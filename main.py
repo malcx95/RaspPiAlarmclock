@@ -26,7 +26,7 @@ GPIO.add_event_detect(BUTTON_PIN, GPIO.RISING, callback=button_pressed)
 
 try:
     menu = Menu(["Kebab", "Mysarna", "Mamma"], display, title="hAIhai")
-    menu.display_menu(delay=True)
+    menu.display_menu(delay=False)
 except KeyboardInterrupt:
     display.message("Have a nice\nday!")
     GPIO.cleanup()
