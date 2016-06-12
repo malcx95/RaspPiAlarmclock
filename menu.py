@@ -7,14 +7,14 @@ class Menu:
 	LCD_ROWS = 2
 
 	def __init__(self, options, display, title="", initial_selection=0):
-		""""" Class for representing a menu on the display.
+		""" Class for representing a menu on the display.
 			 Takes in a list of options in the format
 			 ["Option1", "Option2", ...] as well as a
 			 instance of a Adafruit_CharLCDPlate (display). 
 			 
 			 You can set the title of the menu in the optional
 			 title parameter, and which menu option should be 
-			 initially selected """""
+			 initially selected """
 		if not options:
 			raise ValueError("No options were given!")
 		elif not isinstance(options, list):
@@ -24,11 +24,12 @@ class Menu:
 		self.display = display
 		self.options_count = len(options)
 		if initial_selection >= self.options_count or initial_selection < 0:
-			raise ValueError("Invalid initial selection \"{}\"!".format(initial_selection))
+			raise ValueError("Invalid initial selection \"{}\"!".format( \
+                    initial_selection))
 		self.selected = initial_selection
 
 	def _change_top_row(self, string, delay=False):
-		""""" Changes the top row of the display without clearing """""
+		""" Changes the top row of the display without clearing """
 		for i in range(self.LCD_COLS):
 			self.display.set_cursor(i, 0)
 			self.display.write8(ord(string[i]), True)
@@ -49,4 +50,3 @@ class Menu:
 
 	def __str__(self):
 		return "Menu \"{}\" with options {}".format(self.title, self.options)
-
