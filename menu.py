@@ -19,10 +19,18 @@ class Menu:
             raise ValueError("No options were given!")
         elif not isinstance(options, list):
             raise ValueError("Incompatible options type - must be list!")
+        # List of options ["OPT1", "OPT2", ...]
         self.options = options
+
+        # Title of menu
         self.title = title
+
+        # The LCD-display
         self.display = display
+
+        # Number of options
         self.options_count = len(options)
+
         if initial_selection >= self.options_count or initial_selection < 0:
             raise ValueError("Invalid initial selection \"{}\"!".format( \
                     initial_selection))
@@ -30,7 +38,7 @@ class Menu:
 
     def _change_top_row(self, string, delay=False):
         """ Changes the top row of the display without clearing """
-        for i in range(self.LCD_COLS):
+        for i in range(len(string)):
             self.display.set_cursor(i, 0)
             self.display.write8(ord(string[i]), True)
             if delay:
@@ -44,7 +52,6 @@ class Menu:
         # Display menu title
         self.display.message("{}\n{}".format(self.title, options_row))
         time.sleep(1)
-        print self.selected
         # Display option
         self._change_top_row(self.options[self.selected], delay=delay)
 
