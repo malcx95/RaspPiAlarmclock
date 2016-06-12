@@ -2,6 +2,8 @@ import time
 import Adafruit_CharLCD as LCD
 from constants import *
 
+# TODO MenuOption is not yet tested
+
 class MenuOption:
     """Single menu item in the menu"""
 
