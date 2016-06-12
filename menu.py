@@ -44,8 +44,8 @@ class Menu:
 		# Display menu title
 		self.display.message("{}\n{}".format(self.title, options_row))
 		time.sleep(1)
+        print self.selected
 		# Display option
-                # TODO KNOWN ISSUE: prints out all options
 		self._change_top_row(self.options[self.selected], delay=delay)
 
 	def __str__(self):
