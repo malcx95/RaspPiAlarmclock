@@ -7,14 +7,13 @@ from menu import Menu
 display = LCD.Adafruit_CharLCDPlate()
 
 DISPLAY_WIDTH = 16
-curr = 0
 
 def button_pressed(channel):
     display.clear()
     display.message("Oh shit you\n pressed pin {}".format(channel))
+    GPIO.output(22, True)
     time.sleep(3)
-
-time.sleep(1)
+    GPIO.output(22, False)
 
 BUTTON_PIN = 22
 
