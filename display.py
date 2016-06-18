@@ -1,4 +1,5 @@
 from Adafruit_CharLCD import Adafruit_CharLCDPlate
+from constants import *
 
 class Display(Adafruit_CharLCDPlate):
     
