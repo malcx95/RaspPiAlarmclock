@@ -12,8 +12,8 @@ class Display(Adafruit_CharLCDPlate):
     def change_row(self, text, row):
         """Changes the top row of the display without clearing. Only changes
             different characters."""
-        if top_or_bottom != 0 or top_or_bottom != 1:
-            raise ValueError("top_or_bottom must be either 0 or 1!")
+        if row != 0 or row != 1:
+            raise ValueError("Row must be either 0 or 1!")
         
         text_length = len(text)
 
