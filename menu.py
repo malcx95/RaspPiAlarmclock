@@ -7,7 +7,7 @@ from constants import *
 class MenuOption:
     """Single menu item in the menu"""
 
-    def __init__(self, name):
+    def __init__(self, name, selected=False):
 
         # The whole name of the option
         self.name = name
@@ -21,8 +21,11 @@ class MenuOption:
         else:
             self.scroll_amount = 0
 
+        # whether this option is selected
+        self.selected = selected
+
     def __str__(self):
-        return self.name[self.scroll_offset:]
+        return self.name[self.scroll_offset:16]
 
 class Menu:
 
@@ -60,21 +63,35 @@ class Menu:
             raise ValueError("Invalid initial selection \"{}\"!".format( \
                     initial_selection))
 
-        # The current selection
+        # The current selection (0-based
         self.selected = initial_selection
+        options[self.selected].selected = True
+
+        self._top_row = ""
 
     def _change_top_row(self, string, delay=False):
-        """Changes the top row of the display without clearing"""
+        """Changes the top row of the display without clearing. Only changes
+            different characters."""
         string_length = len(string)
+
+        # first generate new row
+        new_row = ""
+        for i in range(LCD_COLS):
+            if i > string_length - 1:
+                new_row += ' '
+            else:
+                new_row += string[i]
 
         for i in range(LCD_COLS):
             self.display.set_cursor(i, 0)
-            if i > string_length - 1:
-                self.display.write8(ord(' '), True)
-            else:
+            # only write if it's a new character
+            if new_row[i] != self._top_row[i]:
                 self.display.write8(ord(string[i]), True)
             if delay:
                 time.sleep(MENU_DELAY_TIME)
+
+        # save the new state
+        self._top_row = new_row
 
     def display_menu(self, delay=False):
         self.display.clear()
