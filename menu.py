@@ -92,7 +92,7 @@ class Menu:
         for i in range(min(self.options_count, 4)):
             options_row += "[{}] ".format(i + 1)
         # Display option
-        self._change_top_row(self.options[self.selected])
+        self._change_top_row(str(self.options[self.selected]))
 
     def __str__(self):
         return "Menu \"{}\" with options {}".format(self.title, self.options)
