@@ -108,7 +108,7 @@ class Menu:
 
         # Display menu title, if there is any
         if self.title:
-            self.display.change_row(title, TOP_ROW)
+            self.display.change_row(self.title, TOP_ROW)
             self.display.change_row(options_row, BOTTOM_ROW)
             time.sleep(0.5)
         self._display_option()
