@@ -79,7 +79,7 @@ class Menu:
         for i in range(min(self.options_count, 4)):
             if i == self.selected:
                 options_row += "[{}]".format(i + 1)
-                self.display.set_cursor(1, i*3 + 1)
+                self.display.set_cursor(i*3 + 1, 1)
             else:
                 options_row += " {} ".format(i + 1)
 
