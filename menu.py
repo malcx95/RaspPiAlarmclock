@@ -85,6 +85,7 @@ class Menu:
         if self.title:
             self.display.message("{}\n{}".format(self.title, options_row))
             time.sleep(0.5)
+        self._display_option()
 
     def _display_option(self):
         options_row = ""

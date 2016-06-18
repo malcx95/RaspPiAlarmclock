@@ -6,7 +6,5 @@ class InvalidMenuException(Exception):
 
 class InvalidMenuOptionsException(InvalidMenuException):
     def __init__(self, message, options):
-        self.options = options
         super(self, message)
-
-
+        self.options = options
