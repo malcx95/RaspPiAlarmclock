@@ -31,8 +31,6 @@ class Display(Adafruit_CharLCDPlate):
             # only write if it's a new character
             if new_row[i] != self.rows[row][i]:
                 self.write8(ord(text[i]), True)
-            if delay:
-                time.sleep(MENU_DELAY_TIME)
 
         # save the new state
         self.rows[row] = new_row
