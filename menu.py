@@ -67,33 +67,37 @@ class Menu:
         self.selected = initial_selection
         self.options[self.selected].selected = True
 
-        self._top_row = ""
+        # the current image in the display
+        #self.rows = ["                ","                "]
 
-    def _change_top_row(self, string, delay=False):
-        """Changes the top row of the display without clearing. Only changes
-            different characters."""
-        string_length = len(string)
+#    def _change_row(self, string, row, delay=False):
+#        """Changes the top row of the display without clearing. Only changes
+#            different characters."""
+#        if top_or_bottom != 0 or top_or_bottom != 1:
+#            raise ValueError("top_or_bottom must be either 0 or 1!")
+#        
+#        string_length = len(string)
+#
+#        # first generate new row
+#        new_row = ""
+#        for i in range(LCD_COLS):
+#            if i > string_length - 1:
+#                new_row += ' '
+#            else:
+#                new_row += string[i]
+#
+#        for i in range(LCD_COLS):
+#            self.display.set_cursor(i, row)
+#            # only write if it's a new character
+#            if new_row[i] != self.rows[row][i]:
+#                self.display.write8(ord(string[i]), True)
+#            if delay:
+#                time.sleep(MENU_DELAY_TIME)
+#
+#        # save the new state
+#        self.rows[row] = new_row
 
-        # first generate new row
-        new_row = ""
-        for i in range(LCD_COLS):
-            if i > string_length - 1:
-                new_row += ' '
-            else:
-                new_row += string[i]
-
-        for i in range(LCD_COLS):
-            self.display.set_cursor(i, 0)
-            # only write if it's a new character
-            if new_row[i] != self._top_row[i]:
-                self.display.write8(ord(string[i]), True)
-            if delay:
-                time.sleep(MENU_DELAY_TIME)
-
-        # save the new state
-        self._top_row = new_row
-
-    def display_menu(self, delay=False):
+    def display_menu(self):
         self.display.clear()
         options_row = ""
         for i in range(min(self.options_count, 4)):
@@ -104,16 +108,14 @@ class Menu:
 
         # Display menu title, if there is any
         if self.title:
-            self.display.message("{}\n{}".format(self.title, options_row))
+            self.display.change_row(title, TOP_ROW)
+            self.display.change_row(options_row, BOTTOM_ROW)
             time.sleep(0.5)
         self._display_option()
 
     def _display_option(self):
-        options_row = ""
-        for i in range(min(self.options_count, 4)):
-            options_row += "[{}] ".format(i + 1)
         # Display option
-        self._change_top_row(str(self.options[self.selected]))
+        self.display.change_row(str(self.options[self.selected]), 0)
 
     def __str__(self):
         return "Menu \"{}\" with options {}".format(self.title, self.options)
