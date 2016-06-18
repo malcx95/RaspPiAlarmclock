@@ -74,7 +74,6 @@ class Menu:
 
     def display_menu(self):
         self.display.clear()
-        self.display.set_blink(True)
         options_row = ""
         for i in range(min(self.options_count, 4)):
             if i == self.selected:
@@ -89,6 +88,7 @@ class Menu:
             self.display.change_row(options_row, BOTTOM_ROW)
             time.sleep(0.5)
         self._display_option()
+        self.display.set_blink(True)
 
 
     def _display_option(self):
