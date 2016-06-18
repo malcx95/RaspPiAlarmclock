@@ -82,7 +82,7 @@ class Menu:
         for i in range(min(self.options_count, 4)):
             options_row += "[{}] ".format(i + 1)
         # Display menu title, if there is any
-        if title:
+        if self.title:
             self.display.message("{}\n{}".format(self.title, options_row))
             time.sleep(0.5)
 
