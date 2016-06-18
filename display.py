@@ -10,7 +10,6 @@ class Display(Adafruit_CharLCDPlate):
         # the current state of the display
         self.rows = ["                ","                "]
         self._blink = blink
-        self.set_blink(True)
         super(Display, self).__init__()
 
 
