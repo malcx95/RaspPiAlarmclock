@@ -7,6 +7,7 @@ from constants import *
 class MenuOption:
     """Single menu item in the menu"""
 
+
     def __init__(self, name, selected=False):
 
         # The whole name of the option
@@ -24,10 +25,13 @@ class MenuOption:
         # whether this option is selected
         self.selected = selected
 
+
     def __str__(self):
         return self.name[self.scroll_offset:16]
 
+
 class Menu:
+
 
     def __init__(self, options, display, title="", initial_selection=0):
         """ Class for representing a menu on the display.
@@ -67,42 +71,15 @@ class Menu:
         self.selected = initial_selection
         self.options[self.selected].selected = True
 
-        # the current image in the display
-        #self.rows = ["                ","                "]
-
-#    def _change_row(self, string, row, delay=False):
-#        """Changes the top row of the display without clearing. Only changes
-#            different characters."""
-#        if top_or_bottom != 0 or top_or_bottom != 1:
-#            raise ValueError("top_or_bottom must be either 0 or 1!")
-#        
-#        string_length = len(string)
-#
-#        # first generate new row
-#        new_row = ""
-#        for i in range(LCD_COLS):
-#            if i > string_length - 1:
-#                new_row += ' '
-#            else:
-#                new_row += string[i]
-#
-#        for i in range(LCD_COLS):
-#            self.display.set_cursor(i, row)
-#            # only write if it's a new character
-#            if new_row[i] != self.rows[row][i]:
-#                self.display.write8(ord(string[i]), True)
-#            if delay:
-#                time.sleep(MENU_DELAY_TIME)
-#
-#        # save the new state
-#        self.rows[row] = new_row
 
     def display_menu(self):
         self.display.clear()
+        self.display.set_blink(True)
         options_row = ""
         for i in range(min(self.options_count, 4)):
             if i == self.selected:
                 options_row += "[{}]".format(i + 1)
+                self.display.set_cursor(1, i*3 + 1)
             else:
                 options_row += " {} ".format(i + 1)
 
@@ -113,9 +90,11 @@ class Menu:
             time.sleep(0.5)
         self._display_option()
 
+
     def _display_option(self):
         # Display option
         self.display.change_row(str(self.options[self.selected]), 0)
+        
 
     def __str__(self):
         return "Menu \"{}\" with options {}".format(self.title, self.options)

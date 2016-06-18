@@ -2,17 +2,23 @@ from Adafruit_CharLCD import Adafruit_CharLCDPlate
 from constants import *
 
 class Display(Adafruit_CharLCDPlate):
+
     
-    def __init__(self):
+    def __init__(self, blink=False):
         """Initialize display with defaults"""
 
         # the current state of the display
         self.rows = ["                ","                "]
+        self._blink = blink
         super(Display, self).__init__()
+
 
     def change_row(self, text, row):
         """Changes the top row of the display without clearing. Only changes
             different characters."""
+
+        self.blink(False)
+
         if row != 0 and row != 1:
             raise ValueError("Row must be either 0 or 1!")
         
@@ -34,4 +40,11 @@ class Display(Adafruit_CharLCDPlate):
 
         # save the new state
         self.rows[row] = new_row
+        self.blink(self._blink)
+
+
+    def set_blink(self, blink):
+        if blink != self._blink:
+            self._blink = blink
+            self.blink(blink)
 
