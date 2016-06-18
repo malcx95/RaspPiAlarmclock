@@ -7,7 +7,7 @@ class Display(Adafruit_CharLCDPlate):
 
         # the current state of the display
         self.rows = ["                ","                "]
-        super(Adafruit_CharLCDPlate, self)
+        super(Display, self).__init__()
 
     def change_row(self, text, row):
         """Changes the top row of the display without clearing. Only changes
