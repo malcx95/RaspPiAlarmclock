@@ -65,7 +65,7 @@ class Menu:
 
         # The current selection (0-based
         self.selected = initial_selection
-        options[self.selected].selected = True
+        self.options[self.selected].selected = True
 
         self._top_row = ""
 
