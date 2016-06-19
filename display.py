@@ -54,7 +54,12 @@ class Display(Adafruit_CharLCDPlate):
 
     def message(self, text):
         self.lock.acquire()
-        super(Display, self).message(text)
+        row = 0
+        col = 0
+        for char in text:
+            # TODO reimplement message by saving string
+            # in self.rows
+                
         self.lock.release()
 
     def write_char(self, row, col, char):
@@ -67,10 +72,12 @@ class Display(Adafruit_CharLCDPlate):
         self.lock.acquire()
         self.set_cursor(col, row)
         self.write8(ord(char), True)
+        self.rows[row][col] = char
         self.lock.release()
 
     def clear(self):
         self.lock.acquire()
         super(Display, self).clear()
+        self.rows = ["                ","                "]
         self.lock.release()
         
