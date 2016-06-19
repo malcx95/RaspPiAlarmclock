@@ -127,5 +127,5 @@ class BlinkThread(threading.Thread):
 
     def run(self):
         while not self.display._blink_stop_flag.wait(BLINK_INTERVAL):
-            self.display._blink
+            self.display._blink()
         
