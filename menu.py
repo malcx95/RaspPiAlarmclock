@@ -113,11 +113,11 @@ class Menu:
                     self._get_option_position(), self.selected + 1)
 
         self._current_blink = not self._current_blink
-        print "Blinking..."
 
         
     def _get_option_position(self):
         return self.selected * 3 + 1
+
 
     def __str__(self):
         return "Menu \"{}\" with options {}".format(self.title, self.options)
