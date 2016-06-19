@@ -74,11 +74,6 @@ class Menu:
 
 
     def _move_selection(self, direction):
-        # stop blinking thread
-        self._blink_stop_flag.set()
-        self._current_blink = False
-        
-        # compute new selection
         new_selection = self._selected
         if direction == 'l':
             new_selection -= 1
@@ -93,12 +88,6 @@ class Menu:
         self._selected = new_selection
         self._display_option()
         self.display.change_row(self._get_options_row(), BOTTOM_ROW)
-
-        # restart blinking thread
-        self._blink_stop_flag = threading.Event()
-        self._blink_thread = BlinkThread(self)
-        self._blink_thread.start()
-
 
     def _get_options_row(self):
         options_row = ""

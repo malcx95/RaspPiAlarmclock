@@ -57,9 +57,17 @@ class Display(Adafruit_CharLCDPlate):
         row = 0
         col = 0
         for char in text:
-            # TODO reimplement message by saving string
-            # in self.rows
-                
+            if char == '\n' and row == TOP_ROW:
+                row = BOTTOM_ROW
+                col = 0
+            elif col == LCD_COLS and row == TOP_ROW:
+                row = BOTTOM_ROW
+                col = 0
+                self.rows[row][col] = char
+            elif char != '\n':
+                self.rows[row][col]
+        self.change_row(self.row[TOP_ROW], TOP_ROW)
+        self.change_row(self.row[BOTTOM_ROW], BOTTOM_ROW)
         self.lock.release()
 
     def write_char(self, row, col, char):
