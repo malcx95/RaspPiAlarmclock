@@ -53,7 +53,6 @@ class Display(Adafruit_CharLCDPlate):
 
 
     def message(self, text):
-        self.lock.acquire()
         row = 0
         col = 0
         new_rows = ["",""]
@@ -73,7 +72,6 @@ class Display(Adafruit_CharLCDPlate):
 
         self.change_row(new_rows[TOP_ROW], TOP_ROW)
         self.change_row(new_rows[BOTTOM_ROW], BOTTOM_ROW)
-        self.lock.release()
 
     def write_char(self, row, col, char):
         if isinstance(char, int):
