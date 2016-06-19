@@ -15,13 +15,13 @@ DISPLAY_WIDTH = 16
 
 menu = None
 
-for button in BUTTONS:
-    GPIO.setup(button, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-    GPIO.add_event_detect(button, GPIO.RISING, callback=button_pressed)
-
 def button_pressed(channel):
     button = BUTTONS[channel]
     print button
+
+for button in BUTTONS:
+    GPIO.setup(button, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+    GPIO.add_event_detect(button, GPIO.RISING, callback=button_pressed)
 
 GPIO.setup(17, GPIO.OUT)
 
