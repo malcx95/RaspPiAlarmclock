@@ -1,6 +1,7 @@
 import time
 import Adafruit_CharLCD as LCD
 from constants import *
+import pdb
 
 # TODO MenuOption is not yet tested
 
@@ -88,6 +89,7 @@ class Menu:
             self.display.change_row(options_row, BOTTOM_ROW)
             time.sleep(0.5)
         self._display_option()
+        pdb.set_trace()
         self.display.set_blink(True)
 
 
