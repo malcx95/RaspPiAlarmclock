@@ -44,6 +44,7 @@ class Menu:
         # Timer enabling blinking
         self._blink_stop_flag = threading.Event()
         self._blink_thread = BlinkThread(self)
+        self._no_blink = True
 
 
     def display_menu(self):
@@ -58,6 +59,7 @@ class Menu:
             self.display.change_row(options_row, BOTTOM_ROW)
             time.sleep(0.5)
         self._display_option()
+        self._no_blink = False
         self._blink_thread.start()
 
 
@@ -74,6 +76,7 @@ class Menu:
 
 
     def _move_selection(self, direction):
+        self._no_blink = True
         new_selection = self._selected
         if direction == 'l':
             new_selection -= 1
@@ -88,6 +91,7 @@ class Menu:
         self._selected = new_selection
         self._display_option()
         self.display.change_row(self._get_options_row(), BOTTOM_ROW)
+        self._no_blink = False
 
     def _get_options_row(self):
         options_row = ""
@@ -130,5 +134,6 @@ class BlinkThread(threading.Thread):
 
     def run(self):
         while not self.display._blink_stop_flag.wait(BLINK_INTERVAL):
-            self.display._blink()
+            if not self.display._no_blink:
+                self.display._blink()
         
