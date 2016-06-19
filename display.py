@@ -85,7 +85,7 @@ class Display(Adafruit_CharLCDPlate):
         self.lock.acquire()
         self.set_cursor(col, row)
         self.write8(ord(char), True)
-        self.rows[row][col] = char
+        self.rows[row] = self.rows[:col] + char + self.rows[col + 1:]
         self.lock.release()
 
     def clear(self):
