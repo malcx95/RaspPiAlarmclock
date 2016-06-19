@@ -95,7 +95,7 @@ class Menu:
         self.display.change_row(self._get_options_row(), BOTTOM_ROW)
 
         # restart blinking thread
-        self._blink_stop_flag = Event()
+        self._blink_stop_flag = threading.Event()
         self._blink_thread = BlinkThread(self)
         self._blink_thread.start()
 
