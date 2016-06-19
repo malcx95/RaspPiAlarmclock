@@ -56,18 +56,23 @@ class Display(Adafruit_CharLCDPlate):
         self.lock.acquire()
         row = 0
         col = 0
+        new_rows = ["",""]
         for char in text:
             if char == '\n' and row == TOP_ROW:
                 row = BOTTOM_ROW
-                col = 0
             elif col == LCD_COLS and row == TOP_ROW:
                 row = BOTTOM_ROW
-                col = 0
-                self.rows[row][col] = char
+                new_rows[row] += char
             elif char != '\n':
-                self.rows[row][col]
-        self.change_row(self.row[TOP_ROW], TOP_ROW)
-        self.change_row(self.row[BOTTOM_ROW], BOTTOM_ROW)
+                new_rows[row] += char
+
+        # fill out with spaces
+        for row in range(LCD_ROWS):
+            while len(new_rows[row]) < 16:
+                new_rows[row] += ' '
+
+        self.change_row(new_rows[TOP_ROW], TOP_ROW)
+        self.change_row(new_rows[BOTTOM_ROW], BOTTOM_ROW)
         self.lock.release()
 
     def write_char(self, row, col, char):
