@@ -129,6 +129,9 @@ class BlinkThread(threading.Thread):
         self.display = display
 
     def run(self):
-        while not self.display._blink_stop_flag.wait(BLINK_INTERVAL):
-            self.display._blink()
+        try:
+            while not self.display._blink_stop_flag.wait(BLINK_INTERVAL):
+                self.display._blink()
+        except KeyboardInterrupt:
+            sys.exit(1)
         

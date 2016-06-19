@@ -26,7 +26,7 @@ if __name__ == '__main__':
     for button in BUTTONS:
         GPIO.setup(button, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
         GPIO.add_event_detect(button, GPIO.RISING, callback=button_pressed, 
-                bouncetime=400)
+                bouncetime=250)
 
     try:
         menu = Menu(["Kebab", "Mysarna", "Mamma"], display, title="MAMMA GILLAR GLASS")
