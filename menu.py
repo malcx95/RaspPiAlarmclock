@@ -3,33 +3,6 @@ import threading
 import Adafruit_CharLCD as LCD
 from constants import *
 
-
-class MenuOption:
-    """Single menu item in the menu"""
-
-
-    def __init__(self, name, selected=False):
-
-        # The whole name of the option
-        self.name = name
-
-        # The scroll offset in case the name doesn't fit.
-        self.scroll_offset = 0
-
-        # number of characters that don't fit on display
-        if LCD_COLS < len(name):
-            self.scroll_amount = len(name) - LCD_COLS
-        else:
-            self.scroll_amount = 0
-
-        # whether this option is selected
-        self.selected = selected
-
-
-    def __str__(self):
-        return self.name[self.scroll_offset:16]
-
-
 class Menu:
 
 
@@ -48,11 +21,7 @@ class Menu:
             raise ValueError("Incompatible options type - must be list!")
 
         # List of options [OPT1, OPT2, ...]
-        self.options = []
-
-        # Convert options to MenuOption objects
-        for option in options:
-            self.options.append(MenuOption(option))
+        self.options = options
 
         # Title of menu
         self.title = title
@@ -68,8 +37,8 @@ class Menu:
                     initial_selection))
 
         # The current selection (0-based)
-        self.selected = initial_selection
-        self.options[self.selected].selected = True
+        self._selected = initial_selection
+        self.options[self._selected].selected = True
 
         # The current state of a blink
         self._current_blink = False
@@ -79,13 +48,10 @@ class Menu:
 
 
     def display_menu(self):
+
         self.display.clear()
-        options_row = ""
-        for i in range(min(self.options_count, 4)):
-            if i == self.selected:
-                options_row += "[{}]".format(i + 1)
-            else:
-                options_row += " {} ".format(i + 1)
+
+        options_row = self._get_options_row()
 
         # Display menu title, if there is any
         if self.title:
@@ -100,9 +66,43 @@ class Menu:
         self._blink_stop_flag.set()
 
 
+    def move_selection_left(self):
+        self._move_selection('l')
+
+
+    def move_selection_right(self):
+        self._move_selection('r')
+
+
+    def _move_selection(self, direction):
+        new_selection = self._selected
+        if direction == 'l':
+            new_selection -= 1
+        else:
+            new_selection += 1
+
+        if new_selection == -1:
+            new_selection = self.options_count - 1
+        elif new_selection == self.options_count:
+            new_selection = 0
+        
+        self._selected = new_selection
+        self._display_option()
+        self.display.change_row(self._get_options_row(), BOTTOM_ROW)
+
+    def _get_options_row(self):
+        options_row = ""
+        for i in range(min(self.options_count, 4)):
+            if i == self._selected:
+                options_row += "[{}]".format(i + 1)
+            else:
+                options_row += " {} ".format(i + 1)
+        return options_row
+
+    
     def _display_option(self):
         # Display option
-        self.display.change_row(str(self.options[self.selected]), 0)
+        self.display.change_row(str(self.options[self._selected]), TOP_ROW)
         
         
     def _blink(self):
@@ -110,13 +110,13 @@ class Menu:
             self.display.write_char(1, self._get_option_position(), ' ')
         else:
             self.display.write_char(1, \
-                    self._get_option_position(), self.selected + 1)
+                    self._get_option_position(), self._selected + 1)
 
         self._current_blink = not self._current_blink
 
         
     def _get_option_position(self):
-        return self.selected * 3 + 1
+        return self._selected * 3 + 1
 
 
     def __str__(self):

@@ -6,7 +6,7 @@ BOTTOM_ROW = 1
 
 # Menu constants
 MENU_DELAY_TIME = 0.1
-BLINK_INTERVAL = 1
+BLINK_INTERVAL = 0.7
 
 # Button constants
 BUTTONS = {
