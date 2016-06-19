@@ -17,6 +17,10 @@ def button_pressed(channel):
 
 if __name__ == '__main__':
 
+    display.message("HEJHEJ")
+
+    time.sleep(1)
+
     display_lock = threading.Lock()
 
     display = Display(display_lock)
@@ -34,6 +38,7 @@ if __name__ == '__main__':
         while True:
             time.sleep(10)
     except KeyboardInterrupt:
+        display.lock.release()
         display.clear()
         display.message("Have a nice\nkebab!")
         GPIO.cleanup()
