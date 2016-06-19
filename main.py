@@ -9,6 +9,10 @@ from constants import *
 
 def button_pressed(channel):
     button = BUTTONS[channel]
+    if button == 'right':
+        menu.move_selection_right()
+    elif button == 'left':
+        menu.move_selection_left()
 
 
 if __name__ == '__main__':
