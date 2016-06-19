@@ -1,10 +1,13 @@
 #!/usr/bin/python
 import time
+import threading
 import RPi.GPIO as GPIO
 from menu import Menu
 from display import Display
 
-display = Display()
+display_lock = threading.Lock()
+
+display = Display(display_lock)
 
 DISPLAY_WIDTH = 16
 

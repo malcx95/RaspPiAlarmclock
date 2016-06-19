@@ -1,9 +1,8 @@
 import time
+import threading
 import Adafruit_CharLCD as LCD
 from constants import *
-import pdb
 
-# TODO MenuOption is not yet tested
 
 class MenuOption:
     """Single menu item in the menu"""
@@ -68,9 +67,14 @@ class Menu:
             raise ValueError("Invalid initial selection \"{}\"!".format( \
                     initial_selection))
 
-        # The current selection (0-based
+        # The current selection (0-based)
         self.selected = initial_selection
         self.options[self.selected].selected = True
+
+        # Timer enabling blinking
+        self._blink_timer = threading.Timer(BLINK_INTERVAL, self._blink)
+        # The current state of a blink
+        self._current_blink = False
 
 
     def display_menu(self):
@@ -79,7 +83,6 @@ class Menu:
         for i in range(min(self.options_count, 4)):
             if i == self.selected:
                 options_row += "[{}]".format(i + 1)
-                self.display.set_cursor(i*3 + 1, 1)
             else:
                 options_row += " {} ".format(i + 1)
 
@@ -89,14 +92,23 @@ class Menu:
             self.display.change_row(options_row, BOTTOM_ROW)
             time.sleep(0.5)
         self._display_option()
-        pdb.set_trace()
-        self.display.set_blink(True)
+        self._blink_timer.start()
 
 
     def _display_option(self):
         # Display option
         self.display.change_row(str(self.options[self.selected]), 0)
         
+    def _blink(self):
+        if self._current_blink:
+            self.display.write_char(1, self._get_option_position(), ' ')
+        else:
+            self.display.write_char(1, \
+                    self._get_option_position(), self.selected + 1)
+
+        
+    def _get_option_position(self):
+        return self.selected * 3 + 1
 
     def __str__(self):
         return "Menu \"{}\" with options {}".format(self.title, self.options)

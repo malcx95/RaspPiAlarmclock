@@ -1,27 +1,35 @@
+import threading
 from Adafruit_CharLCD import Adafruit_CharLCDPlate
 from constants import *
+
 
 class Display(Adafruit_CharLCDPlate):
 
     
-    def __init__(self, blink=False):
+    def __init__(self, lock):
         """Initialize display with defaults"""
 
         # the current state of the display
         self.rows = ["                ","                "]
-        self._blink = blink
+
+        # the display lock
+        self.lock = lock
+
         super(Display, self).__init__()
+
+        self.blink(False)
+        self.show_cursor(False)
 
 
     def change_row(self, text, row):
         """Changes the top row of the display without clearing. Only changes
             different characters."""
 
-        self.show_cursor(False)
-
         if row != 0 and row != 1:
             raise ValueError("Row must be either 0 or 1!")
-        
+
+        self.lock.acquire()
+
         text_length = len(text)
 
         # first generate new row
@@ -41,13 +49,17 @@ class Display(Adafruit_CharLCDPlate):
         # save the new state
         self.rows[row] = new_row
 
-        self.blink(self._blink)
-        self.show_cursor(True)
+        self.lock.release()
 
-    def set_blink(self, blink):
-        """Enables or disables cursor blinking, also shows or hides cursor"""
-        if blink != self._blink:
-            self._blink = blink
-            self.blink(blink)
-            self.show_cursor(blink)
+
+    def message(self, text):
+        self.lock.acquire()
+        super(Display, self).message(text)
+        self.lock.release()
+
+    def write_char(self, row, col, char):
+        self.lock.acquire()
+        self.set_cursor(row, col)
+        self.write8(char)
+        self.lock.release()
 
