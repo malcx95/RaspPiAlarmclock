@@ -21,10 +21,6 @@ if __name__ == '__main__':
 
     display = Display(display_lock)
 
-    display.message("HEJHEJ")
-
-    time.sleep(1)
-
     GPIO.setup(17, GPIO.OUT)
 
     for button in BUTTONS:
@@ -38,7 +34,6 @@ if __name__ == '__main__':
         while True:
             time.sleep(10)
     except KeyboardInterrupt:
-        display.lock.release()
         display.clear()
         display.message("Have a nice\nkebab!")
         GPIO.cleanup()
