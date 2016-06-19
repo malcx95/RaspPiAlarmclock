@@ -5,7 +5,7 @@ import threading
 import RPi.GPIO as GPIO
 from menu import Menu
 from display import Display
-from constant import *
+from constants import *
 
 display_lock = threading.Lock()
 
