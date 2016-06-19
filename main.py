@@ -21,7 +21,7 @@ if __name__ == '__main__':
 
     display = Display(display_lock)
 
-    GPIO.setup(17, GPIO.OUT)
+    GPIO.setup(LED, GPIO.OUT)
 
     for button in BUTTONS:
         GPIO.setup(button, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
@@ -29,7 +29,8 @@ if __name__ == '__main__':
                 bouncetime=250)
 
     try:
-        menu = Menu(["Kebab", "Mysarna", "Mamma"], display, title="MAMMA GILLAR GLASS")
+        menu = Menu(["Kebab", "Mysarna", "Mamma", "ha", "majs"],
+                display, title="MAMMA GILLAR GLASS")
         menu.display_menu()
         while True:
             time.sleep(10)

@@ -41,9 +41,14 @@ class Menu:
 
         # The current state of a blink
         self._current_blink = False
-        # Timer enabling blinking
+        # Thread enabling blinking
         self._blink_stop_flag = threading.Event()
         self._blink_thread = BlinkThread(self)
+
+        # The number of options that don't fit on the display
+        self.scroll_amount = max(0, options_count - MAX_NUM_OPTIONS_THAT_FIT)
+        # The current scroll offset
+        self.scroll_offset = 0
 
 
     def display_menu(self):
@@ -89,13 +94,23 @@ class Menu:
         self._display_option()
         self.display.change_row(self._get_options_row(), BOTTOM_ROW)
 
+
     def _get_options_row(self):
         options_row = ""
-        for i in range(min(self.options_count, 4)):
+        for i in range(min(self.options_count, 5)):
             if i == self._selected:
-                options_row += "[{}]".format(i + 1)
+                options_row += "[{}]".format(i + 1 + self.scroll_offset)
             else:
-                options_row += " {} ".format(i + 1)
+                options_row += " {} ".format(i + 1 + self.scroll_offset)
+
+        while len(options_row) < LCD_COLS - 1:
+            options_row += ' '
+
+        if self.scroll_offset != self.scroll_amount:
+            options_row += '>'
+        else:
+            options_row += ' '
+
         return options_row
 
     
@@ -124,11 +139,14 @@ class Menu:
 
 class BlinkThread(threading.Thread):
 
+
     def __init__(self, display):
         super(BlinkThread, self).__init__()
         self.display = display
+        
 
     def run(self):
         while not self.display._blink_stop_flag.wait(BLINK_INTERVAL):
             self.display._blink()
+            GPIO.output(LED, self.display._current_blink)
         
