@@ -59,7 +59,11 @@ class Display(Adafruit_CharLCDPlate):
 
     def write_char(self, row, col, char):
         if isinstance(char, int):
-            char = int(char)
+            char = str(char)
+        if not isinstance(char, str) and len(char) != 1:
+            raise TypeError(\
+                    "Invalid character \'{}\', must be int or a single character"\
+                    .format(char))
         self.lock.acquire()
         self.set_cursor(col, row)
         self.write8(ord(char), True)
