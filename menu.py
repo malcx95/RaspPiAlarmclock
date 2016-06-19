@@ -46,7 +46,7 @@ class Menu:
         self._blink_thread = BlinkThread(self)
 
         # The number of options that don't fit on the display
-        self.scroll_amount = max(0, options_count - MAX_NUM_OPTIONS_THAT_FIT)
+        self.scroll_amount = max(0, self.options_count - MAX_NUM_OPTIONS_THAT_FIT)
         # The current scroll offset
         self.scroll_offset = 0
 
