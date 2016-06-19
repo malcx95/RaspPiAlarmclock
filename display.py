@@ -69,3 +69,8 @@ class Display(Adafruit_CharLCDPlate):
         self.write8(ord(char), True)
         self.lock.release()
 
+    def clear(self):
+        self.lock.acquire()
+        super(Display, self).clear()
+        self.lock.release()
+        

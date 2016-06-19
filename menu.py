@@ -96,6 +96,10 @@ class Menu:
         self._blink_thread.start()
 
 
+    def stop(self):
+        self._blink_stop_flag.set()
+
+
     def _display_option(self):
         # Display option
         self.display.change_row(str(self.options[self.selected]), 0)
