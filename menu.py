@@ -1,6 +1,7 @@
 import time
 import threading
 import Adafruit_CharLCD as LCD
+import RPi.GPIO as GPIO
 from constants import *
 
 class Menu:
