@@ -38,7 +38,6 @@ class Menu:
 
         # The current selection (0-based)
         self._selected = initial_selection
-        self.options[self._selected].selected = True
 
         # The current state of a blink
         self._current_blink = False
@@ -102,7 +101,7 @@ class Menu:
     
     def _display_option(self):
         # Display option
-        self.display.change_row(str(self.options[self._selected]), TOP_ROW)
+        self.display.change_row(self.options[self._selected], TOP_ROW)
         
         
     def _blink(self):
