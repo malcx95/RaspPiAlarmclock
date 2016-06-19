@@ -17,7 +17,7 @@ class Display(Adafruit_CharLCDPlate):
         """Changes the top row of the display without clearing. Only changes
             different characters."""
 
-        self.blink(False)
+        self.show_cursor(False)
 
         if row != 0 and row != 1:
             raise ValueError("Row must be either 0 or 1!")
@@ -40,11 +40,14 @@ class Display(Adafruit_CharLCDPlate):
 
         # save the new state
         self.rows[row] = new_row
-        self.blink(self._blink)
 
+        self.blink(self._blink)
+        self.show_cursor(True)
 
     def set_blink(self, blink):
+        """Enables or disables cursor blinking, also shows or hides cursor"""
         if blink != self._blink:
             self._blink = blink
             self.blink(blink)
+            self.show_cursor(blink)
 
