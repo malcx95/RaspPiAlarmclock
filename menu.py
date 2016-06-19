@@ -106,6 +106,9 @@ class Menu:
             self.display.write_char(1, \
                     self._get_option_position(), self.selected + 1)
 
+        self._current_blink = !self._current_blink
+        print "Blinking..."
+
         
     def _get_option_position(self):
         return self.selected * 3 + 1

@@ -59,7 +59,7 @@ class Display(Adafruit_CharLCDPlate):
 
     def write_char(self, row, col, char):
         self.lock.acquire()
-        self.set_cursor(row, col)
+        self.set_cursor(col, row)
         self.write8(char)
         self.lock.release()
 
