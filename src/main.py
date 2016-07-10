@@ -19,9 +19,9 @@ def test():
 
     def button_pressed(channel):
         if channel == M1_BUTTON:
-            menu.move_selection_right()
-        elif channel == M2_BUTTON:
             menu.move_selection_left()
+        elif channel == M2_BUTTON:
+            menu.move_selection_right()
 
     for LED in LEDS.values():
         GPIO.setup(LED, GPIO.OUT)
@@ -29,7 +29,7 @@ def test():
     for button in BUTTONS.values():
         GPIO.setup(button, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
         GPIO.add_event_detect(button, GPIO.RISING, callback=button_pressed, 
-                bouncetime=250, )
+                bouncetime=250)
 
     try:
         menu.display_menu()
