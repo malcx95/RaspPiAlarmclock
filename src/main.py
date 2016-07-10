@@ -7,12 +7,13 @@ from menu import Menu
 from display import Display
 from constants import *
 
+menu = None
+
 def button_pressed(channel):
     if channel == M1_BUTTON:
         menu.move_selection_right()
     elif channel == M2_BUTTON:
         menu.move_selection_left()
-
 
 def test():
     display_lock = threading.Lock()
@@ -25,7 +26,7 @@ def test():
     for button in BUTTONS.values():
         GPIO.setup(button, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
         GPIO.add_event_detect(button, GPIO.RISING, callback=button_pressed, 
-                bouncetime=250)
+                bouncetime=250, )
 
     try:
         menu = Menu(["Kebab", "Mysarna", "Mamma", "ha", "majs"],
