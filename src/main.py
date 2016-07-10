@@ -7,19 +7,21 @@ from menu import Menu
 from display import Display
 from constants import *
 
-menu = Menu(["Kebab", "Mysarna", "Mamma", "ha", "majs"],
-                display, title="MAMMA GILLAR GLASS")
 
-def button_pressed(channel):
-    if channel == M1_BUTTON:
-        menu.move_selection_right()
-    elif channel == M2_BUTTON:
-        menu.move_selection_left()
 
 def test():
     display_lock = threading.Lock()
 
     display = Display(display_lock)
+
+    menu = Menu(["Kebab", "Mysarna", "Mamma", "ha", "majs"],
+                display, title="MAMMA GILLAR GLASS")
+
+    def button_pressed(channel):
+        if channel == M1_BUTTON:
+            menu.move_selection_right()
+        elif channel == M2_BUTTON:
+            menu.move_selection_left()
 
     for LED in LEDS.values():
         GPIO.setup(LED, GPIO.OUT)
