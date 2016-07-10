@@ -7,7 +7,8 @@ from menu import Menu
 from display import Display
 from constants import *
 
-menu = None
+menu = Menu(["Kebab", "Mysarna", "Mamma", "ha", "majs"],
+                display, title="MAMMA GILLAR GLASS")
 
 def button_pressed(channel):
     if channel == M1_BUTTON:
@@ -29,8 +30,6 @@ def test():
                 bouncetime=250, )
 
     try:
-        menu = Menu(["Kebab", "Mysarna", "Mamma", "ha", "majs"],
-                display, title="MAMMA GILLAR GLASS")
         menu.display_menu()
         while True:
             time.sleep(10)
