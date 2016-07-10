@@ -8,22 +8,21 @@ from display import Display
 from constants import *
 
 def button_pressed(channel):
-    button = BUTTONS[channel]
-    if button == 'right':
+    if channel == M1_BUTTON:
         menu.move_selection_right()
-    elif button == 'left':
+    elif channel == M2_BUTTON:
         menu.move_selection_left()
 
 
-if __name__ == '__main__':
-
+def test():
     display_lock = threading.Lock()
 
     display = Display(display_lock)
 
-    GPIO.setup(LED, GPIO.OUT)
+    for LED in LEDS.values():
+        GPIO.setup(LED, GPIO.OUT)
 
-    for button in BUTTONS:
+    for button in BUTTONS.values():
         GPIO.setup(button, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
         GPIO.add_event_detect(button, GPIO.RISING, callback=button_pressed, 
                 bouncetime=250)
@@ -45,3 +44,7 @@ if __name__ == '__main__':
     display.clear()
     display.message("Exiting")
     sys.exit(0)
+
+
+if __name__ == '__main__':
+    test()

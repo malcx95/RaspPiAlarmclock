@@ -6,14 +6,17 @@ from constants import *
 class Display(Adafruit_CharLCDPlate):
 
     
-    def __init__(self, lock):
+    def __init__(self, lock=None):
         """Initialize display with defaults"""
 
         # the current state of the display
         self.rows = ["                ","                "]
 
         # the display lock
-        self.lock = lock
+        if lock is None:
+            self.lock = threading.Lock()
+        else:
+            self.lock = lock
 
         super(Display, self).__init__()
 

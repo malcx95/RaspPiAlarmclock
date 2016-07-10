@@ -150,5 +150,8 @@ class BlinkThread(threading.Thread):
     def run(self):
         while not self.display._blink_stop_flag.wait(BLINK_INTERVAL):
             self.display._blink()
-            GPIO.output(LED, self.display._current_blink)
+            # TODO remove
+            GPIO.output(GREEN_LED, self.display._current_blink)
+            GPIO.output(YELLOW_LED, not self.display._current_blink)
+            GPIO.output(RED_LED, self.display._current_blink)
         
