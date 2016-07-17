@@ -37,7 +37,7 @@ def test():
         display.clear()
         display.message("Have a nice\nkebab!")
         GPIO.cleanup()
-        menu.stop()
+        clock.stop()
         sys.exit(1)
 
     menu.stop()
