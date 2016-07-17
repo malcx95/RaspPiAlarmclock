@@ -23,16 +23,14 @@ def test():
         elif channel == M2_BUTTON:
             menu.move_selection_right()
 
-    for LED in LEDS.values():
-        GPIO.setup(LED, GPIO.OUT)
-
     for button in BUTTONS.values():
         GPIO.setup(button, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
         GPIO.add_event_detect(button, GPIO.RISING, callback=button_pressed, 
                 bouncetime=250)
 
     try:
-        menu.display_menu()
+        clock = ClockFace(display)
+        clock.start()
         while True:
             time.sleep(10)
     except KeyboardInterrupt:

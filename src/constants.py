@@ -28,21 +28,10 @@ BUTTONS = {
         'm1' : 26
         }
 
-LEDS = {
-        'green' : 16,
-        'yellow' : 20,
-        'red' : 21
-        }
 
 M1_BUTTON = BUTTONS['m1']
 M2_BUTTON = BUTTONS['m2']
 M3_BUTTON = BUTTONS['m3']
 M4_BUTTON = BUTTONS['m4']
 M5_BUTTON = BUTTONS['m5']
-
-GREEN_LED = LEDS['green']
-YELLOW_LED = LEDS['yellow']
-RED_LED = LEDS['red']
-###################################################################
-
 
