@@ -1,7 +1,7 @@
 import threading
 from datetime import datetime
 
-class MenuNode:
+class MenuNode(object):
 
 
     def __init__(self, display, title, children=[]):
@@ -23,8 +23,8 @@ class ClockFace(MenuNode):
 
 
     def __init__(self, display):
-        super(ClockFace, self).__init__(display, "Clock")
-        self._update_time()
+        self.time = datetime.now().strftime('%H:%M:%S')
+        super(self.__class__, self).__init__(display, "Clock")
         
     
     def start(self):
