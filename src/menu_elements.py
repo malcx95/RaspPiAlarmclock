@@ -13,9 +13,9 @@ class MenuNode(object):
     def __init__(self, display, title, children=[]):
         if not isinstance(children, list):
             raise ValueError("Children must be list")
+        self._stop_flag = None
         self.title = title
         self.children = children
-        self._stop_flag = threading.Event()
         self.display = display
 
     """
@@ -28,11 +28,13 @@ class MenuNode(object):
         raise NotImplementedError("Start needs to be overridden!")
 
     """
-    Disposes the MenuNode. In case a subclass uses buttons,
+    Terminates the MenuNode, so other nodes can
+    be shown on the display. In case a subclass uses buttons,
     this method needs to be overridden to remove used buttons.
     """
     def stop(self):
         self._stop_flag.set()
+        self._stop_flag = threading.Event()
 
     """
     Gets the MenuNode with the given path. The path is a list
@@ -59,6 +61,7 @@ class ClockFace(MenuNode):
         super(self.__class__, self).__init__(display, "Clock")
     
     def start(self):
+        self._stop_flag = threading.Event()
         self.display.clear()
         while not self._stop_flag.wait(0.5):
             self._update_time()
@@ -123,11 +126,16 @@ class SelectionMenu(MenuNode):
         selected = menu.get_selected_index()
         menu.stop()
 
+        self.stop()
+
+        return selected
+
+    def stop(self):
+        super(self.__class__, self).stop()
         GPIO.remove_event_detect(M1_BUTTON)
         GPIO.remove_event_detect(M2_BUTTON)
         GPIO.remove_event_detect(M3_BUTTON)
 
-        return selected
         
     def _enter_pressed(self):
         self._stop_flag.set()
