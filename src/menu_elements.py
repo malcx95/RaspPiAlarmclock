@@ -1,5 +1,7 @@
 import threading
 import RPi.GPIO as GPIO
+from constants import *
+from menu import Menu
 from datetime import datetime
 
 """
@@ -41,7 +43,7 @@ class MenuNode(object):
     def get_node(self, path):
         if not path:
             return self
-        elif path[0] in self.children:
+        elif len(self.children) >= path[0]:
             return self.children[path[0]].get_node(path[1:])
         else:
             raise IndexError("Node with path {} does not exist".format(path))
@@ -93,7 +95,7 @@ class SelectionMenu(MenuNode):
         super(self.__class__, self).__init__(display, title, children)
 
     def start(self):
-        menu = Menu(str(child) for child in children, display, title)
+        menu = Menu([str(child) for child in self.children], self.display, self.title)
 
         def button_pressed(channel):
             if channel == M1_BUTTON:

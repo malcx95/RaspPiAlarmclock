@@ -5,7 +5,7 @@ import threading
 import RPi.GPIO as GPIO
 from menu import Menu
 from display import Display
-from ledcontrol import LED_CONTROL
+#from ledcontrol import LED_CONTROL
 from constants import *
 from menu_elements import *
 
