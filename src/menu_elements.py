@@ -57,10 +57,10 @@ class MenuNode(object):
 class ClockFace(MenuNode):
 
     def __init__(self, display):
-        self.time = datetime.now().strftime('%H:%M')
         super(self.__class__, self).__init__(display, "Clock")
     
     def start(self):
+        self.time = datetime.now().strftime('%H:%M')
         self._stop_flag = threading.Event()
         self.display.clear()
         while not self._stop_flag.wait(0.5):
@@ -83,7 +83,7 @@ class PlaceHolderNode(MenuNode):
 
     def start(self):
         self.display.clear()
-        self.display.change_row(title, 0)
+        self.display.change_row(self.title, 0)
         self._stop_flag.wait()
 
 
