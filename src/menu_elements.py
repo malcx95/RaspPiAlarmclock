@@ -79,6 +79,7 @@ class PlaceHolderNode(MenuNode):
         super(self.__class__, self).__init__(display, title)
 
     def start(self):
+        self.display.clear()
         self.display.change_row(title, 0)
         self._stop_flag.wait()
 
@@ -106,6 +107,7 @@ class SelectionMenu(MenuNode):
                 menu.move_selection_right()
             elif channel == M3_BUTTON:
                 # enter
+                print "Entering..."
                 self._enter_pressed()
 
         # set up buttons

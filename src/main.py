@@ -5,7 +5,7 @@ import threading
 import RPi.GPIO as GPIO
 from menu import Menu
 from display import Display
-#from ledcontrol import LED_CONTROL
+from ledcontrol import LEDControl
 from constants import *
 from menu_elements import *
 
@@ -75,7 +75,7 @@ def main():
     # list of indices tracing the path to the current node
     current_menu_selection = []
 
-    def back():
+    def back(channel):
         main_menu.get_node(current_menu_selection).stop()
 
     # back button
@@ -83,8 +83,10 @@ def main():
     
     try:
         while True:
+            print "Nu ska vi utforska lite"
             child_selected = main_menu.get_node(current_menu_selection).start()
             if child_selected is not None:
+                print "Nu går vi in igen"
                 current_menu_selection.append(child_selected)
             else:
                 print "Backing..."
@@ -94,7 +96,6 @@ def main():
         display.clear()
         display.message("Have a nice\nkebab!")
         GPIO.cleanup()
-        clock.stop()
         sys.exit(1)
     
 
