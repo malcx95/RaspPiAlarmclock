@@ -68,7 +68,7 @@ class ClockFace(MenuNode):
             self._update_time()
 
     def _update_time(self):
-        old_time = self.time.copy()
+        old_time = self.time
         self.time = datetime.now().strftime('%H:%M')
         if old_time != self.time:
             self.display.change_row(self.time, 0)
