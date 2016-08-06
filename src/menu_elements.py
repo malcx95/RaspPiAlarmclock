@@ -61,13 +61,14 @@ class ClockFace(MenuNode):
     
     def start(self):
         self.time = datetime.now().strftime('%H:%M')
+        self.display.change_row(self.time, 0)
         self._stop_flag = threading.Event()
         self.display.clear()
         while not self._stop_flag.wait(0.5):
             self._update_time()
 
     def _update_time(self):
-        old_time = self.time
+        old_time = self.time.copy()
         self.time = datetime.now().strftime('%H:%M')
         if old_time != self.time:
             self.display.change_row(self.time, 0)
