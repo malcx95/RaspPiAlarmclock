@@ -4,7 +4,6 @@ from constants import *
 
 
 class Display(Adafruit_CharLCDPlate):
-
     
     def __init__(self, lock=None):
         """Initialize display with defaults"""
@@ -22,7 +21,6 @@ class Display(Adafruit_CharLCDPlate):
 
         self.blink(False)
         self.show_cursor(False)
-
 
     def change_row(self, text, row):
         """Changes the top row of the display without clearing. Only changes
@@ -53,7 +51,6 @@ class Display(Adafruit_CharLCDPlate):
         self.rows[row] = new_row
 
         self.lock.release()
-
 
     def message(self, text):
         row = 0

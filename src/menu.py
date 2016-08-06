@@ -4,8 +4,8 @@ import Adafruit_CharLCD as LCD
 import RPi.GPIO as GPIO
 from constants import *
 
-class Menu:
 
+class Menu:
 
     def __init__(self, options, display, title="", initial_selection=0):
         """ Class for representing a menu on the display.
@@ -52,7 +52,6 @@ class Menu:
         # The current scroll offset
         self.scroll_offset = 0
 
-
     def display_menu(self):
 
         self.display.clear()
@@ -67,35 +66,31 @@ class Menu:
         self._display_option()
         self._blink_thread.start()
 
-
     def stop(self):
         self._blink_stop_flag.set()
-
 
     def move_selection_left(self):
         self._move_selection('l')
 
-
     def move_selection_right(self):
         self._move_selection('r')
 
+    def get_selected_index(self):
+        return self._selected
 
     def _move_selection(self, direction):
-        new_selection = self._selected
         if direction == 'l':
-            new_selection -= 1
+            self._selected -= 1
         else:
-            new_selection += 1
+            self._selected += 1
 
-        if new_selection == -1:
-            new_selection = self.options_count - 1
-        elif new_selection == self.options_count:
-            new_selection = 0
+        if self._selected == -1:
+            self._selected = self.options_count - 1
+        elif self._selected == self.options_count:
+            self._selected = 0
         
-        self._selected = new_selection
         self._display_option()
         self.display.change_row(self._get_options_row(), BOTTOM_ROW)
-
 
     def _get_options_row(self):
         options_row = ""
@@ -115,11 +110,9 @@ class Menu:
 
         return options_row
 
-    
     def _display_option(self):
         # Display option
         self.display.change_row(self.options[self._selected], TOP_ROW)
-        
         
     def _blink(self):
         if self._current_blink:
@@ -130,10 +123,8 @@ class Menu:
 
         self._current_blink = not self._current_blink
 
-        
     def _get_option_position(self):
         return self._selected * 3 + 1
-
 
     def __str__(self):
         return "Menu \"{}\" with options {}".format(self.title, self.options)
@@ -141,11 +132,9 @@ class Menu:
 
 class BlinkThread(threading.Thread):
 
-
     def __init__(self, display):
         super(BlinkThread, self).__init__()
         self.display = display
-        
 
     def run(self):
         while not self.display._blink_stop_flag.wait(BLINK_INTERVAL):
