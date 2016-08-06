@@ -13,7 +13,7 @@ class MenuNode(object):
     def __init__(self, display, title, children=[]):
         if not isinstance(children, list):
             raise ValueError("Children must be list")
-        self._stop_flag = None
+        self._stop_flag = threading.Event()
         self.title = title
         self.children = children
         self.display = display
