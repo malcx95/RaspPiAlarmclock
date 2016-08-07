@@ -84,7 +84,6 @@ def main():
     def back(channel):
         global ready
         if ready:
-            ready = False
             main_menu.get_node(current_menu_selection).stop()
             global back_pressed
             back_pressed = True
@@ -103,6 +102,7 @@ def main():
             ready = True
             child_selected = main_menu.get_node(
                 current_menu_selection).start()
+            ready = False
             if child_selected is not None and (not back_pressed):
                 print "Nu går vi in igen"
                 current_menu_selection.append(child_selected)
