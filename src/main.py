@@ -48,61 +48,70 @@ from menu_elements import *
 #     sys.exit(0)
 
 global back_pressed
-global ready
-ready = False
 back_pressed = False
 
 def main():
 
     display = Display()
+    menu_lock = threading.Lock()
 
     # setup buttons
     for button in BUTTONS.values():
         GPIO.setup(button, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
     
     # setup menu
-    test_menu1_children = [PlaceHolderNode(display, "test1"),
-                 PlaceHolderNode(display, "test2"),
-                 PlaceHolderNode(display, "test3")]
+    test_menu1_children = [PlaceHolderNode(display, menu_lock, "test1"),
+                 PlaceHolderNode(display, menu_lock, "test2"),
+                           PlaceHolderNode(display, menu_lock, "test3")]
 
-    test_menu2_children = [PlaceHolderNode(display, "test4"),
-                 PlaceHolderNode(display, "test5"),
-                 PlaceHolderNode(display, "test6")]
+    test_menu2_children = [PlaceHolderNode(display, menu_lock, "test4"),
+                 PlaceHolderNode(display, menu_lock, "test5"),
+                 PlaceHolderNode(display, menu_lock, "test6")]
 
-    test_menu1 = SelectionMenu(display, "HEJHEJ", test_menu1_children)
-    test_menu2 = SelectionMenu(display, "KEBAB", test_menu2_children)
+    test_menu1 = SelectionMenu(display, "HEJHEJ", test_menu1_children, menu_lock)
+    test_menu2 = SelectionMenu(display, "KEBAB", test_menu2_children, menu_lock)
 
-    clock_face = ClockFace(display)
+    clock_face = ClockFace(display, menu_lock)
 
     main_children = [clock_face, test_menu1, test_menu2]
 
-    main_menu = SelectionMenu(display, "Main menu", main_children)
+    main_menu = SelectionMenu(display, "Main menu", main_children, menu_lock)
     
     # list of indices tracing the path to the current node
     current_menu_selection = []
 
     def back(channel):
-        global ready
-        if ready:
-            main_menu.get_node(current_menu_selection).stop()
-            global back_pressed
-            back_pressed = True
+        menu_lock.acquire()
+        main_menu.get_node(current_menu_selection).stop()
+        global back_pressed
+        back_pressed = True
+        menu_lock.release()
+
+    def exit():
+        display.clear()
+        display.message("Have a nice\nkebab!")
+        GPIO.cleanup()
+        sys.exit(1)
 
     # back button
     GPIO.add_event_detect(M4_BUTTON, GPIO.RISING, 
                           callback=back,
                           bouncetime=300)
+
+    # exit
+    GPIO.add_event_detect(M5_BUTTON, GPIO.RISING,
+                          callback=lambda x: exit(), bouncetime=300)
     
     try:
+        menu_lock.acquire()
         while True:
             print "Nu ska vi utforska lite"
             global back_pressed
-            global ready
             back_pressed = False
-            ready = True
+            menu_lock.release()
             child_selected = main_menu.get_node(
                 current_menu_selection).start()
-            ready = False
+            menu_lock.acquire()
             if child_selected is not None and (not back_pressed):
                 print "Nu går vi in igen"
                 current_menu_selection.append(child_selected)
@@ -112,11 +121,8 @@ def main():
                     current_menu_selection.pop()
             child_selected = None
     except KeyboardInterrupt:
-        display.clear()
-        display.message("Have a nice\nkebab!")
-        GPIO.cleanup()
-        sys.exit(1)
-    
+        exit()
+
 
 if __name__ == '__main__':
     main()
