@@ -169,7 +169,5 @@ class SelectionMenu(MenuNode):
         self.lock.release()
 
     def _enter_pressed(self):
-        self.lock.acquire()
         self._stop_flag.set()
-        self.lock.release()
     
