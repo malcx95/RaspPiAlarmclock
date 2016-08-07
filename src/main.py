@@ -75,9 +75,11 @@ def main():
     
     # list of indices tracing the path to the current node
     current_menu_selection = []
+    back_pressed = False
 
     def back(channel):
         main_menu.get_node(current_menu_selection).stop()
+        back_pressed = True
 
     # back button
     GPIO.add_event_detect(M4_BUTTON, GPIO.RISING, callback=back, bouncetime=300)
@@ -85,11 +87,12 @@ def main():
     try:
         while True:
             print "Nu ska vi utforska lite"
+            back_pressed = False
             child_selected = main_menu.get_node(current_menu_selection).start()
-            if child_selected is not None:
+            if child_selected is not None and (not back_pressed):
                 print "Nu går vi in igen"
                 current_menu_selection.append(child_selected)
-            else:
+            elif back_pressed:
                 print "Backing..."
                 if current_menu_selection:
                     current_menu_selection.pop()
