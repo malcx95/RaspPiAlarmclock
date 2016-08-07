@@ -127,7 +127,7 @@ class SelectionMenu(MenuNode):
                     self.display, self.title)
 
         def button_pressed(channel):
-            self.lock.aqcuire()
+            self.lock.acquire()
             if channel == M1_BUTTON:
                 # move left
                 menu.move_selection_left()
