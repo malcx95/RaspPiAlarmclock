@@ -47,6 +47,9 @@ from menu_elements import *
 #     display.message("Exiting")
 #     sys.exit(0)
 
+global back_pressed
+global ready
+ready = False
 back_pressed = False
 
 def main():
@@ -79,17 +82,27 @@ def main():
     current_menu_selection = []
 
     def back(channel):
-        main_menu.get_node(current_menu_selection).stop()
-        back_pressed = True
+        global ready
+        if ready:
+            ready = False
+            main_menu.get_node(current_menu_selection).stop()
+            global back_pressed
+            back_pressed = True
 
     # back button
-    GPIO.add_event_detect(M4_BUTTON, GPIO.RISING, callback=back, bouncetime=300)
+    GPIO.add_event_detect(M4_BUTTON, GPIO.RISING, 
+                          callback=back,
+                          bouncetime=300)
     
     try:
         while True:
             print "Nu ska vi utforska lite"
+            global back_pressed
+            global ready
             back_pressed = False
-            child_selected = main_menu.get_node(current_menu_selection).start()
+            ready = True
+            child_selected = main_menu.get_node(
+                current_menu_selection).start()
             if child_selected is not None and (not back_pressed):
                 print "Nu går vi in igen"
                 current_menu_selection.append(child_selected)
