@@ -35,9 +35,7 @@ class MenuNode(object):
     be shown on the display. In case a subclass uses buttons,
     this method needs to be overridden to remove used buttons.
 
-    Every subclass should override this, to add synchronization for the flag
-    using the lock, make sure to encapsulate a call to the base method within 
-    a synchronized block.
+    Do not use the lock here.
     """
     def stop(self):
         self._stop_flag.set()
@@ -83,11 +81,6 @@ class ClockFace(MenuNode):
         if old_time != self.time:
             self.display.change_row(self.time, 0)
 
-    def stop(self):
-        self.lock.acquire()
-        super(self,__class__, self).stop()
-        self.lock.release()
-
 
 """
 Just a placeholder node
@@ -103,11 +96,6 @@ class PlaceHolderNode(MenuNode):
         self.display.clear()
         self.display.change_row(self.title, 0)
         self._stop_flag.wait()
-
-    def stop(self):
-        self.lock.acquire()
-        super(self,__class__, self).stop()
-        self.lock.release()
 
 
 """
@@ -161,12 +149,10 @@ class SelectionMenu(MenuNode):
         return selected
 
     def stop(self):
-        self.lock.acquire()
         super(self.__class__, self).stop()
         GPIO.remove_event_detect(M1_BUTTON)
         GPIO.remove_event_detect(M2_BUTTON)
         GPIO.remove_event_detect(M3_BUTTON)
-        self.lock.release()
 
     def _enter_pressed(self):
         self._stop_flag.set()
