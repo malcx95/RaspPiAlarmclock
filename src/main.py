@@ -88,6 +88,10 @@ def main():
         menu_lock.release()
 
     def exit():
+        menu_lock.acquire()
+        main_menu.get_node(current_menu_selection).stop()
+        menu_lock.release()
+
         display.clear()
         display.message("Have a nice\nkebab!")
         GPIO.cleanup()
