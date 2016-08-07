@@ -100,7 +100,8 @@ class SelectionMenu(MenuNode):
         super(self.__class__, self).__init__(display, title, children)
 
     def start(self):
-        menu = Menu([str(child) for child in self.children], self.display, self.title)
+        menu = Menu([str(child) for child in self.children],
+                    self.display, self.title)
 
         def button_pressed(channel):
             if channel == M1_BUTTON:
@@ -115,9 +116,12 @@ class SelectionMenu(MenuNode):
                 self._enter_pressed()
 
         # set up buttons
-        GPIO.add_event_detect(M1_BUTTON, GPIO.RISING, callback=button_pressed)
-        GPIO.add_event_detect(M2_BUTTON, GPIO.RISING, callback=button_pressed)
-        GPIO.add_event_detect(M3_BUTTON, GPIO.RISING, callback=button_pressed)
+        GPIO.add_event_detect(M1_BUTTON, GPIO.RISING, callback=button_pressed,
+                              bouncetime=300)
+        GPIO.add_event_detect(M2_BUTTON, GPIO.RISING, callback=button_pressed, 
+                              bouncetime=300)
+        GPIO.add_event_detect(M3_BUTTON, GPIO.RISING, callback=button_pressed, 
+                              bouncetime=300)
         
         menu.display_menu()
         

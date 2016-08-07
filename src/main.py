@@ -93,6 +93,7 @@ def main():
                 print "Backing..."
                 if current_menu_selection:
                     current_menu_selection.pop()
+            child_selected = None
     except KeyboardInterrupt:
         display.clear()
         display.message("Have a nice\nkebab!")
