@@ -109,7 +109,6 @@ def main():
     try:
         menu_lock.acquire()
         while True:
-            print "Nu ska vi utforska lite"
             global back_pressed
             back_pressed = False
             menu_lock.release()
@@ -117,10 +116,8 @@ def main():
                 current_menu_selection).start()
             menu_lock.acquire()
             if child_selected is not None and (not back_pressed):
-                print "Nu går vi in igen"
                 current_menu_selection.append(child_selected)
             elif back_pressed:
-                print "Backing..."
                 if current_menu_selection:
                     current_menu_selection.pop()
             child_selected = None
