@@ -136,10 +136,11 @@ class SelectionMenu(MenuNode):
     selected MenuNode when stopped or on the press of the enter button.
     """
 
-    def __init__(self, display, title, children, lock):
+    def __init__(self, display, title, children, lock, disable_back=False):
         if not children:
             raise ValueError("Children can't be empty")
-        super(self.__class__, self).__init__(display, title, lock, children)
+        super(self.__class__, self).__init__(display, title,
+                                             lock, children, disable_back)
 
     def _show(self):
         self.lock.acquire()
