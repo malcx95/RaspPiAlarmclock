@@ -65,6 +65,11 @@ def main():
                            PlaceHolderNode(display, menu_lock, "test3"),
                            PlaceHolderNode(display, menu_lock, "test4"),
                            PlaceHolderNode(display, menu_lock, "test5"),
+                           PlaceHolderNode(display, menu_lock, "tesss"),
+                           PlaceHolderNode(display, menu_lock, "tess"),
+                           PlaceHolderNode(display, menu_lock, "tessd"),
+                           PlaceHolderNode(display, menu_lock, "tersw"),
+                           PlaceHolderNode(display, menu_lock, "tehws"),
                            PlaceHolderNode(display, menu_lock, "test6")]
 
     test_menu1 = SelectionMenu(display, "HEJHEJ", test_menu1_children, menu_lock)
