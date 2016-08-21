@@ -43,7 +43,8 @@ class MenuNode(object):
             GPIO.add_event_detect(BACK_BUTTON, GPIO.RISING, 
                                   callback=back, bouncetime=400)
 
-        return self._back_pressed, self._show()
+        child_selected = self._show()
+        return self._back_pressed, child_selected
 
     def _show(self):
         """
