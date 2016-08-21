@@ -54,14 +54,14 @@ class LEDControl:
 
     def set(self, on, led):
         self._lock.aqcuire()
-        self.value = on
-        GPIO.output(LED_PORTS[led], self.value)
+        self._values[led] = on
+        GPIO.output(LED_PORTS[led], on)
         self._lock.release()
 
     def toggle(self, led):
         self._lock.aqcuire()
-        self.value = not self.value
-        GPIO.output(LED_PORTS[led], self.value)
+        self._values[led] = not self._values[led]
+        GPIO.output(LED_PORTS[led], self._values[led])
         self._lock.release()
 
     def is_on(self, led):
