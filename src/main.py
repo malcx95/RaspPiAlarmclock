@@ -71,7 +71,7 @@ def main():
 
     clock_face = ClockFace(display, menu_lock)
 
-    main_children = [clock_face, test_menu1, test_menu2]
+    main_children = [clock_face, test_menu1]
 
     main_menu = SelectionMenu(display, "Main menu", main_children,
                               menu_lock, disable_back=True)
