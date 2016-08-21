@@ -169,13 +169,13 @@ class SelectionMenu(MenuNode):
         menu.display_menu()
         GPIO.add_event_detect(ENTER_BUTTON, GPIO.RISING,
                               callback=button_pressed,
-                              bouncetime=400)
+                              bouncetime=300)
         GPIO.add_event_detect(LEFT_BUTTON, GPIO.RISING,
                               callback=button_pressed, 
-                              bouncetime=400)
+                              bouncetime=300)
         GPIO.add_event_detect(RIGHT_BUTTON, GPIO.RISING, 
                               callback=button_pressed, 
-                              bouncetime=400)
+                              bouncetime=300)
         
         self.lock.release()
         

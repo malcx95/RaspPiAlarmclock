@@ -57,6 +57,9 @@ class Menu:
         # The current scroll offset
         self.scroll_offset = 0
 
+        # Lock for synchronizing changes of the selection
+        self._selection_lock = threading.Lock()
+
     def display_menu(self):
 
         self.display.clear()
@@ -84,6 +87,7 @@ class Menu:
         return self._selected
 
     def _move_selection(self, direction):
+        self._selection_lock.acquire()
         if direction == 'l':
             self._selected -= 1
         else:
@@ -100,6 +104,7 @@ class Menu:
         
         self._display_option()
         self.display.change_row(self._get_options_row(), BOTTOM_ROW)
+        self._selection_lock.release()
 
     def _get_options_row(self):
         options_row = ""
@@ -125,17 +130,19 @@ class Menu:
         self.display.change_row(self.options[self._selected], TOP_ROW)
         
     def _blink(self):
+        self._selection_lock.acquire()
         if self._current_blink:
             self.display.write_char(1, self._get_option_position(), ' ')
         else:
             self.display.write_char(1,
                                     self._get_option_position(),
-                                    self._selected + 1 - scroll_offset)
+                                    self.NUMBERS[self._selected + 1])
+        self._selection_lock.release()
 
         self._current_blink = not self._current_blink
 
     def _get_option_position(self):
-        return self._selected * 3 + 1
+        return (self._selected - self.scroll_offset) * 3 + 1
 
     def __str__(self):
         return "Menu \"{}\" with options {}".format(self.title, self.options)
