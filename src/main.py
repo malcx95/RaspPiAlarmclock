@@ -100,6 +100,7 @@ def main():
                 if current_menu_selection:
                     current_menu_selection.pop()
             child_selected = None
+            menu_lock.release()
     except KeyboardInterrupt:
         exit()
 
