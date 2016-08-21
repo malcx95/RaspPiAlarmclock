@@ -136,7 +136,7 @@ class Menu:
         else:
             self.display.write_char(1,
                                     self._get_option_position(),
-                                    self.NUMBERS[self._selected + 1])
+                                    self.NUMBERS[self._selected])
         self._selection_lock.release()
 
         self._current_blink = not self._current_blink
