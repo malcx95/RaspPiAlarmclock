@@ -38,6 +38,7 @@ class LEDControl:
     def __init__(self):
         for led in self.LEDS.values():
             GPIO.setup(led, GPIO.OUT)
+        self._lock = threading.Lock()
         self._values = {
             'LED_ENTER': False,
             'LED_LEFT': False,
@@ -53,13 +54,13 @@ class LEDControl:
         }
 
     def set(self, on, led):
-        self._lock.aqcuire()
+        self._lock.acquire()
         self._values[led] = on
         GPIO.output(LED_PORTS[led], on)
         self._lock.release()
 
     def toggle(self, led):
-        self._lock.aqcuire()
+        self._lock.acquire()
         self._values[led] = not self._values[led]
         GPIO.output(LED_PORTS[led], self._values[led])
         self._lock.release()

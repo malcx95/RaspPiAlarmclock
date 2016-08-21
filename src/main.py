@@ -81,7 +81,8 @@ def main():
     main_children = [clock_face, test_menu1]
 
     main_menu = SelectionMenu(display, "Main menu", main_children,
-                              menu_lock, disable_back=True)
+                              menu_lock, disable_back=True,
+                              led_control=led_control)
     
     # list of indices tracing the path to the current node
     current_menu_selection = []
