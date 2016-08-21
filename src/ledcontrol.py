@@ -37,7 +37,7 @@ class LEDControl:
     
     def __init__(self):
         for led in self.LEDS.values():
-            GPIO.setup.setup(led, GPIO.OUT)
+            GPIO.setup(led, GPIO.OUT)
         self._values = {
             'LED_ENTER': False,
             'LED_LEFT': False,
