@@ -44,7 +44,10 @@ class MenuNode(object):
                                   callback=back, bouncetime=400)
 
         child_selected = self._show()
-        return self._back_pressed, child_selected
+        self.lock.acquire()
+        back_pressed = self._back_pressed
+        self.lock.release()
+        return back_pressed, child_selected
 
     def _show(self):
         """
@@ -95,12 +98,16 @@ class ClockFace(MenuNode):
         self.time = None
     
     def _show(self):
+        self.lock.acquire()
         self.time = datetime.now().strftime('%H:%M')
 
         self.display.clear()
         self.display.change_row(self.time, 0)
+        self.lock.release()
         while not self._stop_flag.wait(1):
+            self.lock.acquire()
             self._update_time()
+            self.lock.release()
         return None
 
     def _update_time(self):
@@ -121,9 +128,9 @@ class PlaceHolderNode(MenuNode):
 
     def _show(self):
         self.lock.acquire()
-        self.lock.release()
         self.display.clear()
         self.display.change_row(self.title, 0)
+        self.lock.release()
         self._stop_flag.wait()
         return None
 
@@ -159,6 +166,7 @@ class SelectionMenu(MenuNode):
             self.lock.release()
 
         # set up buttons
+        menu.display_menu()
         GPIO.add_event_detect(ENTER_BUTTON, GPIO.RISING,
                               callback=button_pressed,
                               bouncetime=400)
@@ -169,7 +177,6 @@ class SelectionMenu(MenuNode):
                               callback=button_pressed, 
                               bouncetime=400)
         
-        menu.display_menu()
         self.lock.release()
         
         self._stop_flag.wait()
