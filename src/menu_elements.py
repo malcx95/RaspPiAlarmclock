@@ -118,13 +118,13 @@ class SelectionMenu(MenuNode):
 
         def button_pressed(channel):
             self.lock.acquire()
-            if channel == ENTER_BUTTON:
+            if channel == LEFT_BUTTON:
                 # move left
                 menu.move_selection_left()
-            elif channel == LEFT_BUTTON:
+            elif channel == RIGHT_BUTTON:
                 # move right
                 menu.move_selection_right()
-            elif channel == RIGHT_BUTTON:
+            elif channel == ENTER_BUTTON:
                 # enter
                 self._enter_pressed()
             self.lock.release()
