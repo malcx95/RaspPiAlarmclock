@@ -88,16 +88,17 @@ class Menu:
         elif self._selected == self.options_count:
             self._selected = 0
 
-        self.scroll_offset = max(MAX_NUM_OPTIONS_THAT_FIT, self._selected) - \
-            MAX_NUM_OPTIONS_THAT_FIT
+        self.scroll_offset = max(MAX_NUM_OPTIONS_THAT_FIT, 
+                                 self._selected + 1) - \
+                                 MAX_NUM_OPTIONS_THAT_FIT
         
         self._display_option()
         self.display.change_row(self._get_options_row(), BOTTOM_ROW)
 
     def _get_options_row(self):
         options_row = ""
-        for i in range(min(self.options_count, 5)):
-            if i == self._selected:
+        for i in range(min(self.options_count, MAX_NUM_OPTIONS_THAT_FIT)):
+            if i + scroll_offset == self._selected:
                 options_row += "[{}]".format(i + 1 + self.scroll_offset)
             else:
                 options_row += " {} ".format(i + 1 + self.scroll_offset)
