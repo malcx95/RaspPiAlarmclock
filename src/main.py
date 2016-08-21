@@ -72,7 +72,9 @@ def main():
                            PlaceHolderNode(display, menu_lock, "tehws"),
                            PlaceHolderNode(display, menu_lock, "test6")]
 
-    test_menu1 = SelectionMenu(display, "HEJHEJ", test_menu1_children, menu_lock)
+    test_menu1 = SelectionMenu(display, "HEJHEJ", 
+                               test_menu1_children, menu_lock,
+                               led_control=led_control)
 
     clock_face = ClockFace(display, menu_lock)
 
