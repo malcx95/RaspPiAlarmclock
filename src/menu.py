@@ -98,7 +98,7 @@ class Menu:
     def _get_options_row(self):
         options_row = ""
         for i in range(min(self.options_count, MAX_NUM_OPTIONS_THAT_FIT)):
-            if i + scroll_offset == self._selected:
+            if i + self.scroll_offset == self._selected:
                 options_row += "[{}]".format(i + 1 + self.scroll_offset)
             else:
                 options_row += " {} ".format(i + 1 + self.scroll_offset)
