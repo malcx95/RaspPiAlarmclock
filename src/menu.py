@@ -1,4 +1,5 @@
 import time
+from ledcontrol import LEDControl
 import threading
 import Adafruit_CharLCD as LCD
 import RPi.GPIO as GPIO
@@ -10,7 +11,8 @@ class Menu:
     # deal with it
     NUMBERS = '123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
-    def __init__(self, options, display, title="", initial_selection=0):
+    def __init__(self, options, display, 
+                 title="", initial_selection=0, led_control=None):
         """ Class for representing a menu on the display.
              Takes in a list of options in the format
              ["Option1", "Option2", ...] as well as a
@@ -23,6 +25,8 @@ class Menu:
             raise ValueError("No options were given!")
         elif not isinstance(options, list):
             raise ValueError("Incompatible options type - must be list!")
+
+        self._led_control = led_control
 
         # List of options [OPT1, OPT2, ...]
         self.options = options
@@ -137,9 +141,13 @@ class Menu:
             self.display.write_char(1,
                                     self._get_option_position(),
                                     self.NUMBERS[self._selected])
-        self._selection_lock.release()
 
+        if self._led_control is not None:
+            self._led_control.set(self._current_blink, LEDControl.ENTER)
+
+        self._selection_lock.release()
         self._current_blink = not self._current_blink
+
 
     def _get_option_position(self):
         return (self._selected - self.scroll_offset) * 3 + 1
