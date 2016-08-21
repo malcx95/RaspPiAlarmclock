@@ -21,17 +21,22 @@ MAX_NUM_OPTIONS_THAT_FIT = 5
 # Buttons and LEDs
 ###################################################################
 BUTTONS = {
-        'm5' : 5,
-        'm4' : 6,
-        'm3' : 13,
-        'm2' : 19,
-        'm1' : 26
+    'ENTER': 17,
+    'LEFT' : 27,
+    'RIGHT': 22,
+    'BACK' : 5,
+    'KEY1' : 6,
+    'KEY2' : 13,
+    'KEY3' : 19,
+    'KEY4' : 26,
         }
 
-
-M1_BUTTON = BUTTONS['m1']
-M2_BUTTON = BUTTONS['m2']
-M3_BUTTON = BUTTONS['m3']
-M4_BUTTON = BUTTONS['m4']
-M5_BUTTON = BUTTONS['m5']
+ENTER_BUTTON = BUTTONS['ENTER']
+LEFT_BUTTON = BUTTONS['LEFT']
+RIGHT_BUTTON = BUTTONS['RIGHT']
+BACK_BUTTON = BUTTONS['BACK']
+KEY1_BUTTON = BUTTONS['KEY1']
+KEY2_BUTTON = BUTTONS['KEY2']
+KEY3_BUTTON = BUTTONS['KEY3']
+KEY4_BUTTON = BUTTONS['KEY4']
 

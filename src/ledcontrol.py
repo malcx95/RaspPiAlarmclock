@@ -1,33 +1,56 @@
 import RPi.GPIO as GPIO
 import threading
 
-"""
-    Class for controlling the LEDS. Other modules 
-    should not instantiate this class, use the LED_CONTROL 
-    instance.
-"""
 class LEDControl:
+    """
+        Class for controlling the LEDS. Other modules 
+        should not instantiate this class, use the LED_CONTROL 
+        instance.
+    """
 
-    GREEN = 'green'
-    RED = 'red'
-    YELLOW = 'yellow'
-    
-    LED_PORTS = {
-            'green' : 16,
-            'yellow' : 20,
-            'red' : 21
-            }
-
-    VALUES = {
-            'green' : False,
-            'yellow' : False,
-            'red' : False,
+    LEDS = {
+        'LED_ENTER': 12,
+        'LED_LEFT': 7,
+        'LED_RIGHT': 8,
+        'LED_BACK': 25,
+        'LED_KEY1': 24,
+        'LED_KEY2': 23,
+        'LED_KEY3': 18,
+        'LED_KEY4': 15,
+        'LED_FRONT_RED': 16,
+        'LED_FRONT_GREEN': 21,
+        'LED_FRONT_YELLOW': 20,
     }
 
-    for led in LED_PORTS.values():
-        GPIO.setup(led, GPIO.OUT)
+    ENTER = 'LED_ENTER'
+    LEFT  = 'LED_LEFT'
+    RIGHT = 'LED_RIGHT'
+    BACK = 'LED_BACK'
+    KEY1 = 'LED_KEY1'
+    KEY2 = 'LED_KEY2'
+    KEY3 = 'LED_KEY3'
+    KEY4 = 'LED_KEY4'
+    FRONT_RED = 'LED_FRONT_RED'
+    FRONT_GREEN = 'LED_FRONT_GREEN'
+    FRONT_YELLOW = 'LED_FRONT_YELLOW'
 
-    _lock = threading.Lock()
+    
+    def __init__(self):
+        for led in self.LEDS.values():
+            GPIO.setup.setup(led, GPIO.OUT)
+        self._values = {
+            'LED_ENTER': False,
+            'LED_LEFT': False,
+            'LED_RIGHT': False,
+            'LED_BACK': False,
+            'LED_KEY1': False,
+            'LED_KEY2': False,
+            'LED_KEY3': False,
+            'LED_KEY4': False,
+            'LED_FRONT_RED': False,
+            'LED_FRONT_GREEN': False,
+            'LED_FRONT_YELLOW': False,
+        }
 
     def set(self, on, led):
         self._lock.aqcuire()
@@ -40,4 +63,7 @@ class LEDControl:
         self.value = not self.value
         GPIO.output(LED_PORTS[led], self.value)
         self._lock.release()
+
+    def is_on(self, led):
+        return self._values[led]
 

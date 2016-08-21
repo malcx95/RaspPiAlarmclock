@@ -4,11 +4,12 @@ from constants import *
 from menu import Menu
 from datetime import datetime
 
-"""
-Generic class for things that can be in menu items.
-Every subclass must override the start(self) method.
-"""
+
 class MenuNode(object):
+    """
+    Generic class for things that can be in menu items.
+    Every subclass must override the start(self) method.
+    """
 
     def __init__(self, display, title, lock, children=[]):
         if not isinstance(children, list):
@@ -19,35 +20,35 @@ class MenuNode(object):
         self.display = display
         self.lock = lock
 
-    """
-    Method for "starting" the menu node, that is 
-    showing it on the display. Every subclass to MenuNode
-    must implement this method, and use the self._stop_flag
-    to determine when to quit.
-
-    This method needs to be synchronized with the lock.
-    """
     def start(self):
+        """
+        Method for "starting" the menu node, that is 
+        showing it on the display. Every subclass to MenuNode
+        must implement this method, and use the self._stop_flag
+        to determine when to quit.
+
+        This method needs to be synchronized with the lock.
+        """
         raise NotImplementedError("Start needs to be overridden!")
 
-    """
-    Terminates the MenuNode, so other nodes can
-    be shown on the display. In case a subclass uses buttons,
-    this method needs to be overridden to remove used buttons.
-
-    Do not use the lock here.
-    """
     def stop(self):
+        """
+        Terminates the MenuNode, so other nodes can
+        be shown on the display. In case a subclass uses buttons,
+        this method needs to be overridden to remove used buttons.
+
+        Do not use the lock here.
+        """
         self._stop_flag.set()
         self._stop_flag = threading.Event()
 
-    """
-    Gets the MenuNode with the given path. The path is a list
-    of indices representing the which children in the nodes to follow.
-    For example, to access the node which is child 1 of a node which is 
-    child 0 of the main menu, [0, 1] is sent as path.
-    """
     def get_node(self, path):
+        """
+        Gets the MenuNode with the given path. The path is a list
+        of indices representing path the which children in the nodes to follow.
+        For example, to access the node which is child 1 of a node which is 
+        child 0 of the main menu, [0, 1] is sent as path.
+        """
         if not path:
             return self
         elif len(self.children) >= path[0]:
@@ -82,10 +83,11 @@ class ClockFace(MenuNode):
             self.display.change_row(self.time, 0)
 
 
-"""
-Just a placeholder node
-"""
+
 class PlaceHolderNode(MenuNode):
+    """
+    Just a placeholder node
+    """
 
     def __init__(self, display, lock, title="Example"):
         super(self.__class__, self).__init__(display, title, lock)
@@ -98,11 +100,11 @@ class PlaceHolderNode(MenuNode):
         self._stop_flag.wait()
 
 
-"""
-MenuNode representing a regular menu. Start returns the 
-selected MenuNode when stopped or on the press of the enter button.
-"""
 class SelectionMenu(MenuNode):
+    """
+    MenuNode representing a regular menu. Start returns the 
+    selected MenuNode when stopped or on the press of the enter button.
+    """
 
     def __init__(self, display, title, children, lock):
         if not children:
@@ -116,24 +118,26 @@ class SelectionMenu(MenuNode):
 
         def button_pressed(channel):
             self.lock.acquire()
-            if channel == M1_BUTTON:
+            if channel == ENTER_BUTTON:
                 # move left
                 menu.move_selection_left()
-            elif channel == M2_BUTTON:
+            elif channel == LEFT_BUTTON:
                 # move right
                 menu.move_selection_right()
-            elif channel == M3_BUTTON:
+            elif channel == RIGHT_BUTTON:
                 # enter
-                print "Entering..."
                 self._enter_pressed()
             self.lock.release()
 
         # set up buttons
-        GPIO.add_event_detect(M1_BUTTON, GPIO.RISING, callback=button_pressed,
+        GPIO.add_event_detect(ENTER_BUTTON, GPIO.RISING,
+                              callback=button_pressed,
                               bouncetime=300)
-        GPIO.add_event_detect(M2_BUTTON, GPIO.RISING, callback=button_pressed, 
+        GPIO.add_event_detect(LEFT_BUTTON, GPIO.RISING,
+                              callback=button_pressed, 
                               bouncetime=300)
-        GPIO.add_event_detect(M3_BUTTON, GPIO.RISING, callback=button_pressed, 
+        GPIO.add_event_detect(RIGHT_BUTTON, GPIO.RISING, 
+                              callback=button_pressed, 
                               bouncetime=300)
         
         menu.display_menu()
@@ -150,9 +154,9 @@ class SelectionMenu(MenuNode):
 
     def stop(self):
         super(self.__class__, self).stop()
-        GPIO.remove_event_detect(M1_BUTTON)
-        GPIO.remove_event_detect(M2_BUTTON)
-        GPIO.remove_event_detect(M3_BUTTON)
+        GPIO.remove_event_detect(ENTER_BUTTON)
+        GPIO.remove_event_detect(LEFT_BUTTON)
+        GPIO.remove_event_detect(RIGHT_BUTTON)
 
     def _enter_pressed(self):
         self._stop_flag.set()

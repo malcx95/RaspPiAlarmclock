@@ -20,9 +20,9 @@ from menu_elements import *
 #                 display, title="MAMMA GILLAR GLASS")
 # 
 #     def button_pressed(channel):
-#         if channel == M1_BUTTON:
+#         if channel == ENTER_BUTTON:
 #             menu.move_selection_left()
-#         elif channel == M2_BUTTON:
+#         elif channel == LEFT_BUTTON:
 #             menu.move_selection_right()
 # 
 #     for button in BUTTONS.values():
@@ -61,12 +61,12 @@ def main():
     
     # setup menu
     test_menu1_children = [PlaceHolderNode(display, menu_lock, "test1"),
-                 PlaceHolderNode(display, menu_lock, "test2"),
+                           PlaceHolderNode(display, menu_lock, "test2"),
                            PlaceHolderNode(display, menu_lock, "test3")]
 
     test_menu2_children = [PlaceHolderNode(display, menu_lock, "test4"),
-                 PlaceHolderNode(display, menu_lock, "test5"),
-                 PlaceHolderNode(display, menu_lock, "test6")]
+                           PlaceHolderNode(display, menu_lock, "test5"),
+                           PlaceHolderNode(display, menu_lock, "test6")]
 
     test_menu1 = SelectionMenu(display, "HEJHEJ", test_menu1_children, menu_lock)
     test_menu2 = SelectionMenu(display, "KEBAB", test_menu2_children, menu_lock)
@@ -98,13 +98,9 @@ def main():
         sys.exit(1)
 
     # back button
-    GPIO.add_event_detect(M4_BUTTON, GPIO.RISING, 
+    GPIO.add_event_detect(BACK_BUTTON, GPIO.RISING, 
                           callback=back,
                           bouncetime=300)
-
-    # exit
-    GPIO.add_event_detect(M5_BUTTON, GPIO.RISING,
-                          callback=lambda x: exit(), bouncetime=300)
     
     try:
         menu_lock.acquire()
