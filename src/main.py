@@ -51,6 +51,8 @@ from menu_elements import *
 def main():
 
     display = Display()
+    led_control = LEDControl()
+
     menu_lock = threading.Lock()
 
     # setup buttons
@@ -60,14 +62,12 @@ def main():
     # setup menu
     test_menu1_children = [PlaceHolderNode(display, menu_lock, "test1"),
                            PlaceHolderNode(display, menu_lock, "test2"),
-                           PlaceHolderNode(display, menu_lock, "test3")]
-
-    test_menu2_children = [PlaceHolderNode(display, menu_lock, "test4"),
+                           PlaceHolderNode(display, menu_lock, "test3"),
+                           PlaceHolderNode(display, menu_lock, "test4"),
                            PlaceHolderNode(display, menu_lock, "test5"),
                            PlaceHolderNode(display, menu_lock, "test6")]
 
     test_menu1 = SelectionMenu(display, "HEJHEJ", test_menu1_children, menu_lock)
-    test_menu2 = SelectionMenu(display, "KEBAB", test_menu2_children, menu_lock)
 
     clock_face = ClockFace(display, menu_lock)
 
