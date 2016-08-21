@@ -68,3 +68,7 @@ class LEDControl:
     def is_on(self, led):
         return self._values[led]
 
+    def clear(self):
+        for led in self.LEDS:
+            self.set(False, led)
+

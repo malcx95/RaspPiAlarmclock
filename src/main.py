@@ -96,6 +96,7 @@ def main():
 
     try:
         while True:
+            led_control.clear()
             back_pressed, child_selected = main_menu.get_node(
                 current_menu_selection).start()
             menu_lock.acquire()
