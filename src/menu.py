@@ -7,6 +7,9 @@ from constants import *
 
 class Menu:
 
+    # deal with it
+    NUMBERS = '123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+
     def __init__(self, options, display, title="", initial_selection=0):
         """ Class for representing a menu on the display.
              Takes in a list of options in the format
@@ -31,6 +34,9 @@ class Menu:
         self.display = display
 
         # Number of options
+        if len(options) > self.NUMBERS:
+            raise ValueError("List of options can't be longer than " 
+                             + str(len(options)))
         self.options_count = len(options)
 
         if initial_selection >= self.options_count or initial_selection < 0:
@@ -98,10 +104,11 @@ class Menu:
     def _get_options_row(self):
         options_row = ""
         for i in range(min(self.options_count, MAX_NUM_OPTIONS_THAT_FIT)):
+            number = NUMBERS[i + self.scroll_offset]
             if i + self.scroll_offset == self._selected:
-                options_row += "[{}]".format(i + 1 + self.scroll_offset)
+                options_row += "[{}]".format(number)
             else:
-                options_row += " {} ".format(i + 1 + self.scroll_offset)
+                options_row += " {} ".format(number)
 
         while len(options_row) < LCD_COLS - 1:
             options_row += ' '
