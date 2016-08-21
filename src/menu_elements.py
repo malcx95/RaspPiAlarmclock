@@ -31,6 +31,7 @@ class MenuNode(object):
         the child node selected.
         """
 
+        self._stop_flag = threading.Event()
         self._back_pressed = False
         if not self._disable_back:
             def back(channel):
@@ -67,7 +68,6 @@ class MenuNode(object):
         if not self._disable_back:
             GPIO.remove_event_detect(BACK_BUTTON)
         self._stop_flag.set()
-        self._stop_flag = threading.Event()
 
     def get_node(self, path):
         """
@@ -94,10 +94,7 @@ class ClockFace(MenuNode):
         self.time = None
     
     def _show(self):
-        self.lock.acquire()
         self.time = datetime.now().strftime('%H:%M')
-        self._stop_flag = threading.Event()
-        self.lock.release()
 
         self.display.clear()
         self.display.change_row(self.time, 0)
