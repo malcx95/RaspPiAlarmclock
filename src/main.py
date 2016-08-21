@@ -47,8 +47,6 @@ from menu_elements import *
 #     display.message("Exiting")
 #     sys.exit(0)
 
-global back_pressed
-back_pressed = False
 
 def main():
 
@@ -75,17 +73,11 @@ def main():
 
     main_children = [clock_face, test_menu1, test_menu2]
 
-    main_menu = SelectionMenu(display, "Main menu", main_children, menu_lock)
+    main_menu = SelectionMenu(display, "Main menu", main_children,
+                              menu_lock, disable_back=True)
     
     # list of indices tracing the path to the current node
     current_menu_selection = []
-
-    def back(channel):
-        menu_lock.acquire()
-        main_menu.get_node(current_menu_selection).stop()
-        global back_pressed
-        back_pressed = True
-        menu_lock.release()
 
     def exit():
         menu_lock.acquire()
@@ -97,18 +89,9 @@ def main():
         GPIO.cleanup()
         sys.exit(1)
 
-    # back button
-    GPIO.add_event_detect(BACK_BUTTON, GPIO.RISING, 
-                          callback=back,
-                          bouncetime=300)
-    
     try:
-        menu_lock.acquire()
         while True:
-            global back_pressed
-            back_pressed = False
-            menu_lock.release()
-            child_selected = main_menu.get_node(
+            back_pressed, child_selected = main_menu.get_node(
                 current_menu_selection).start()
             menu_lock.acquire()
             if child_selected is not None and (not back_pressed):

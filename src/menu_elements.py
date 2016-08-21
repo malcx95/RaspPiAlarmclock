@@ -8,10 +8,9 @@ from datetime import datetime
 class MenuNode(object):
     """
     Generic class for things that can be in menu items.
-    Every subclass must override the start(self) method.
     """
 
-    def __init__(self, display, title, lock, children=[]):
+    def __init__(self, display, title, lock, children=[], disable_back=False):
         if not isinstance(children, list):
             raise ValueError("Children must be list")
         self._stop_flag = threading.Event()
@@ -19,15 +18,41 @@ class MenuNode(object):
         self.children = children
         self.display = display
         self.lock = lock
+        self._back_pressed = False
+        self._disable_back = disable_back
 
     def start(self):
         """
-        Method for "starting" the menu node, that is 
-        showing it on the display. Every subclass to MenuNode
-        must implement this method, and use the self._stop_flag
-        to determine when to quit.
+        Shows this MenuNode on the display. The thread invoking 
+        this method is not released until another thread invokes 
+        the stop() method.
+
+        Returns (bool, MenuNode): whether the back button was pressed,
+        the child node selected.
+        """
+
+        self._back_pressed = False
+        if not self._disable_back:
+            def back(channel):
+                self.lock.acquire()
+                self._back_pressed = True
+                self.stop()
+                self.lock.release()
+
+            GPIO.add_event_detect(BACK_BUTTON, GPIO.RISING, 
+                                  callback=back, bouncetime=400)
+
+        return self._back_pressed, self._show()
+
+    def _show(self):
+        """
+        Abstract method for showing this menu item on the display.
+        Every subclass to MenuNode must implement this method,
+        and use the self._stop_flag to determine when to quit.
 
         This method needs to be synchronized with the lock.
+
+        Returns the selected MenuNode, if any.
         """
         raise NotImplementedError("Start needs to be overridden!")
 
@@ -39,6 +64,8 @@ class MenuNode(object):
 
         Do not use the lock here.
         """
+        if not self._disable_back:
+            GPIO.remove_event_detect(BACK_BUTTON)
         self._stop_flag.set()
         self._stop_flag = threading.Event()
 
@@ -64,8 +91,9 @@ class ClockFace(MenuNode):
 
     def __init__(self, display, lock):
         super(self.__class__, self).__init__(display, "Clock", lock)
+        self.time = None
     
-    def start(self):
+    def _show(self):
         self.lock.acquire()
         self.time = datetime.now().strftime('%H:%M')
         self._stop_flag = threading.Event()
@@ -75,6 +103,7 @@ class ClockFace(MenuNode):
         self.display.change_row(self.time, 0)
         while not self._stop_flag.wait(1):
             self._update_time()
+        return None
 
     def _update_time(self):
         old_time = self.time
@@ -92,12 +121,13 @@ class PlaceHolderNode(MenuNode):
     def __init__(self, display, lock, title="Example"):
         super(self.__class__, self).__init__(display, title, lock)
 
-    def start(self):
+    def _show(self):
         self.lock.acquire()
         self.lock.release()
         self.display.clear()
         self.display.change_row(self.title, 0)
         self._stop_flag.wait()
+        return None
 
 
 class SelectionMenu(MenuNode):
@@ -111,7 +141,7 @@ class SelectionMenu(MenuNode):
             raise ValueError("Children can't be empty")
         super(self.__class__, self).__init__(display, title, lock, children)
 
-    def start(self):
+    def _show(self):
         self.lock.acquire()
         menu = Menu([str(child) for child in self.children],
                     self.display, self.title)
@@ -132,13 +162,13 @@ class SelectionMenu(MenuNode):
         # set up buttons
         GPIO.add_event_detect(ENTER_BUTTON, GPIO.RISING,
                               callback=button_pressed,
-                              bouncetime=300)
+                              bouncetime=400)
         GPIO.add_event_detect(LEFT_BUTTON, GPIO.RISING,
                               callback=button_pressed, 
-                              bouncetime=300)
+                              bouncetime=400)
         GPIO.add_event_detect(RIGHT_BUTTON, GPIO.RISING, 
                               callback=button_pressed, 
-                              bouncetime=300)
+                              bouncetime=400)
         
         menu.display_menu()
         self.lock.release()
