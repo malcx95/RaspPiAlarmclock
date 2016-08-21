@@ -46,7 +46,6 @@ class Menu:
         self._blink_stop_flag = threading.Event()
         self._blink_thread = BlinkThread(self)
 
-        # TODO maybe we shouldn't care that we can only have five options?
         # The number of options that don't fit on the display
         self.scroll_amount = max(0, self.options_count - MAX_NUM_OPTIONS_THAT_FIT)
         # The current scroll offset
@@ -88,6 +87,9 @@ class Menu:
             self._selected = self.options_count - 1
         elif self._selected == self.options_count:
             self._selected = 0
+
+        self.scroll_offset = max(MAX_NUM_OPTIONS_THAT_FIT, self._selected) - \
+            MAX_NUM_OPTIONS_THAT_FIT
         
         self._display_option()
         self.display.change_row(self._get_options_row(), BOTTOM_ROW)
