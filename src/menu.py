@@ -128,8 +128,9 @@ class Menu:
         if self._current_blink:
             self.display.write_char(1, self._get_option_position(), ' ')
         else:
-            self.display.write_char(1, \
-                    self._get_option_position(), self._selected + 1)
+            self.display.write_char(1,
+                                    self._get_option_position(),
+                                    self._selected + 1 - scroll_offset)
 
         self._current_blink = not self._current_blink
 
