@@ -62,6 +62,8 @@ def main():
         GPIO.cleanup()
         sys.exit(1)
 
+    alarm_thread.set_alarm('2201')
+
     try:
         while True:
             led_control.clear()

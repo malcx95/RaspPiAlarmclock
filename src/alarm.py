@@ -42,12 +42,17 @@ class AlarmSupervisorThread(threading.Thread):
     def run(self):
         while True:
             self.lock.acquire()
+            print 'Creating flags...'
             self._added_menu = threading.Event()
             self._added_alarm = threading.Event()
             self.lock.release()
+            print 'Waiting for an alarm...'
             self._added_alarm.wait()
+            print 'Waiting for a menu to be added...'
             self._added_menu.wait()
+            print 'Starting to check for alarms...'
             while True:
+                print 'Checking...'
                 current_time = datetime.now().strftime(TIME_FORMAT)
                 self.lock.acquire()
                 if current_time in self.alarms:
