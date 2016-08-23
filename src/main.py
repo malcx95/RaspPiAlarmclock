@@ -7,7 +7,6 @@ import RPi.GPIO as GPIO
 from menu import Menu
 from display import Display
 from ledcontrol import LEDControl
-from constants import *
 import buttons
 from menu_elements import *
 

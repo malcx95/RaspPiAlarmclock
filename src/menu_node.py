@@ -1,6 +1,5 @@
 import threading
 import RPi.GPIO as GPIO
-from constants import *
 import buttons
 from menu import Menu
 

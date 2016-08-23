@@ -1,6 +1,5 @@
 import threading
 from Adafruit_CharLCD import Adafruit_CharLCDPlate
-from constants import *
 
 LCD_COLS = 16
 LCD_ROWS = 2
