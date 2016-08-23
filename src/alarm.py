@@ -2,6 +2,7 @@ import threading
 import buttons
 import time
 import display
+import RPi.GPIO as GPIO
 from ledcontrol import LEDControl
 from datetime import datetime
 
