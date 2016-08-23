@@ -91,6 +91,7 @@ class AlarmSupervisorThread(threading.Thread):
 
             iteration = not iteration
 
+        GPIO.remove_event_detect(buttons.ENTER_BUTTON)
         print 'Dismissing alarm...'
 
         self.display.clear()
