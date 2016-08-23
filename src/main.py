@@ -64,9 +64,7 @@ def main():
 
     time.sleep(1)
 
-    alarm_thread.set_alarm('2234')
-    alarm_thread.set_alarm('2235')
-    alarm_thread.set_alarm('2236')
+    alarm_thread.set_alarm('2300')
 
     try:
         while True:
