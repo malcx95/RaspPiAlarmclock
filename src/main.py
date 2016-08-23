@@ -62,7 +62,7 @@ def main():
         GPIO.cleanup()
         sys.exit(1)
 
-    alarm_thread.set_alarm('2201')
+    alarm_thread.set_alarm('2203')
 
     try:
         while True:

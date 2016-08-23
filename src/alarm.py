@@ -33,7 +33,7 @@ class AlarmSupervisorThread(threading.Thread):
     def set_alarm(self, alarm):
         self.lock.acquire()
         self.alarms.append(alarm)
-        if len(alarms) == 1:
+        if len(self.alarms) == 1:
             while self._added_alarm is None:
                 pass
             self._added_alarm.set()
@@ -59,7 +59,7 @@ class AlarmSupervisorThread(threading.Thread):
                     self.alarm_dismissed = threading.Event()
                     self.permission_to_start = threading.Event()
                     self.alarm_gone_off = True
-                    sound_alarm()
+                    self._sound_alarm()
                     self.alarms.remove(current_time)
                     self.lock.release()
                     self.alarm_dismissed.set()
@@ -68,7 +68,7 @@ class AlarmSupervisorThread(threading.Thread):
                 time.sleep(1)
             self.alarm_gone_off = False
 
-    def sound_alarm(self):
+    def _sound_alarm(self):
         print 'Stopping current menu...'
         self._selected_menu.stop()
         print 'Waiting to sound alarm...'
