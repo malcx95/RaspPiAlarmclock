@@ -3,8 +3,10 @@ from ledcontrol import LEDControl
 import threading
 import Adafruit_CharLCD as LCD
 import RPi.GPIO as GPIO
-from constants import *
 
+MENU_DELAY_TIME = 0.1
+BLINK_INTERVAL = 0.7
+MAX_NUM_OPTIONS_THAT_FIT = 5
 
 class Menu:
 
@@ -72,8 +74,8 @@ class Menu:
 
         # Display menu title, if there is any
         if self.title:
-            self.display.change_row(self.title, TOP_ROW)
-            self.display.change_row(options_row, BOTTOM_ROW)
+            self.display.change_row(self.title, display.TOP_ROW)
+            self.display.change_row(options_row, display.BOTTOM_ROW)
             self._led_control.set(True, LEDControl.BACK)
             self._led_control.set(True, LEDControl.LEFT)
             self._led_control.set(True, LEDControl.RIGHT)
@@ -125,7 +127,7 @@ class Menu:
             else:
                 options_row += " {} ".format(number)
 
-        while len(options_row) < LCD_COLS - 1:
+        while len(options_row) < display.LCD_COLS - 1:
             options_row += ' '
 
         if self.scroll_offset != self.scroll_amount:
@@ -137,7 +139,7 @@ class Menu:
 
     def _display_option(self):
         # Display option
-        self.display.change_row(self.options[self._selected], TOP_ROW)
+        self.display.change_row(self.options[self._selected], display.TOP_ROW)
         
     def _blink(self):
         self._selection_lock.acquire()

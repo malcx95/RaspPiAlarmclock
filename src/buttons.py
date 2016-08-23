@@ -1,0 +1,23 @@
+"""
+Button constants
+"""
+
+BUTTONS = {
+    'ENTER': 17,
+    'LEFT' : 27,
+    'RIGHT': 22,
+    'BACK' : 5,
+    'KEY1' : 6,
+    'KEY2' : 13,
+    'KEY3' : 19,
+    'KEY4' : 26,
+        }
+
+ENTER_BUTTON = BUTTONS['ENTER']
+LEFT_BUTTON = BUTTONS['LEFT']
+RIGHT_BUTTON = BUTTONS['RIGHT']
+BACK_BUTTON = BUTTONS['BACK']
+KEY1_BUTTON = BUTTONS['KEY1']
+KEY2_BUTTON = BUTTONS['KEY2']
+KEY3_BUTTON = BUTTONS['KEY3']
+KEY4_BUTTON = BUTTONS['KEY4']

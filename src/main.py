@@ -8,44 +8,8 @@ from menu import Menu
 from display import Display
 from ledcontrol import LEDControl
 from constants import *
+import buttons
 from menu_elements import *
-
-
-# def test():
-#     display_lock = threading.Lock()
-# 
-#     display = Display(display_lock)
-# 
-#     menu = Menu(["Kebab", "Mysarna", "Mamma", "ha", "majs"],
-#                 display, title="MAMMA GILLAR GLASS")
-# 
-#     def button_pressed(channel):
-#         if channel == ENTER_BUTTON:
-#             menu.move_selection_left()
-#         elif channel == LEFT_BUTTON:
-#             menu.move_selection_right()
-# 
-#     for button in BUTTONS.values():
-#         GPIO.setup(button, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-#         GPIO.add_event_detect(button, GPIO.RISING, callback=button_pressed, 
-#                 bouncetime=300)
-# 
-#     try:
-#         clock = ClockFace(display)
-#         clock.start()
-#         while True:
-#             time.sleep(10)
-#     except KeyboardInterrupt:
-#         display.clear()
-#         display.message("Have a nice\nkebab!")
-#         GPIO.cleanup()
-#         clock.stop()
-#         sys.exit(1)
-# 
-#     menu.stop()
-#     display.clear()
-#     display.message("Exiting")
-#     sys.exit(0)
 
 
 def main():
@@ -56,7 +20,7 @@ def main():
     menu_lock = threading.Lock()
 
     # setup buttons
-    for button in BUTTONS.values():
+    for button in buttons.BUTTONS.values():
         GPIO.setup(button, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
     
     # setup menu

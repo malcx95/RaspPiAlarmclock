@@ -1,8 +1,8 @@
 import threading
 import RPi.GPIO as GPIO
 from constants import *
+import buttons
 from menu import Menu
-from datetime import datetime
 
 
 class MenuNode(object):
@@ -70,7 +70,7 @@ class MenuNode(object):
         Do not use the lock here.
         """
         if not self._disable_back:
-            GPIO.remove_event_detect(BACK_BUTTON)
+            GPIO.remove_event_detect(buttons.BACK_BUTTON)
         self._stop_flag.set()
 
     def get_node(self, path):
@@ -89,32 +89,6 @@ class MenuNode(object):
 
     def __str__(self):
         return self.title
-
-
-class ClockFace(MenuNode):
-
-    def __init__(self, display, lock):
-        super(self.__class__, self).__init__(display, "Clock", lock)
-        self.time = None
-    
-    def _show(self):
-        self.lock.acquire()
-        self.time = datetime.now().strftime('%H:%M')
-
-        self.display.clear()
-        self.display.change_row(self.time, 0)
-        self.lock.release()
-        while not self._stop_flag.wait(1):
-            self.lock.acquire()
-            self._update_time()
-            self.lock.release()
-        return None
-
-    def _update_time(self):
-        old_time = self.time
-        self.time = datetime.now().strftime('%H:%M')
-        if old_time != self.time:
-            self.display.change_row(self.time, 0)
 
 
 
@@ -156,26 +130,26 @@ class SelectionMenu(MenuNode):
 
         def button_pressed(channel):
             self.lock.acquire()
-            if channel == LEFT_BUTTON:
+            if channel == buttons.LEFT_BUTTON:
                 # move left
                 menu.move_selection_left()
-            elif channel == RIGHT_BUTTON:
+            elif channel == buttons.RIGHT_BUTTON:
                 # move right
                 menu.move_selection_right()
-            elif channel == ENTER_BUTTON:
+            elif channel == buttons.ENTER_BUTTON:
                 # enter
                 self._enter_pressed()
             self.lock.release()
 
         # set up buttons
         menu.display_menu()
-        GPIO.add_event_detect(ENTER_BUTTON, GPIO.RISING,
+        GPIO.add_event_detect(buttons.ENTER_BUTTON, GPIO.RISING,
                               callback=button_pressed,
                               bouncetime=300)
-        GPIO.add_event_detect(LEFT_BUTTON, GPIO.RISING,
+        GPIO.add_event_detect(buttons.LEFT_BUTTON, GPIO.RISING,
                               callback=button_pressed, 
                               bouncetime=300)
-        GPIO.add_event_detect(RIGHT_BUTTON, GPIO.RISING, 
+        GPIO.add_event_detect(buttons.RIGHT_BUTTON, GPIO.RISING, 
                               callback=button_pressed, 
                               bouncetime=300)
         
@@ -192,9 +166,9 @@ class SelectionMenu(MenuNode):
 
     def stop(self):
         super(self.__class__, self).stop()
-        GPIO.remove_event_detect(ENTER_BUTTON)
-        GPIO.remove_event_detect(LEFT_BUTTON)
-        GPIO.remove_event_detect(RIGHT_BUTTON)
+        GPIO.remove_event_detect(buttons.ENTER_BUTTON)
+        GPIO.remove_event_detect(buttons.LEFT_BUTTON)
+        GPIO.remove_event_detect(buttons.RIGHT_BUTTON)
 
     def _enter_pressed(self):
         self._stop_flag.set()
