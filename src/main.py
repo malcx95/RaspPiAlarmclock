@@ -10,6 +10,7 @@ from ledcontrol import LEDControl
 from clock_face import ClockFace
 import buttons
 from menu_node import *
+from alarm import AlarmSupervisorThread
 
 
 def main():
@@ -51,6 +52,9 @@ def main():
     # list of indices tracing the path to the current node
     current_menu_selection = []
 
+    alarm_thread = AlarmSupervisorThread(display, led_control)
+    alarm_thread.start()
+
     def exit():
         main_menu.get_node(current_menu_selection).stop()
         display.clear()
@@ -61,14 +65,19 @@ def main():
     try:
         while True:
             led_control.clear()
-            back_pressed, child_selected = main_menu.get_node(
-                current_menu_selection).start()
+            selected_node = main_menu.get_node(current_menu_selection)
+            alarm_thread.set_selected_menu_node(selected_node)
+            back_pressed, child_selected = selected_node.start()
             menu_lock.acquire()
-            if child_selected is not None and (not back_pressed):
-                current_menu_selection.append(child_selected)
-            elif back_pressed:
-                if current_menu_selection:
-                    current_menu_selection.pop()
+            if alarm_thread.alarm_gone_off:
+                alarm_thread.permission_to_start.set()
+                alarm_thread.alarm_dismissed.wait()
+            else:
+                if child_selected is not None and (not back_pressed):
+                    current_menu_selection.append(child_selected)
+                elif back_pressed:
+                    if current_menu_selection:
+                        current_menu_selection.pop()
             child_selected = None
             menu_lock.release()
     except KeyboardInterrupt:
