@@ -149,7 +149,7 @@ class Menu:
                                     self.NUMBERS[self._selected])
 
         if self._led_control is not None:
-            self._led_control.set(self._current_blink, LEDControl.ENTER)
+            self._led_control.set(not self._current_blink, LEDControl.ENTER)
 
         self._selection_lock.release()
         self._current_blink = not self._current_blink
