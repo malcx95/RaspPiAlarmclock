@@ -7,8 +7,9 @@ import RPi.GPIO as GPIO
 from menu import Menu
 from display import Display
 from ledcontrol import LEDControl
+from clock_face import ClockFace
 import buttons
-from menu_elements import *
+from menu_node import *
 
 
 def main():
