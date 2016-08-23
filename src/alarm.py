@@ -48,7 +48,8 @@ class AlarmSupervisorThread(threading.Thread):
             self._added_alarm = threading.Event()
             self.lock.release()
             print 'Waiting for an alarm...'
-            self._added_alarm.wait()
+            if not alarms:
+                self._added_alarm.wait()
             print 'Waiting for a menu to be added...'
             self._added_menu.wait()
             print 'Starting to check for alarms...'
