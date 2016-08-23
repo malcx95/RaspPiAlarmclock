@@ -10,6 +10,7 @@ TIME_FORMAT = "%H%M"
 class AlarmSupervisorThread(threading.Thread):
 
     def __init__(self, display, led_control):
+        super(self.__class__, self).__init__()
         self._selected_menu = None
         self._added_menu = None
         self._added_alarm = None
