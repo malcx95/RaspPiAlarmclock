@@ -3,6 +3,7 @@ from ledcontrol import LEDControl
 import threading
 import Adafruit_CharLCD as LCD
 import RPi.GPIO as GPIO
+import display
 
 MENU_DELAY_TIME = 0.1
 BLINK_INTERVAL = 0.7
@@ -115,7 +116,7 @@ class Menu:
                                  MAX_NUM_OPTIONS_THAT_FIT
         
         self._display_option()
-        self.display.change_row(self._get_options_row(), BOTTOM_ROW)
+        self.display.change_row(self._get_options_row(), display.BOTTOM_ROW)
         self._selection_lock.release()
 
     def _get_options_row(self):
