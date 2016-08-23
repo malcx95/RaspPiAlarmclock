@@ -13,7 +13,7 @@ class AlarmSupervisorThread(threading.Thread):
     def __init__(self, display, led_control):
         super(self.__class__, self).__init__()
         self._selected_menu = None
-        self._added_menu = None
+        self._added_menu = threading.Event()
         self._added_alarm = None
         self.alarm_gone_off = False
         self.permission_to_start = None
@@ -26,8 +26,6 @@ class AlarmSupervisorThread(threading.Thread):
     def set_selected_menu_node(self, menu):
         self.lock.acquire()
         self._selected_menu = menu
-        while self._added_menu is None:
-            pass
         self._added_menu.set()
         self.lock.release()
 
@@ -44,7 +42,6 @@ class AlarmSupervisorThread(threading.Thread):
         while True:
             self.lock.acquire()
             print 'Creating flags...'
-            self._added_menu = threading.Event()
             self._added_alarm = threading.Event()
             self.lock.release()
             print 'Waiting for an alarm...'
@@ -64,6 +61,8 @@ class AlarmSupervisorThread(threading.Thread):
                     self._sound_alarm()
                     self.alarms.remove(current_time)
                     self.lock.release()
+                    self._added_menu = threading.Event()
+                    self._selected_menu = None
                     self.alarm_dismissed.set()
                     break
                 self.lock.release()
