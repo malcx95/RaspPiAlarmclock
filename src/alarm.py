@@ -6,7 +6,7 @@ import RPi.GPIO as GPIO
 from ledcontrol import LEDControl
 from datetime import datetime
 
-TIME_FORMAT = "%H%M"
+TIME_FORMAT = "%Y%m%d%H%M"
 
 class AlarmSupervisorThread(threading.Thread):
 
@@ -41,17 +41,13 @@ class AlarmSupervisorThread(threading.Thread):
     def run(self):
         while True:
             self.lock.acquire()
-            print 'Creating flags...'
+            self._remove_passed_alarms()
             self._added_alarm = threading.Event()
             self.lock.release()
-            print 'Waiting for an alarm...'
             if not self.alarms:
                 self._added_alarm.wait()
-            print 'Waiting for a menu to be added...'
             self._added_menu.wait()
-            print 'Starting to check for alarms...'
             while True:
-                print 'Checking...'
                 current_time = datetime.now().strftime(TIME_FORMAT)
                 self.lock.acquire()
                 if current_time in self.alarms:
@@ -69,17 +65,21 @@ class AlarmSupervisorThread(threading.Thread):
                 time.sleep(1)
             self.alarm_gone_off = False
 
+    def _remove_passed_alarms(self):
+        alarms_to_remove = []
+        for alarm in self.alarms:
+            if int(alarm) < int(datetime.now().strftime(TIME_FORMAT)):
+                alarms_to_remove.append(alarm)
+        self.alarms = [a for a in self.alarms if a not in alarms_to_remove]
+                
+
     def _sound_alarm(self):
-        print 'Stopping current menu...'
         self._selected_menu.stop()
-        print 'Waiting to sound alarm...'
         self.permission_to_start.wait()
         iteration = False
         self.display.clear()
-        print 'Starting alarm...'
-        while not GPIO.wait_for_edge(buttons.ENTER_BUTTON, 
+        while not GPIO.wait_for_edge(buttons.ENTER, 
                                      GPIO.RISING, timeout=500):
-            print 'ALARM GONE OFF'
             if iteration:
                 self.display.change_row('WAKE UP!!', display.TOP_ROW)
             else:
@@ -91,8 +91,7 @@ class AlarmSupervisorThread(threading.Thread):
 
             iteration = not iteration
 
-        GPIO.remove_event_detect(buttons.ENTER_BUTTON)
-        print 'Dismissing alarm...'
+        GPIO.remove_event_detect(buttons.ENTER)
 
         self.display.clear()
 

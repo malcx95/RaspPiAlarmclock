@@ -39,7 +39,7 @@ class MenuNode(object):
                 self.stop()
                 self.lock.release()
 
-            GPIO.add_event_detect(buttons.BACK_BUTTON, GPIO.RISING, 
+            GPIO.add_event_detect(buttons.BACK, GPIO.RISING, 
                                   callback=back, bouncetime=400)
 
         child_selected = self._show()
@@ -69,7 +69,7 @@ class MenuNode(object):
         Do not use the lock here.
         """
         if not self._disable_back:
-            GPIO.remove_event_detect(buttons.BACK_BUTTON)
+            GPIO.remove_event_detect(buttons.BACK)
         self._stop_flag.set()
 
     def get_node(self, path):
@@ -129,26 +129,26 @@ class SelectionMenu(MenuNode):
 
         def button_pressed(channel):
             self.lock.acquire()
-            if channel == buttons.LEFT_BUTTON:
+            if channel == buttons.LEFT:
                 # move left
                 menu.move_selection_left()
-            elif channel == buttons.RIGHT_BUTTON:
+            elif channel == buttons.RIGHT:
                 # move right
                 menu.move_selection_right()
-            elif channel == buttons.ENTER_BUTTON:
+            elif channel == buttons.ENTER:
                 # enter
                 self._enter_pressed()
             self.lock.release()
 
         # set up buttons
         menu.display_menu()
-        GPIO.add_event_detect(buttons.ENTER_BUTTON, GPIO.RISING,
+        GPIO.add_event_detect(buttons.ENTER, GPIO.RISING,
                               callback=button_pressed,
                               bouncetime=300)
-        GPIO.add_event_detect(buttons.LEFT_BUTTON, GPIO.RISING,
+        GPIO.add_event_detect(buttons.LEFT, GPIO.RISING,
                               callback=button_pressed, 
                               bouncetime=300)
-        GPIO.add_event_detect(buttons.RIGHT_BUTTON, GPIO.RISING, 
+        GPIO.add_event_detect(buttons.RIGHT, GPIO.RISING, 
                               callback=button_pressed, 
                               bouncetime=300)
         
@@ -165,9 +165,9 @@ class SelectionMenu(MenuNode):
 
     def stop(self):
         super(self.__class__, self).stop()
-        GPIO.remove_event_detect(buttons.ENTER_BUTTON)
-        GPIO.remove_event_detect(buttons.LEFT_BUTTON)
-        GPIO.remove_event_detect(buttons.RIGHT_BUTTON)
+        GPIO.remove_event_detect(buttons.ENTER)
+        GPIO.remove_event_detect(buttons.LEFT)
+        GPIO.remove_event_detect(buttons.RIGHT)
 
     def _enter_pressed(self):
         self._stop_flag.set()
