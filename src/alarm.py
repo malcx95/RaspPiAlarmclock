@@ -8,6 +8,24 @@ from datetime import datetime
 
 TIME_FORMAT = "%Y%m%d%H%M"
 
+class Alarm(object):
+
+    def __init__(self, hour, minute, day, month):
+        self.hour = hour
+        self.minute = minute
+        self.day = day
+        self.month = month
+
+    def get_alarm_string(self):
+        return '{y}{m}{d}{h}{M}'.format(y=self.year, m=self.month, 
+                                        d=self.day, h=self.hour, M=self.minute)
+    
+    def __str__(self):
+        return '{}:{}'.format(self.hour, 
+                              self.minute if self.minute >= 10 else 
+                              '0' + str(self.minute))
+
+
 class AlarmSupervisorThread(threading.Thread):
 
     def __init__(self, display, led_control):
