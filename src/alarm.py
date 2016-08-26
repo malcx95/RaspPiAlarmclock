@@ -71,8 +71,6 @@ class AlarmSupervisorThread(threading.Thread):
             if int(alarm) < int(datetime.now().strftime(TIME_FORMAT)):
                 alarms_to_remove.append(alarm)
         self.alarms = [a for a in self.alarms if a not in alarms_to_remove]
-        print self.alarms
-                
 
     def _sound_alarm(self):
         self._selected_menu.stop()
