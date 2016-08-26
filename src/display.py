@@ -6,6 +6,10 @@ LCD_ROWS = 2
 TOP_ROW = 0
 BOTTOM_ROW = 1
 
+LEFT_ARROW = '\x01'
+RIGHT_ARROW = '\x02'
+ENTER = '\x03'
+
 class Display(Adafruit_CharLCDPlate):
     
     def __init__(self, lock=None):
@@ -21,6 +25,18 @@ class Display(Adafruit_CharLCDPlate):
             self.lock = lock
 
         super(Display, self).__init__()
+
+        # create custom characters
+
+        # left arrow
+        self.create_char(1, [0,4,2,31,2,4,0,0])
+
+        # right arrow
+        self.create_char(2, [0,4,8,31,8,4,0,0])
+
+        # enter
+        self.create_char(3, [1,1,1,5,9,31,8,4])
+
 
         self.blink(False)
         self.show_cursor(False)

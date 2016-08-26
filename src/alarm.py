@@ -5,25 +5,83 @@ import display
 import RPi.GPIO as GPIO
 from ledcontrol import LEDControl
 from datetime import datetime
+from calendar import monthrange
 
 TIME_FORMAT = "%Y%m%d%H%M"
 
 class Alarm(object):
+    """
+    Represents an alarm. Contains information about exactly when the
+    alarm shall be sound as well as information for the user.
+    """
 
-    def __init__(self, hour, minute, day, month):
-        self.hour = hour
-        self.minute = minute
-        self.day = day
-        self.month = month
+    def __init__(self, hour, minute, day, month, year, repeat):
+        self._hour = hour
+        self._minute = minute
+        self._day = day
+        self._month = month
+        self._year = year
+        self.repeat = repeat
+        self._weekday = datetime(year, month, day).weekday()
 
     def get_alarm_string(self):
-        return '{y}{m}{d}{h}{M}'.format(y=self.year, m=self.month, 
-                                        d=self.day, h=self.hour, M=self.minute)
-    
+        return '{y}{m}{d}{h}{M}'.format(y=self._year,
+                                        m=self._month, 
+                                        d=self._day,
+                                        h=self._hour,
+                                        M=self._minute)
+
+    def get_weekday(self):
+        return self._weekday
+
+    def increment_hour(self, amount):
+        """
+        Increments the hour by amount and returns the new hour.
+        Amount must be -1 or 1.
+        """
+        new_hour = self._hour
+        new_hour = (new_hour + amount) % 24
+        self._hour = new_hour
+        return new_hour
+
+    def incremement_minute(self, amount):
+        """
+        Increments the minute by amount and returns the new minute.
+        Amount must be -1 or 1.
+        """
+        new_min = self._minute
+        new_min = (new_min + amount) % 60
+        self._minute = new_min
+        return new_min
+        
+    def increment_day(self, amount):
+        """
+        Increments the weekday by amount and returns the new weekday.
+        This changes the actual date on which the alarm will sound.
+        Amount must be -1 or 1.
+        """
+        num_days = monthrange(self._year, self._month)
+        if amount + self._day > num_days:
+            if self._month + 1 > 12:
+                self._year += 1
+                self._month = 1
+            else:
+                self._month += 1
+        elif amount + self._day < 1:
+            if self._month - 1 < 1:
+                self._year -= 1
+                self._month = 1
+            else:
+                self._month -= 1
+        else:
+            self._day += amount
+        self._weekday = datetime(self._year, self._month, self._day).weekday()
+        return self._weekday
+            
     def __str__(self):
-        return '{}:{}'.format(self.hour, 
-                              self.minute if self.minute >= 10 else 
-                              '0' + str(self.minute))
+        return '{}:{}'.format(self._hour, 
+                              self._minute if self._minute >= 10 else 
+                              '0' + str(self._minute))
 
 
 class AlarmSupervisorThread(threading.Thread):

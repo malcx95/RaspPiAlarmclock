@@ -1,7 +1,11 @@
 import menu_node
+import threading
+import display
+from datetime import datetime
 from alarm import Alarm
 
-DAYS = ('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')
+DAYS = ('Monday', 'Tuesday', 'Wednesday', 'Thursday',
+        'Friday', 'Saturday', 'Sunday')
 
 class AlarmApplication(MenuNode):
 
@@ -15,6 +19,8 @@ class AlarmApplication(MenuNode):
 
 class AlarmEditor(MenuNode):
 
+    top_row_format = '{hour}:{min} {day}'
+
     def __init__(self, display, lock, led_control, alarm=None):
         super(self.__class__, self).__init__(display, str(alarm),
                                              self._children, lock)
@@ -22,18 +28,21 @@ class AlarmEditor(MenuNode):
         if alarm is None:
             self.alarm = alarm
         else:
-            self.alarm = None
+            today = datetime.now()
+            self.alarm = Alarm(7, 0, today.day, today.month, today.year, False)
+        self._weekday = datetime.now().weekday()
 
-    def _increment_hour(self, amount):
-        new_hour = self.alarm.hour
-        new_hour = (new_hour + amount) % 24
-        self.alarm.hour = new_hour
-        return new_hour
+    def _show(self):
+        pass
 
-    def _incremement_minute(self, amount):
-        new_min = self.alarm.minute
-        new_min = (new_min + amount) % 60
-        self.alarm.minute = new_min
-        return new_min
+    def _update(self):
+        # TODO you are here, use the top_row_format
+        self.display.change_row(display.TOP_ROW, top_row)
+
         
+class BlinkThread(threading.Thread):
+    
+    def __init__(self):
+        super(self.__class__, self).__init__()
+        pass
 

@@ -157,7 +157,6 @@ class Menu:
         self._selection_lock.release()
         self._current_blink = not self._current_blink
 
-
     def _get_option_position(self):
         return (self._selected - self.scroll_offset) * 3 + 1
 

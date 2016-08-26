@@ -170,5 +170,5 @@ class SelectionMenu(MenuNode):
         GPIO.remove_event_detect(buttons.RIGHT)
 
     def _enter_pressed(self):
-        self._stop_flag.set()
+        self.stop()
     
