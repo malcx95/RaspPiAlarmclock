@@ -15,7 +15,8 @@ class Menu:
     NUMBERS = '123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
     def __init__(self, options, display, 
-                 title="", initial_selection=0, led_control=None):
+                 title="", initial_selection=0, led_control=None,
+                 icons=None):
         """ Class for representing a menu on the display.
              Takes in a list of options in the format
              ["Option1", "Option2", ...] as well as a
@@ -29,6 +30,14 @@ class Menu:
         elif not isinstance(options, list):
             raise ValueError("Incompatible options type - must be list!")
 
+        if icons is None:
+            self._icons = self._icons
+        else:
+            if len(icons) != len(options):
+                raise ValueError("Icons must have the same length as options!")
+            else:
+                self._icons = icons
+
         self._led_control = led_control
 
         # List of options [OPT1, OPT2, ...]
@@ -41,7 +50,7 @@ class Menu:
         self.display = display
 
         # Number of options
-        if len(options) > self.NUMBERS:
+        if len(options) > self._icons:
             raise ValueError("List of options can't be longer than " 
                              + str(len(options)))
         self.options_count = len(options)
@@ -122,7 +131,7 @@ class Menu:
     def _get_options_row(self):
         options_row = ""
         for i in range(min(self.options_count, MAX_NUM_OPTIONS_THAT_FIT)):
-            number = self.NUMBERS[i + self.scroll_offset]
+            number = self._icons[i + self.scroll_offset]
             if i + self.scroll_offset == self._selected:
                 options_row += "[{}]".format(number)
             else:
@@ -149,7 +158,7 @@ class Menu:
         else:
             self.display.write_char(1,
                                     self._get_option_position(),
-                                    self.NUMBERS[self._selected])
+                                    self._icons[self._selected])
 
         if self._led_control is not None:
             self._led_control.set(not self._current_blink, LEDControl.ENTER)
