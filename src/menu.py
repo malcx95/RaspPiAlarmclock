@@ -31,7 +31,7 @@ class Menu:
             raise ValueError("Incompatible options type - must be list!")
 
         if icons is None:
-            self._icons = self._icons
+            self._icons = self.NUMBERS
         else:
             if len(icons) != len(options):
                 raise ValueError("Icons must have the same length as options!")

@@ -10,7 +10,8 @@ from ledcontrol import LEDControl
 from clock_face import ClockFace
 import buttons
 from menu_node import *
-from alarm import AlarmSupervisorThread
+from alarm import Alarm, AlarmSupervisorThread
+from alarm_app import AlarmApplication
 
 def main():
 
