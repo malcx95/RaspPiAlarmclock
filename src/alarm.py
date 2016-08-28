@@ -7,7 +7,18 @@ from ledcontrol import LEDControl
 from datetime import datetime
 from calendar import monthrange
 
+
 TIME_FORMAT = "%Y%m%d%H%M"
+
+
+def alarm_list_compare(x1, x2):
+    if x1[1] and not x2[1]:
+        return 1
+    elif not x1[1] and x2[1]:
+        return -1
+    else:
+        return cmp(x1, x2)
+
 
 class Alarm(object):
     """
@@ -96,6 +107,9 @@ class Alarm(object):
         return '{}:{}'.format(self.hour, 
                               self.minute if self.minute >= 10 else 
                               '0' + str(self.minute))
+
+    def __cmp__(self, other):
+        return cmp(self.get_alarm_string(), other.get_alarm_string())
 
 
 class AlarmSupervisorThread(threading.Thread):

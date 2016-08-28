@@ -1,17 +1,20 @@
 import menu_node
+import menu
 import threading
 import display
 from datetime import datetime
-from alarm import Alarm
+from alarm import Alarm, alarm_list_compare
 
 DAYS = ('Monday', 'Tuesday', 'Wednesday', 'Thursday',
         'Friday', 'Saturday', 'Sunday')
 
 class AlarmApplication(menu_node.MenuNode):
 
-    def __init__(self, display, lock, led_control):
+    def __init__(self, display, lock, led_control, alarms):
         super(self.__class__, self).__init__(display, 'Alarms', lock)
         self._led_control = led_control
+        self.alarms = alarms
+        self._selected = 0
 
     def _show(self):
         if not self.children:
@@ -21,11 +24,29 @@ class AlarmApplication(menu_node.MenuNode):
             self.lock.acquire()
             if not self._back_pressed:
                 self._add_placeholder_alarm()
-                return self.children[0]
+                return 0
             return None
         else:
-            pass
-        # TODO implement
+            icons = [display.ON if on else display.OFF for _, on in self.alarms]
+            options = [str(al) + ' - ON' if on else str(al) + ' - OFF'
+                        for al, on in self.alarms]
+            self.lock.acquire()
+            self._selected = 0
+            menu = menu.Menu(options, self.display, 
+                             'Alarms', led_control=self._led_control,
+                             icons=icons)
+            self._set_up_buttons()
+            self.menu.display_menu()
+            self.lock.release()
+            self._stop_flag.wait()
+            self.menu.stop()
+            return self._selected
+
+    def _set_up_buttons(self):
+        pass
+
+    def _free_used_buttons(self):
+        pass
 
     def _add_placeholder_alarm(self):
         today = datetime.now()
@@ -33,6 +54,8 @@ class AlarmApplication(menu_node.MenuNode):
         alarm.increment_day()
         editor = AlarmEditor(self.display, self.lock, self._led_control, alarm)
         self.children.append(editor)
+        self.alarms.append((alarm, False))
+        self.alarms.sort(alarm_list_compare)
     
 
 class AlarmEditor(menu_node.MenuNode):
@@ -56,15 +79,23 @@ class AlarmEditor(menu_node.MenuNode):
         self._current_selection = 0
         # Page 0 contains hour, minute and day, page 1 contains repeat
         self._current_page = 0
+        # TODO use
         self._accept = False
 
     def _show(self):
         self.lock.acquire()
         self.display.clear()
         self._update()
+        self._set_up_buttons()
         self.lock.release()
         self._stop_flag.wait()
         return None
+
+    def _set_up_buttons(self):
+        pass
+
+    def _free_used_buttons(self):
+        pass
 
     def _update(self):
         top_row = ''

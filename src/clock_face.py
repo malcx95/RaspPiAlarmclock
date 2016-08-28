@@ -25,3 +25,6 @@ class ClockFace(MenuNode):
         self.time = datetime.now().strftime('%H:%M')
         if old_time != self.time:
             self.display.change_row(self.time, 0)
+    
+    def _free_used_buttons(self):
+        pass

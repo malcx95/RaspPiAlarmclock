@@ -22,12 +22,11 @@ class MenuNode(object):
 
     def start(self):
         """
-        Shows this MenuNode on the display. The thread invoking 
-        this method is not released until another thread invokes 
-        the stop() method.
+        Shows this MenuNode on the display. This method does not return 
+        until another thread calls the stop() method.
 
         Returns (bool, MenuNode): whether the back button was pressed,
-        the child node selected.
+        the index of the child node selected.
         """
 
         self._stop_flag = threading.Event()
@@ -56,21 +55,28 @@ class MenuNode(object):
 
         This method needs to be synchronized with the lock.
 
-        Returns the selected MenuNode, if any.
+        Returns the index of the selected MenuNode, if any.
         """
-        raise NotImplementedError("Start needs to be overridden!")
+        raise NotImplementedError('Start needs to be overridden!')
 
     def stop(self):
         """
-        Terminates the MenuNode, so other nodes can
-        be shown on the display. In case a subclass uses buttons,
-        this method needs to be overridden to remove used buttons.
-
-        Do not use the lock here.
+        Terminates the MenuNode, freeing up resources used by it and
+        making the start() method return.
         """
         if not self._disable_back:
             GPIO.remove_event_detect(buttons.BACK)
+        self._free_used_buttons()
         self._stop_flag.set()
+
+    def _free_used_buttons(self):
+        """
+        Removes the event detect of any buttons that isn't the back button.
+        Is called by the stop() method and needs to be implemented by every
+        subclass. If the MenuNode does not use any other buttons than the 
+        back button, 
+        """
+        raise NotImplementedError('Free used buttons must be overridden!')
 
     def get_node(self, path):
         """
@@ -93,7 +99,7 @@ class MenuNode(object):
 
 class PlaceHolderNode(MenuNode):
     """
-    Just a placeholder node
+    Just a placeholder node.
     """
 
     def __init__(self, display, lock, title="Example"):
@@ -106,6 +112,9 @@ class PlaceHolderNode(MenuNode):
         self.lock.release()
         self._stop_flag.wait()
         return None
+    
+    def _free_used_buttons(self):
+        pass
 
 
 class SelectionMenu(MenuNode):
@@ -163,8 +172,7 @@ class SelectionMenu(MenuNode):
 
         return selected
 
-    def stop(self):
-        super(self.__class__, self).stop()
+    def _free_used_buttons(self):
         GPIO.remove_event_detect(buttons.ENTER)
         GPIO.remove_event_detect(buttons.LEFT)
         GPIO.remove_event_detect(buttons.RIGHT)

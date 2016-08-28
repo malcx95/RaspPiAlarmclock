@@ -12,7 +12,6 @@ import buttons
 from menu_node import *
 from alarm import AlarmSupervisorThread
 
-
 def main():
 
     display = Display()
@@ -20,30 +19,16 @@ def main():
 
     menu_lock = threading.Lock()
 
+    alarms = [(Alarm(10, 0, 28, 8, 2016, False), False)]
+
     # setup buttons
     for button in buttons.BUTTONS.values():
         GPIO.setup(button, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-    
-    # setup menu
-    test_menu1_children = [PlaceHolderNode(display, menu_lock, "test1"),
-                           PlaceHolderNode(display, menu_lock, "test2"),
-                           PlaceHolderNode(display, menu_lock, "test3"),
-                           PlaceHolderNode(display, menu_lock, "test4"),
-                           PlaceHolderNode(display, menu_lock, "test5"),
-                           PlaceHolderNode(display, menu_lock, "tesss"),
-                           PlaceHolderNode(display, menu_lock, "tess"),
-                           PlaceHolderNode(display, menu_lock, "tessd"),
-                           PlaceHolderNode(display, menu_lock, "tersw"),
-                           PlaceHolderNode(display, menu_lock, "tehws"),
-                           PlaceHolderNode(display, menu_lock, "test6")]
-
-    test_menu1 = SelectionMenu(display, "HEJHEJ", 
-                               test_menu1_children, menu_lock,
-                               led_control=led_control)
 
     clock_face = ClockFace(display, menu_lock)
 
-    main_children = [clock_face, test_menu1]
+    main_children = [clock_face,
+                     AlarmApplication(display, menu_lock, led_control, alarms)]
 
     main_menu = SelectionMenu(display, "Main menu", main_children,
                               menu_lock, disable_back=True,
