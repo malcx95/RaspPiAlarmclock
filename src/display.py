@@ -42,16 +42,16 @@ class Display(Adafruit_CharLCDPlate):
         self.create_char(3, [1,1,1,5,9,31,8,4])
 
         # up arrow
-        self.create_char(4, [4,14,21,4,4,4,4])
+        self.create_char(4, [4,14,21,4,4,4,4,4])
 
         # down arrow
-        self.create_char(5, [4,4,4,4,21,14,4])
+        self.create_char(5, [4,4,4,4,4,21,14,4])
 
         # on icon
-        self.create_char(6, [0,14,17,17,17,14,0])
+        self.create_char(6, [0,14,31,31,31,31,14,0])
         
         # off icon
-        self.create_char(7, [0,14,31,31,31,14,0])
+        self.create_char(7, [0,14,17,17,17,17,14,0])
 
         self.blink(False)
         self.show_cursor(False)
