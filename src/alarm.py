@@ -140,11 +140,10 @@ class AlarmList(object):
         return not self._alarms
 
     def _save(self):
-        if not os.path.isdir(SAVE_DIR):
-            os.makedirs(SAVE_DIR)
         with open(self.SAVE_FILE, 'w') as file_:
             file_.write(json.dumps(
-                [[al.get_json_representation(), act] for al, act in self._alarms]))
+                [[al.get_json_representation(), act] 
+                 for al, act in self._alarms]))
 
     def delete_alarm(self, alarm):
         for i in range(len(self._alarms)):
