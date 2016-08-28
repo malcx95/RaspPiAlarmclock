@@ -10,7 +10,7 @@ from ledcontrol import LEDControl
 from clock_face import ClockFace
 import buttons
 from menu_node import *
-from alarm import Alarm, AlarmSupervisorThread, AlarmList
+import alarm
 from alarm_app import AlarmApplication
 
 SAVE_DIR = '~/AlarmClockFiles'
@@ -22,8 +22,8 @@ def main():
 
     menu_lock = threading.Lock()
 
-    alarm_list = AlarmList()
-    alarm_list.add_alarm(Alarm(7, 0, 1))
+    alarm_list = alarm.AlarmList()
+    alarm_list.add_alarm(alarm.Alarm(7, 0, 1, 0), False)
 
     # setup buttons
     for button in buttons.BUTTONS.values():
@@ -32,7 +32,7 @@ def main():
     clock_face = ClockFace(display, menu_lock)
 
     main_children = [clock_face,
-                     AlarmApplication(display, menu_lock, led_control, alarms)]
+                     AlarmApplication(display, menu_lock, led_control, alarm_list)]
 
     main_menu = SelectionMenu(display, "Main menu", main_children,
                               menu_lock, disable_back=True,
@@ -41,7 +41,7 @@ def main():
     # list of indices tracing the path to the current node
     current_menu_selection = []
 
-    alarm_thread = AlarmSupervisorThread(display, led_control)
+    alarm_thread = alarm.AlarmSupervisorThread(display, led_control)
     alarm_thread.start()
 
     def exit():

@@ -1,9 +1,10 @@
 import menu_node
-import menu
 import threading
 import display
+import alarm
 from datetime import datetime
-from alarm import Alarm, alarm_list_compare
+from menu import Menu
+
 
 DAYS = ('Monday', 'Tuesday', 'Wednesday', 'Thursday',
         'Friday', 'Saturday', 'Sunday')
@@ -34,14 +35,14 @@ class AlarmApplication(menu_node.MenuNode):
                         for al, on in self.alarm_list]
             self.lock.acquire()
             self._selected = 0
-            menu = menu.Menu(options, self.display, 
+            menu = Menu(options, self.display, 
                              'Alarms', led_control=self._led_control,
                              icons=icons)
             self._set_up_buttons()
-            self.menu.display_menu()
+            menu.display_menu()
             self.lock.release()
             self._stop_flag.wait()
-            self.menu.stop()
+            menu.stop()
             return self._selected
 
     def _set_up_buttons(self):
@@ -52,7 +53,7 @@ class AlarmApplication(menu_node.MenuNode):
 
     def _add_placeholder_alarm(self):
         today = datetime.now()
-        alarm = Alarm(7, 0, 2, False)
+        alarm = alarm.Alarm(7, 0, today.weekday(), 0)
         alarm.increment_day()
         editor = AlarmEditor(self.display, self.lock, self._led_control, alarm)
         self.children.append(editor)

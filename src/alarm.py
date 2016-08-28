@@ -121,8 +121,8 @@ class AlarmList(object):
         return iter(self._alarms)
 
     def load_alarms(self):
-        if os.path.isfile(SAVE_FILE):
-            with open(SAVE_FILE) as file_:
+        if os.path.isfile(self.SAVE_FILE):
+            with open(self.SAVE_FILE) as file_:
                 alarms_string = file_.read()
             alarm_array = json.loads(alarms_string)
             for alarm, activated in alarm_array:
@@ -140,9 +140,11 @@ class AlarmList(object):
         return not self._alarms
 
     def _save(self):
-        with open(SAVE_FILE, 'w') as file_:
+        if not os.path.isdir(SAVE_DIR):
+            os.makedirs(SAVE_DIR)
+        with open(self.SAVE_FILE, 'w') as file_:
             file_.write(json.dumps(
-                [x.get_json_representation() for x in self._alarms]))
+                [[al.get_json_representation(), act] for al, act in self._alarms]))
 
     def delete_alarm(self, alarm):
         for i in range(len(self._alarms)):
