@@ -2,22 +2,16 @@ import threading
 import buttons
 import time
 import display
+import os
+import json
 import RPi.GPIO as GPIO
 from ledcontrol import LEDControl
 from datetime import datetime
 from calendar import monthrange
+from main import SAVE_DIR
 
 
 TIME_FORMAT = "%Y%m%d%H%M"
-
-
-def alarm_list_compare(x1, x2):
-    if x1[1] and not x2[1]:
-        return 1
-    elif not x1[1] and x2[1]:
-        return -1
-    else:
-        return cmp(x1, x2)
 
 
 class Alarm(object):
@@ -31,19 +25,26 @@ class Alarm(object):
     EVERY_WEEK = 2
     REPEAT_OPTIONS = ('None', 'Daily', 'Weekly')
 
-    def __init__(self, hour, minute, day, month, year, repeat):
+    def __init__(self, hour, minute, weekday, repeat):
         self.hour = hour
         self.minute = minute
-        self.day = day
-        self.month = month
-        self.year = year
         self.repeat = repeat
-        self.weekday = datetime(year, month, day).weekday()
+        self.weekday = weekday
+
+    def _update_date(self):
+        today = datetime.now()
+        self._day = today.day
+        self._month = today.month
+        self._year = today.year
+        while datetime(self._year, self._month, self._day).weekday() != \
+              self.weekday:
+           self._increment_day()
 
     def get_alarm_string(self):
-        return '{y}{m}{d}{h}{M}'.format(y=self.year,
-                                        m=self.month, 
-                                        d=self.day,
+        self._update_date()
+        return '{y}{m}{d}{h}{M}'.format(y=self._year,
+                                        m=self._month, 
+                                        d=self._day,
                                         h=self.hour,
                                         M=self.minute)
 
@@ -79,37 +80,75 @@ class Alarm(object):
         self.minute = new_min
         return new_min
         
-    def increment_day(self, amount):
-        """
-        Increments the weekday by amount and returns the new weekday.
-        This changes the actual date on which the alarm will sound.
-        Amount must be -1 or 1.
-        """
-        num_days = monthrange(self.year, self.month)
-        if amount + self.day > num_days:
-            if self.month + 1 > 12:
-                self.year += 1
-                self.month = 1
+    def _increment_day(self):
+        num_days = monthrange(self._year, self._month)
+        if self._day + 1 > num_days:
+            if self._month + 1 > 12:
+                self._year += 1
+                self._month = 1
             else:
-                self.month += 1
-        elif amount + self.day < 1:
-            if self.month - 1 < 1:
-                self.year -= 1
-                self.month = 1
-            else:
-                self.month -= 1
+                self._month += 1
         else:
-            self.day += amount
-        self.weekday = datetime(self.year, self.month, self.day).weekday()
-        return self.weekday
+            self._day += 1
             
     def __str__(self):
         return '{}:{}'.format(self.hour, 
                               self.minute if self.minute >= 10 else 
                               '0' + str(self.minute))
+    
+    def get_json_representation(self):
+        return [self.hour, self.minute, self.weekday, self.repeat]
 
-    def __cmp__(self, other):
-        return cmp(self.get_alarm_string(), other.get_alarm_string())
+
+def _alarm_list_compare(x1, x2):
+    if x1[1] and not x2[1]:
+        return 1
+    elif not x1[1] and x2[1]:
+        return -1
+    else:
+        return cmp(str(x1[0]), str(x2[0]))
+
+
+class AlarmList(object):
+    """An intelligent iterable list of alarms"""
+
+    SAVE_FILE = os.path.join(SAVE_DIR, 'alarms.json')
+
+    def __init__(self):
+        self._alarms = []
+
+    def __iter__(self):
+        return iter(self._alarms)
+
+    def load_alarms(self):
+        if os.path.isfile(SAVE_FILE):
+            with open(SAVE_FILE) as file_:
+                alarms_string = file_.read()
+            alarm_array = json.loads(alarms_string)
+            for alarm, activated in alarm_array:
+                self._alarms.append((Alarm(*alarm), activated))
+            self._alarms.sort(_alarm_list_compare)
+        else:
+            return []
+
+    def add_alarm(self, alarm, activated):
+        self._alarms.append((alarm, activated))
+        self._alarms.sort(_alarm_list_compare)
+        self._save()
+
+    def is_empty(self):
+        return not self._alarms
+
+    def _save(self):
+        with open(SAVE_FILE, 'w') as file_:
+            file_.write(json.dumps(
+                [x.get_json_representation() for x in self._alarms]))
+
+    def delete_alarm(self, alarm):
+        for i in range(len(self._alarms)):
+            if self._alarms[i] == alarm:
+                self._alarms.pop(i)
+        raise KeyError('Alarm {} is not in the list'.format(alarm))
 
 
 class AlarmSupervisorThread(threading.Thread):

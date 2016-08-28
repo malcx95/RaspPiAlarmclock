@@ -74,7 +74,7 @@ class MenuNode(object):
         Removes the event detect of any buttons that isn't the back button.
         Is called by the stop() method and needs to be implemented by every
         subclass. If the MenuNode does not use any other buttons than the 
-        back button, 
+        back button, this method doesn't do anything.
         """
         raise NotImplementedError('Free used buttons must be overridden!')
 
@@ -94,7 +94,6 @@ class MenuNode(object):
 
     def __str__(self):
         return self.title
-
 
 
 class PlaceHolderNode(MenuNode):

@@ -10,26 +10,28 @@ DAYS = ('Monday', 'Tuesday', 'Wednesday', 'Thursday',
 
 class AlarmApplication(menu_node.MenuNode):
 
-    def __init__(self, display, lock, led_control, alarms):
+    def __init__(self, display, lock, led_control, alarm_list):
         super(self.__class__, self).__init__(display, 'Alarms', lock)
         self._led_control = led_control
-        self.alarms = alarms
+        self.alarm_list = alarm_list
         self._selected = 0
 
     def _show(self):
-        if not self.children:
-            self.display.message('No alarms. Press {} to add new alarm.'\
+        if self.alarm_list.is_empty():
+            self.display.message('No alarms.\nPress {} to add.'\
                                  .format(display.ENTER))
             self._stop_flag.wait()
             self.lock.acquire()
             if not self._back_pressed:
                 self._add_placeholder_alarm()
                 return 0
+            self.lock.release()
             return None
         else:
-            icons = [display.ON if on else display.OFF for _, on in self.alarms]
+            icons = [display.ON if on else display.OFF
+                     for _, on in self.alarm_list]
             options = [str(al) + ' - ON' if on else str(al) + ' - OFF'
-                        for al, on in self.alarms]
+                        for al, on in self.alarm_list]
             self.lock.acquire()
             self._selected = 0
             menu = menu.Menu(options, self.display, 
@@ -50,12 +52,12 @@ class AlarmApplication(menu_node.MenuNode):
 
     def _add_placeholder_alarm(self):
         today = datetime.now()
-        alarm = Alarm(7, 0, today.day, today.month, today.year, False)
+        alarm = Alarm(7, 0, 2, False)
         alarm.increment_day()
         editor = AlarmEditor(self.display, self.lock, self._led_control, alarm)
         self.children.append(editor)
-        self.alarms.append((alarm, False))
-        self.alarms.sort(alarm_list_compare)
+        self.alarm_list.add_alarm(alarm, False)
+        self.alarm_list.sort(alarm_list_compare)
     
 
 class AlarmEditor(menu_node.MenuNode):

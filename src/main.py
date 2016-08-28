@@ -10,8 +10,10 @@ from ledcontrol import LEDControl
 from clock_face import ClockFace
 import buttons
 from menu_node import *
-from alarm import Alarm, AlarmSupervisorThread
+from alarm import Alarm, AlarmSupervisorThread, AlarmList
 from alarm_app import AlarmApplication
+
+SAVE_DIR = '~/AlarmClockFiles'
 
 def main():
 
@@ -20,7 +22,8 @@ def main():
 
     menu_lock = threading.Lock()
 
-    alarms = [(Alarm(10, 0, 28, 8, 2016, False), False)]
+    alarm_list = AlarmList()
+    alarm_list.add_alarm(Alarm(7, 0, 1))
 
     # setup buttons
     for button in buttons.BUTTONS.values():
@@ -48,7 +51,7 @@ def main():
         GPIO.cleanup()
         sys.exit(1)
 
-    time.sleep(1)
+    time.sleep(0.1)
 
     alarm_thread.set_alarm('201608232300')
 
