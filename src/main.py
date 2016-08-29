@@ -4,6 +4,7 @@ import time
 import sys
 import threading
 import RPi.GPIO as GPIO
+import os
 from menu import Menu
 from display import Display
 from ledcontrol import LEDControl
@@ -13,9 +14,12 @@ from menu_node import *
 import alarm
 from alarm_app import AlarmApplication
 
-SAVE_DIR = '~/AlarmClockFiles'
+SAVE_DIR = os.path.expanduser('~/.local/share/AlarmClockFiles')
 
 def main():
+
+    if not os.path.isdir(SAVE_DIR):
+        os.makedirs(SAVE_DIR)
 
     display = Display()
     led_control = LEDControl()
