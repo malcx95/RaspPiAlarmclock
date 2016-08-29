@@ -26,14 +26,13 @@ class LEDControl:
     LEFT  = 'LED_LEFT'
     RIGHT = 'LED_RIGHT'
     BACK = 'LED_BACK'
-    KEY1 = 'LED_KEY1'
-    KEY2 = 'LED_KEY2'
-    KEY3 = 'LED_KEY3'
-    KEY4 = 'LED_KEY4'
+    SET = 'LED_KEY1'
+    UP = 'LED_KEY2'
+    DOWN = 'LED_KEY3'
+    DELETE = 'LED_KEY4'
     FRONT_RED = 'LED_FRONT_RED'
     FRONT_GREEN = 'LED_FRONT_GREEN'
     FRONT_YELLOW = 'LED_FRONT_YELLOW'
-
     
     def __init__(self):
         for led in self.LEDS.values():

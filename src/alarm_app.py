@@ -1,7 +1,9 @@
 import menu_node
 import threading
+import buttons
 import display
 import alarm
+import RPi.GPIO as GPIO
 from datetime import datetime
 from menu import Menu
 
@@ -40,19 +42,60 @@ class AlarmApplication(menu_node.MenuNode):
                         led_control=self._led_control,
                         icons=icons, 
                         blinking_leds=[self._led_control.ENTER,
-                                        self._led_control.BACK])
-            self._set_up_buttons()
+                                        self._led_control.SET,
+                                        self._led_control.DELETE])
+            self._set_up_buttons(menu)
             menu.display_menu()
             self.lock.release()
             self._stop_flag.wait()
             menu.stop()
             return self._selected
 
-    def _set_up_buttons(self):
+    def _set_up_buttons(self, menu):
+
+        def buttons_pressed(channel):
+            self.lock.acquire()
+            if channel == buttons.LEFT:
+                menu.move_selection_left()
+            elif channel == buttons.RIGHT:
+                menu.move_selection_right()
+            elif channel == buttons.ENTER:
+                self._enter_pressed()
+            elif channel == buttons.SET:
+                self._set_pressed()
+            elif channel == buttons.DELETE:
+                self._delete_pressed()
+            self.lock.release()
+        
+        GPIO.add_event_detect(buttons.ENTER, GPIO.RISING,
+                              callback=button_pressed, bouncetime=300)
+        GPIO.add_event_detect(buttons.RIGHT, GPIO.RISING,
+                              callback=button_pressed, bouncetime=300)
+        GPIO.add_event_detect(buttons.LEFT, GPIO.RISING, 
+                              callback=button_pressed, bouncetime=300)
+        GPIO.add_event_detect(buttons.SET, GPIO.RISING, 
+                              callback=button_pressed, bouncetime=300)
+        GPIO.add_event_detect(buttons.DELETE, GPIO.RISING, 
+                              callback=button_pressed, bouncetime=300)
+
+    def _enter_pressed(self):
+        # TODO implement
+        pass
+
+    def _delete_pressed(self):
+        # TODO implement
+        pass
+
+    def _set_pressed(self):
+        # TODO implement
         pass
 
     def _free_used_buttons(self):
-        pass
+        GPIO.remove_event_detect(buttons.ENTER)
+        GPIO.remove_event_detect(buttons.RIGHT)
+        GPIO.remove_event_detect(buttons.LEFT)
+        GPIO.remove_event_detect(buttons.SET)
+        GPIO.remove_event_detect(buttons.DELETE)
 
     def _add_placeholder_alarm(self):
         today = datetime.now()

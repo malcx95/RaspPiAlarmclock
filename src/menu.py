@@ -103,6 +103,7 @@ class Menu:
             self._led_control.set(False, LEDControl.BACK)
             self._led_control.set(False, LEDControl.LEFT)
             self._led_control.set(False, LEDControl.RIGHT)
+
         self._display_option()
         self._blink_thread.start()
 

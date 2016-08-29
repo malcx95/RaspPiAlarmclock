@@ -27,7 +27,6 @@ def main():
     menu_lock = threading.Lock()
 
     alarm_list = alarm.AlarmList()
-    alarm_list.add_alarm(alarm.Alarm(7, 0, 1, 0), False)
 
     # setup buttons
     for button in buttons.BUTTONS.values():
