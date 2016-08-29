@@ -32,7 +32,7 @@ class AlarmApplication(menu_node.MenuNode):
             self.lock.release()
             return None
         else:
-            for alarm in self.alarm_list:
+            for alarm, _ in self.alarm_list:
                 editor = AlarmEditor(self.display, self.lock, 
                                      self._led_control, alarm)
                 self.children.append(editor)
