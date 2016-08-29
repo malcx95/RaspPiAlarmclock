@@ -69,14 +69,6 @@ class MenuNode(object):
         self._free_used_buttons()
         self._stop_flag.set()
 
-    def _set_up_buttons(self):
-        """
-        Initializes buttons that aren't the back button. If this MenuNode,
-        does not use any other buttons than the back button, this method
-        should do nothing.
-        """
-        raise NotImplementedError('Set up buttons must be implemented!')
-
     def _free_used_buttons(self):
         """
         Removes the event detect of any buttons that isn't the back button.
@@ -122,9 +114,6 @@ class PlaceHolderNode(MenuNode):
     
     def _free_used_buttons(self):
         pass
-    
-    def _set_up_buttons(self):
-        pass
 
 
 class SelectionMenu(MenuNode):
@@ -141,7 +130,11 @@ class SelectionMenu(MenuNode):
                                              lock, children, disable_back)
         self._led_control = led_control
 
-    def _set_up_buttons(self):
+    def _show(self):
+        self.lock.acquire()
+        menu = Menu([str(child) for child in self.children],
+                    self.display, self.title, led_control=self._led_control,
+                    blinking_leds=[self._led_control.ENTER])
 
         def button_pressed(channel):
             self.lock.acquire()
@@ -153,9 +146,11 @@ class SelectionMenu(MenuNode):
                 menu.move_selection_right()
             elif channel == buttons.ENTER:
                 # enter
-                self.stop()
+                self._enter_pressed()
             self.lock.release()
 
+        # set up buttons
+        menu.display_menu()
         GPIO.add_event_detect(buttons.ENTER, GPIO.RISING,
                               callback=button_pressed,
                               bouncetime=300)
@@ -165,16 +160,6 @@ class SelectionMenu(MenuNode):
         GPIO.add_event_detect(buttons.RIGHT, GPIO.RISING, 
                               callback=button_pressed, 
                               bouncetime=300)
-
-
-    def _show(self):
-        self.lock.acquire()
-        menu = Menu([str(child) for child in self.children],
-                    self.display, self.title, led_control=self._led_control,
-                    blinking_leds=[self._led_control.ENTER])
-
-        # set up buttons
-        menu.display_menu()
         
         self.lock.release()
         
@@ -191,4 +176,7 @@ class SelectionMenu(MenuNode):
         GPIO.remove_event_detect(buttons.ENTER)
         GPIO.remove_event_detect(buttons.LEFT)
         GPIO.remove_event_detect(buttons.RIGHT)
+
+    def _enter_pressed(self):
+        self.stop()
     
