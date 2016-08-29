@@ -20,6 +20,7 @@ class AlarmApplication(menu_node.MenuNode):
         self._selected = 0
 
     def _show(self):
+        self.children = []
         if self.alarm_list.is_empty():
             self.display.message('No alarms.\nPress {} to add.'\
                                  .format(display.ENTER))
@@ -31,6 +32,10 @@ class AlarmApplication(menu_node.MenuNode):
             self.lock.release()
             return None
         else:
+            for alarm in self.alarm_list:
+                editor = AlarmEditor(self.display, self.lock, 
+                                     self._led_control, alarm)
+                self.children.append(editor)
             icons = [display.ON if on else display.OFF
                      for _, on in self.alarm_list]
             options = [str(al) + ' - ON' if on else str(al) + ' - OFF'
@@ -103,7 +108,6 @@ class AlarmApplication(menu_node.MenuNode):
         editor = AlarmEditor(self.display, self.lock, self._led_control, alarm)
         self.children.append(editor)
         self.alarm_list.add_alarm(alarm, False)
-        self.alarm_list.sort(alarm_list_compare)
     
 
 class AlarmEditor(menu_node.MenuNode):
