@@ -115,7 +115,7 @@ class AlarmList(object):
     SAVE_FILE = os.path.join(SAVE_DIR, 'alarms.json')
 
     def __init__(self):
-        self._alarms = []
+        self._alarms = self.load_alarms()
 
     def __iter__(self):
         return iter(self._alarms)

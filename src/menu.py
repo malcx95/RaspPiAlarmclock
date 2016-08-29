@@ -16,15 +16,22 @@ class Menu:
 
     def __init__(self, options, display, 
                  title="", initial_selection=0, led_control=None,
-                 icons=None):
-        """ Class for representing a menu on the display.
-             Takes in a list of options in the format
-             ["Option1", "Option2", ...] as well as a
-             instance of a Adafruit_CharLCDPlate (display). 
-             
-             You can set the title of the menu in the optional
-             title parameter, and which menu option should be 
-             initially selected """
+                 icons=None, blinking_leds=[]):
+        """ 
+        Class for representing a menu on the display.
+        Takes in a list of options in the format
+        ["Option1", "Option2", ...] as well as a
+        instance of a Adafruit_CharLCDPlate (display). 
+        
+        You can set the title of the menu in the optional
+        title parameter, and which menu option should be 
+        initially selected. If you supply a list of characters
+        to the argument icons that is as long as the options list,
+        each option will have those icons in the same order.
+        
+        You can also supply a led_control instance, and a list 
+        of LED:s that should blink together with the cursor.
+        """
         if not options:
             raise ValueError("No options were given!")
         elif not isinstance(options, list):
@@ -75,6 +82,9 @@ class Menu:
 
         # Lock for synchronizing changes of the selection
         self._selection_lock = threading.Lock()
+
+        # list of LEDs that should blink as the cursor does
+        self._blinking_leds = blinking_leds
 
     def display_menu(self):
 
@@ -161,7 +171,8 @@ class Menu:
                                     self._icons[self._selected])
 
         if self._led_control is not None:
-            self._led_control.set(not self._current_blink, LEDControl.ENTER)
+            for led in self._blinking_leds:
+                self._led_control.set(not self._current_blink, led)
 
         self._selection_lock.release()
         self._current_blink = not self._current_blink

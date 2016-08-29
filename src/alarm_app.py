@@ -36,8 +36,11 @@ class AlarmApplication(menu_node.MenuNode):
             self.lock.acquire()
             self._selected = 0
             menu = Menu(options, self.display, 
-                             'Alarms', led_control=self._led_control,
-                             icons=icons)
+                        'Alarms', 
+                        led_control=self._led_control,
+                        icons=icons, 
+                        blinking_leds=[self._led_control.ENTER,
+                                        self._led_control.BACK])
             self._set_up_buttons()
             menu.display_menu()
             self.lock.release()
