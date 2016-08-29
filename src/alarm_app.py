@@ -79,8 +79,7 @@ class AlarmApplication(menu_node.MenuNode):
                               callback=button_pressed, bouncetime=300)
 
     def _enter_pressed(self):
-        # TODO implement
-        pass
+        self.stop()
 
     def _delete_pressed(self):
         # TODO implement
