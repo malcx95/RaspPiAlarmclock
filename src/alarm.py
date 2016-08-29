@@ -121,13 +121,15 @@ class AlarmList(object):
         return iter(self._alarms)
 
     def load_alarms(self):
+        alarms = []
         if os.path.isfile(self.SAVE_FILE):
             with open(self.SAVE_FILE) as file_:
                 alarms_string = file_.read()
             alarm_array = json.loads(alarms_string)
             for alarm, activated in alarm_array:
-                self._alarms.append((Alarm(*alarm), activated))
-            self._alarms.sort(_alarm_list_compare)
+                alarms.append((Alarm(*alarm), activated))
+            alarms.sort(_alarm_list_compare)
+            return alarms
         else:
             return []
 
