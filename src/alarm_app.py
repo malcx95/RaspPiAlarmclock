@@ -53,7 +53,7 @@ class AlarmApplication(menu_node.MenuNode):
 
     def _set_up_buttons(self, menu):
 
-        def buttons_pressed(channel):
+        def button_pressed(channel):
             self.lock.acquire()
             if channel == buttons.LEFT:
                 menu.move_selection_left()
