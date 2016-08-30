@@ -8,9 +8,6 @@ from datetime import datetime
 from menu import Menu
 
 
-DAYS = ('Monday', 'Tuesday', 'Wednesday', 'Thursday',
-        'Friday', 'Saturday', 'Sunday')
-
 class AlarmApplication(menu_node.MenuNode):
 
     def __init__(self, display, lock, led_control, alarm_list):
@@ -91,8 +88,7 @@ class AlarmApplication(menu_node.MenuNode):
         pass
 
     def _set_pressed(self):
-        # TODO implement
-        pass
+        selected_alarm = self.alarm_list[self._selected]
 
     def _free_used_buttons(self):
         GPIO.remove_event_detect(buttons.ENTER)
@@ -167,7 +163,7 @@ class AlarmEditor(menu_node.MenuNode):
         elif self.alarm.weekday == (today + 1) % 7:
             return 'Tomorrow'
         else:
-            return DAYS[self.alarm.weekday]
+            return alarm.DAYS[self.alarm.weekday]
 
         
 class BlinkThread(threading.Thread):

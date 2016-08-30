@@ -11,6 +11,10 @@ from calendar import monthrange
 from main import SAVE_DIR
 
 
+DAYS = ('Monday', 'Tuesday', 'Wednesday', 'Thursday',
+        'Friday', 'Saturday', 'Sunday')
+
+
 TIME_FORMAT = "%Y%m%d%H%M"
 
 
@@ -92,9 +96,10 @@ class Alarm(object):
             self._day += 1
             
     def __str__(self):
-        return '{}:{}'.format(self.hour, 
+        return '{}:{} {}'.format(self.hour, 
                               self.minute if self.minute >= 10 else 
-                              '0' + str(self.minute))
+                              '0' + str(self.minute),
+                                 DAYS[weekday][:3])
     
     def get_json_representation(self):
         return [self.hour, self.minute, self.weekday, self.repeat]
@@ -119,6 +124,9 @@ class AlarmList(object):
 
     def __iter__(self):
         return iter(self._alarms)
+
+    def __getitem__(self, index):
+        return self._alarms[index]
 
     def load_alarms(self):
         alarms = []

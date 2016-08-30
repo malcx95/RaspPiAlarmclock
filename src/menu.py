@@ -88,7 +88,7 @@ class Menu:
 
     def display_menu(self):
 
-        self.display.clear()
+        # self.display.clear()
 
         options_row = self._get_options_row()
 
