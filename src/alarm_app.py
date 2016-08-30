@@ -157,8 +157,8 @@ class AlarmEditor(menu_node.MenuNode):
                                                day=self._get_weekday_text())
         else:
             top_row = 'Repeat: {}'.format(self.alarm.get_repeat_string())
-        self.display.change_row(display.TOP_ROW, top_row)
-        self.display.change_row(display.BOTTOM_ROW, self.BOTTOM_ROW)
+        self.display.change_row(top_row, display.TOP_ROW)
+        self.display.change_row(self.BOTTOM_ROW, display.BOTTOM_ROW)
 
     def _get_weekday_text(self):
         today = datetime.now().weekday()
