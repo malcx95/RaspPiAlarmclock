@@ -88,6 +88,7 @@ class AlarmApplication(menu_node.MenuNode):
         pass
 
     def _set_pressed(self):
+        # TODO NOT DONE
         selected_alarm = self.alarm_list[self._selected]
 
     def _free_used_buttons(self):
