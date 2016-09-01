@@ -90,7 +90,6 @@ class AlarmApplication(menu_node.MenuNode):
         pass
 
     def _set_pressed(self):
-        # TODO NOT DONE
         alarm, activated = self.alarm_list[self._selected]
         self.alarm_list.set_alarm_activated(alarm, not activated, activated)
         icon = display.ON if not activated else display.OFF

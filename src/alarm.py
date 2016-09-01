@@ -107,9 +107,9 @@ class Alarm(object):
 
 def _alarm_list_compare(x1, x2):
     if x1[1] and not x2[1]:
-        return 1
-    elif not x1[1] and x2[1]:
         return -1
+    elif not x1[1] and x2[1]:
+        return 1
     else:
         return cmp(str(x1[0]), str(x2[0]))
 

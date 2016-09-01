@@ -1,6 +1,7 @@
 import threading
 import RPi.GPIO as GPIO
 import buttons
+import time
 from menu import Menu
 
 
@@ -64,6 +65,7 @@ class MenuNode(object):
         Terminates the MenuNode, freeing up resources used by it and
         making the start() method return.
         """
+        time.sleep(0.1)
         if not self._disable_back:
             GPIO.remove_event_detect(buttons.BACK)
         self._free_used_buttons()
