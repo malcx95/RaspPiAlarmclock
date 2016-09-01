@@ -171,12 +171,12 @@ class AlarmList(object):
         KeyError if the given alarm is not contained in the list.
         """
         found_index = None
-        for i in range(self._alarms):
+        for i in range(len(self._alarms)):
             al, act = self._alarms[i]
             if alarm == al and act == old_value:
                 found_index = i
                 break
-        if found_al is None:
+        if found_index is None:
             raise KeyError(
                 'Alarm {} with old value {} not found'.format(
                     str(alarm), old_value))
