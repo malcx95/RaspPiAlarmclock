@@ -39,7 +39,7 @@ class MenuNode(object):
                 self.lock.release()
 
             GPIO.add_event_detect(buttons.BACK, GPIO.RISING, 
-                                  callback=back, bouncetime=400)
+                                  callback=back, bouncetime=450)
 
         child_selected = self._show()
         self.lock.acquire()

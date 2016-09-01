@@ -18,6 +18,9 @@ SAVE_DIR = os.path.expanduser('~/.local/share/AlarmClockFiles')
 
 def main():
 
+    GPIO.cleanup()
+    GPIO.setmode(GPIO.BCM)
+
     if not os.path.isdir(SAVE_DIR):
         os.makedirs(SAVE_DIR)
 

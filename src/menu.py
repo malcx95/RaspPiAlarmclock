@@ -86,6 +86,13 @@ class Menu:
         # list of LEDs that should blink as the cursor does
         self._blinking_leds = blinking_leds
 
+    def set_icon_at(self, icon, index):
+        self._icons[index] = icon
+        self._selection_lock.acquire()
+        self._display_option()
+        self.display.change_row(self._get_options_row(), display.BOTTOM_ROW)
+        self._selection_lock.release()
+
     def display_menu(self):
 
         # self.display.clear()
@@ -159,7 +166,6 @@ class Menu:
         return options_row
 
     def _display_option(self):
-        # Display option
         self.display.change_row(self.options[self._selected], display.TOP_ROW)
         
     def _blink(self):
