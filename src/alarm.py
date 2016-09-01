@@ -99,7 +99,7 @@ class Alarm(object):
         return '{}:{} {}'.format(self.hour, 
                               self.minute if self.minute >= 10 else 
                               '0' + str(self.minute),
-                                 DAYS[weekday][:3])
+                                 DAYS[self.weekday][:3])
     
     def get_json_representation(self):
         return [self.hour, self.minute, self.weekday, self.repeat]
