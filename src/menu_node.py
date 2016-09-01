@@ -40,7 +40,7 @@ class MenuNode(object):
                 self.lock.release()
 
             GPIO.add_event_detect(buttons.BACK, GPIO.RISING, 
-                                  callback=back, bouncetime=450)
+                                  callback=back, bouncetime=400)
 
         child_selected = self._show()
         self.lock.acquire()
@@ -65,7 +65,10 @@ class MenuNode(object):
         Terminates the MenuNode, freeing up resources used by it and
         making the start() method return.
         """
+
+        # I don't know why but this fixes the bounce problem
         time.sleep(0.1)
+
         if not self._disable_back:
             GPIO.remove_event_detect(buttons.BACK)
         self._free_used_buttons()

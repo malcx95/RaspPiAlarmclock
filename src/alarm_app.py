@@ -36,8 +36,7 @@ class AlarmApplication(menu_node.MenuNode):
                 self.children.append(editor)
             icons = [display.ON if on else display.OFF
                      for _, on in self.alarm_list]
-            options = [str(al) + ' - ON' if on else str(al) + ' - OFF'
-                        for al, on in self.alarm_list]
+            options = self._get_options()
             self.lock.acquire()
             self._selected = 0
             self.menu = Menu(options, self.display, 
@@ -53,6 +52,10 @@ class AlarmApplication(menu_node.MenuNode):
             self._stop_flag.wait()
             self.menu.stop()
             return self._selected
+
+    def _get_options(self):
+        return [str(al) + ' - ON' if on else str(al) + ' - OFF'
+                        for al, on in self.alarm_list]
 
     def _set_up_buttons(self):
 
@@ -94,6 +97,7 @@ class AlarmApplication(menu_node.MenuNode):
         self.alarm_list.set_alarm_activated(alarm, not activated, activated)
         icon = display.ON if not activated else display.OFF
         self.menu.set_icon_at(icon, self._selected)
+        self.menu.update_options(self._get_options())
 
     def _free_used_buttons(self):
         GPIO.remove_event_detect(buttons.ENTER)

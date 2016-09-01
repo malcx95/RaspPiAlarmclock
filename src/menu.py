@@ -89,9 +89,12 @@ class Menu:
     def set_icon_at(self, icon, index):
         self._icons[index] = icon
         self._selection_lock.acquire()
-        self._display_option()
         self.display.change_row(self._get_options_row(), display.BOTTOM_ROW)
         self._selection_lock.release()
+
+    def update_options(self, options):
+        self.options = options
+        self._display_option()
 
     def display_menu(self):
 
