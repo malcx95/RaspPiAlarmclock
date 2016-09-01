@@ -155,11 +155,33 @@ class AlarmList(object):
                 [[al.get_json_representation(), act] 
                  for al, act in self._alarms]))
 
-    def delete_alarm(self, alarm):
-        for i in range(len(self._alarms)):
-            if self._alarms[i] == alarm:
-                self._alarms.pop(i)
+    def delete_alarm(self, alarm, activated=None):
+        if activated is not None:
+            self._alarms.remove((alarm, activated))
+        else:
+            for i in range(len(self._alarms)):
+                if self._alarms[i] == alarm:
+                    self._alarms.pop(i)
+                    break
         raise KeyError('Alarm {} is not in the list'.format(alarm))
+
+    def set_alarm_activated(self, alarm, activated, old_value):
+        """
+        Sets the given alarm in the list to activated. Raises
+        KeyError if the given alarm is not contained in the list.
+        """
+        found_index = None
+        for i in range(self._alarms):
+            al, act = self._alarms[i]
+            if alarm == al and act == old_value:
+                found_index = i
+                break
+        if found_al is None:
+            raise KeyError(
+                'Alarm {} with old value {} not found'.format(
+                    str(alarm), old_value))
+        self._alarms[found_index] = (alarm, activated)
+        self._save()
 
 
 class AlarmSupervisorThread(threading.Thread):

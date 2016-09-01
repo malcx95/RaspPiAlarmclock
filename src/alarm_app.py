@@ -15,6 +15,7 @@ class AlarmApplication(menu_node.MenuNode):
         self._led_control = led_control
         self.alarm_list = alarm_list
         self._selected = 0
+        self.menu = None
 
     def _show(self):
         self.children = []
@@ -39,34 +40,35 @@ class AlarmApplication(menu_node.MenuNode):
                         for al, on in self.alarm_list]
             self.lock.acquire()
             self._selected = 0
-            menu = Menu(options, self.display, 
+            self.menu = Menu(options, self.display, 
                         'Alarms', 
                         led_control=self._led_control,
                         icons=icons, 
                         blinking_leds=[self._led_control.ENTER,
                                         self._led_control.SET,
                                         self._led_control.DELETE])
-            self._set_up_buttons(menu)
-            menu.display_menu()
+            self._set_up_buttons()
+            self.menu.display_menu()
             self.lock.release()
             self._stop_flag.wait()
-            menu.stop()
+            self.menu.stop()
             return self._selected
 
-    def _set_up_buttons(self, menu):
+    def _set_up_buttons(self):
 
         def button_pressed(channel):
             self.lock.acquire()
             if channel == buttons.LEFT:
-                menu.move_selection_left()
+                self.menu.move_selection_left()
             elif channel == buttons.RIGHT:
-                menu.move_selection_right()
+                self.menu.move_selection_right()
             elif channel == buttons.ENTER:
                 self._enter_pressed()
             elif channel == buttons.SET:
                 self._set_pressed()
             elif channel == buttons.DELETE:
                 self._delete_pressed()
+            self._selected = self.menu.get_selected_index()
             self.lock.release()
         
         GPIO.add_event_detect(buttons.ENTER, GPIO.RISING,
@@ -89,7 +91,10 @@ class AlarmApplication(menu_node.MenuNode):
 
     def _set_pressed(self):
         # TODO NOT DONE
-        selected_alarm = self.alarm_list[self._selected]
+        alarm, activated = self.alarm_list[self._selected]
+        self.alarm_list.set_alarm_activated(alarm, not activated, activated)
+        icon = display.ON if not activated else display.OFF
+        self.menu.set_icon_at(icon, self._selected)
 
     def _free_used_buttons(self):
         GPIO.remove_event_detect(buttons.ENTER)
