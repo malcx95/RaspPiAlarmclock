@@ -165,7 +165,7 @@ class AlarmEditor(menu_node.MenuNode):
             top_row = self.PAGE0_FORMAT.format(hour=self.alarm.hour,
                                                minute=self.alarm.minute 
                                                 if self.alarm.minute > 9 else
-                                                '0' + self.alarm.minute,
+                                                '0' + str(self.alarm.minute),
                                                day=self._get_weekday_text())
         else:
             top_row = 'Repeat: {}'.format(self.alarm.get_repeat_string())

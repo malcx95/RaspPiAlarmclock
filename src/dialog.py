@@ -85,8 +85,8 @@ class Dialog(object):
             for i in range(len(message_split)):
                 index = i + scroll_offset
                 # TODO review
-                if index == len(message_row):
-                    last_index_to_fit = len(message_row) - 1
+                if index == len(message_split):
+                    last_index_to_fit = len(message_split) - 1
                     break
                 elif len(message_row) + len(message_split[index]) + 1 <= \
                         display.LCD_COLS:
@@ -100,9 +100,9 @@ class Dialog(object):
                     last_index_to_fit = index
                     break
             if last_index_to_fit == len(message_split) - 1:
-                scroll_amount = 0
+                scroll_offset = 0
             else:
-                scroll_amount += 1
+                scroll_offset  += 1
             self.display.change_row(message_row, display.TOP_ROW)
             self._lock.release()
         return self.options[self.selected]
@@ -119,7 +119,7 @@ class Dialog(object):
 
 class MessageDialog(Dialog):
     
-    def __init__(self, message, display, led_control=none):
+    def __init__(self, message, display, led_control=None):
         super(self.__class__, self).__init__(
             message, [OK_OPTION], display, led_control)
 
@@ -133,15 +133,15 @@ class QuestionDialog(Dialog):
     YES_NO_CANCEL = 2
 
     def __init__(self, question, option_type, display, led_control=None):
-        if option_type == OK_CANCEL:
+        if option_type == self.OK_CANCEL:
             options = [OK_OPTION, CANCEL_OPTION]
-        elif option_type == YES_NO:
+        elif option_type == self.YES_NO:
             options = [YES_OPTION, NO_OPTION]
-        elif option_type == YES_NO_CANCEL:
+        elif option_type == self.YES_NO_CANCEL:
             options = [YES_OPTION, NO_OPTION, CANCEL_OPTION]
         else:
             raise ValueError('option_type must be a number from 0 to 2!')
         super(self.__class__, self).__init__(question, options,
-                                             display, led_control=ledcontrol)
+                                             display, led_control=led_control)
 
 
