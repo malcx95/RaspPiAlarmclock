@@ -110,14 +110,14 @@ class Menu:
             self._led_control.set(True, LEDControl.LEFT)
             self._led_control.set(True, LEDControl.RIGHT)
             time.sleep(0.5)
-            self._led_control.set(False, LEDControl.BACK)
-            self._led_control.set(False, LEDControl.LEFT)
-            self._led_control.set(False, LEDControl.RIGHT)
 
         self._display_option()
         self._blink_thread.start()
 
     def stop(self):
+        self._led_control.set(False, LEDControl.BACK)
+        self._led_control.set(False, LEDControl.LEFT)
+        self._led_control.set(False, LEDControl.RIGHT)
         self._blink_stop_flag.set()
 
     def move_selection_left(self):

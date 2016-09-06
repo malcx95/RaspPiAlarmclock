@@ -1,4 +1,5 @@
 import threading
+import display
 import time
 import buttons
 from ledcontrol import LEDControl
@@ -21,7 +22,7 @@ class Dialog(object):
         self.options = options
         self.message = message
         self.display = display
-        self.selection = options.index(initial_selection) \
+        self.selected = options.index(initial_selection) \
                 if initial_selection else 0
         self._lock = threading.Lock()
         self._stop_flag = threading.Event()
@@ -58,10 +59,12 @@ class Dialog(object):
         return self._show()
     
     def _move_left(self):
-        pass
+        self.selected = (self.selected - 1) % len(self.options)
+        self._update_options()
 
     def _move_right(self):
-        pass
+        self.selected = (self.selected + 1) % len(self.options)
+        self._update_options()
 
     def stop(self):
         time.sleep(0.1)
@@ -72,11 +75,42 @@ class Dialog(object):
         self._stop_flag.set()
 
     def _show(self):
-        # TODO refresh options
+        self._update_options()
+        message_split = self.message.split(' ')
+        scroll_offset = 0
         while not self._stop_flag.wait(1):
             self._lock.acquire()
-                # TODO scroll message
+            message_row = ''
+            last_index_to_fit = len(message_split) - 1
+            for i in range(len(message_split)):
+                index = i + scroll_offset
+                # TODO review
+                if index == len(message_row):
+                    last_index_to_fit = len(message_row) - 1
+                    break;
+                elif len(message_row) + message_split[index] + 1 <= display.LCD_COLS:
+                    message_row += message_split[index] + ' '
+                elif len(message_row) + message_split[index] <= display.LCD_COLS:
+                    message_row += message_split[index]
+                    last_index_to_fit = index
+                    break
+                else:
+                    last_index_to_fit = index
+                    break
+            if last_index_to_fit == len(message_split) - 1:
+                scroll_amount = 0
+            else:
+                scroll_amount += 1
             self._lock.release()
+
+    def _update_options(self):
+        top_row = ""
+        for i in range(len(self.options)):
+            option = self.options[i]
+            top_row += '[{}]'.format(option) \
+                if self.selected == i else ' ' + option + ' '
+            top_row += ' '
+        self.display.change_row(top_row[:-1], display.BOTTOM_ROW)
 
 
 class MessageDialog(Dialog):
