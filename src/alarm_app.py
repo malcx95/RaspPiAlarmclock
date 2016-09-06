@@ -1,4 +1,5 @@
 import menu_node
+from dialog import QuestionDialog
 import threading
 import buttons
 import display
@@ -146,6 +147,10 @@ class AlarmEditor(menu_node.MenuNode):
         self._set_up_buttons()
         self.lock.release()
         self._stop_flag.wait()
+        dialog = QuestionDialog("HEJ?", QuestionDialog.OK_CANCEL, 
+                                self.display, self._led_control)
+        result = dialog.show_dialog()
+        print result
         return None
 
     def _set_up_buttons(self):

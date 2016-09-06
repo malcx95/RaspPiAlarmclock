@@ -87,10 +87,12 @@ class Dialog(object):
                 # TODO review
                 if index == len(message_row):
                     last_index_to_fit = len(message_row) - 1
-                    break;
-                elif len(message_row) + message_split[index] + 1 <= display.LCD_COLS:
+                    break
+                elif len(message_row) + len(message_split[index]) + 1 <= \
+                        display.LCD_COLS:
                     message_row += message_split[index] + ' '
-                elif len(message_row) + message_split[index] <= display.LCD_COLS:
+                elif len(message_row) + len(message_split[index]) <= \
+                        display.LCD_COLS:
                     message_row += message_split[index]
                     last_index_to_fit = index
                     break
@@ -101,7 +103,9 @@ class Dialog(object):
                 scroll_amount = 0
             else:
                 scroll_amount += 1
+            self.display.change_row(message_row, display.TOP_ROW)
             self._lock.release()
+        return self.options[self.selected]
 
     def _update_options(self):
         top_row = ""
