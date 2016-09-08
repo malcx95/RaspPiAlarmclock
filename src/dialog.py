@@ -78,6 +78,7 @@ class Dialog(object):
         self._update_options()
         message_split = self.message.split(' ')
         scroll_offset = 0
+        self.display.change_row(self.message, display.TOP_ROW)
         while not self._stop_flag.wait(1):
             self._lock.acquire()
             message_row = ''

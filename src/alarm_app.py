@@ -147,7 +147,7 @@ class AlarmEditor(menu_node.MenuNode):
         self._set_up_buttons()
         self.lock.release()
         self._stop_flag.wait()
-        dialog = QuestionDialog("HEJ?", QuestionDialog.OK_CANCEL, 
+        dialog = QuestionDialog("Nu ställer jag dig en dum fråga?", QuestionDialog.OK_CANCEL, 
                                 self.display, self._led_control)
         result = dialog.show_dialog()
         print result
