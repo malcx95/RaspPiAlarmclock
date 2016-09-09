@@ -28,3 +28,4 @@ class ClockFace(MenuNode):
     
     def _free_used_buttons(self):
         pass
+
