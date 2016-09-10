@@ -15,8 +15,6 @@ class Dialog(object):
     Generic dialog class.
     """
 
-    # TODO Currently not usable
-
     def __init__(self, message, options, display, 
                  led_control=None, initial_selection=None):
         self.options = options
@@ -80,7 +78,7 @@ class Dialog(object):
         scroll_offset = 0
         index, message_row = self._add_words_that_fit(0, message_split)
         self.display.change_row(message_row, display.TOP_ROW)
-        while not self._stop_flag.wait(1):
+        while not self._stop_flag.wait(1.5):
             self._lock.acquire()
             index, message_row = self._add_words_that_fit(index, message_split)
             self.display.change_row(message_row, display.TOP_ROW)
