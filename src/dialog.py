@@ -41,8 +41,6 @@ class Dialog(object):
     Generic dialog class.
     """
 
-    # TODO Currently not usable
-
     def __init__(self, message, options, display, 
                  led_control=None, initial_selection=None, timeout=60):
         self.options = options
@@ -112,36 +110,28 @@ class Dialog(object):
         self._update_options()
         message_split = self.message.split(' ')
         scroll_offset = 0
-        self.display.change_row(self.message, display.TOP_ROW)
-        while not self._stop_flag.wait(1):
+        index, message_row = self._add_words_that_fit(0, message_split)
+        self.display.change_row(message_row, display.TOP_ROW)
+        while not self._stop_flag.wait(1.5):
             self._lock.acquire()
-            message_row = ''
-            last_index_to_fit = len(message_split) - 1
-            for i in range(len(message_split)):
-                index = i + scroll_offset
-                # TODO review
-                if index == len(message_split):
-                    last_index_to_fit = len(message_split) - 1
-                    break
-                elif len(message_row) + len(message_split[index]) + 1 <= \
-                        display.LCD_COLS:
-                    message_row += message_split[index] + ' '
-                elif len(message_row) + len(message_split[index]) <= \
-                        display.LCD_COLS:
-                    message_row += message_split[index]
-                    last_index_to_fit = index
-                    break
-                else:
-                    last_index_to_fit = index
-                    break
-            if last_index_to_fit == len(message_split) - 1:
-                scroll_offset = 0
-            else:
-                scroll_offset  += 1
+            index, message_row = self._add_words_that_fit(index, message_split)
             self.display.change_row(message_row, display.TOP_ROW)
             self._lock.release()
         self._count_down_thread.join()
         return self.options[self.selected]
+
+    def _add_words_that_fit(self, index, words):
+        new_index = index
+        message = ''
+        while new_index < len(words):
+            word = words[new_index]
+            if len(message) + len(word) <= display.LCD_COLS:
+                message += word + ' '
+            else:
+                break
+            new_index += 1
+
+        return new_index if new_index < len(words) else 0, message[:-1]
 
     def _update_options(self):
         top_row = ""
