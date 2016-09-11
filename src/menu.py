@@ -113,7 +113,6 @@ class Menu:
 
         self._display_option()
         self._blink_thread.start()
-        self._blink_thread.join()
 
     def stop(self):
         self._led_control.set(False, LEDControl.BACK)

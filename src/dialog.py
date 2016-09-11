@@ -146,7 +146,7 @@ class Dialog(object):
 class MessageDialog(Dialog):
     
     def __init__(self, message, display, led_control=None, 
-                timeout=timeout):
+                timeout=60):
         super(self.__class__, self).__init__(
             message, [OK_OPTION], display, led_control,
             timeout=timeout)

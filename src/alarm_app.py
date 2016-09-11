@@ -90,9 +90,9 @@ class AlarmApplication(menu_node.MenuNode):
         self.stop()
 
     def _delete_pressed(self):
-        #dialog = QuestionDialog('Delete alarm?', QuestionDialog.YES_NO,
-        #                        self.display, self._led_control)
-        pass
+        dialog = QuestionDialog('Delete alarm?', QuestionDialog.YES_NO,
+                                self.display, self._led_control, 10)
+        print dialog.show_dialog()
 
     def _set_pressed(self):
         alarm, activated = self.alarm_list[self._selected]
