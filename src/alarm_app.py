@@ -90,7 +90,8 @@ class AlarmApplication(menu_node.MenuNode):
         self.stop()
 
     def _delete_pressed(self):
-        # TODO implement
+        #dialog = QuestionDialog('Delete alarm?', QuestionDialog.YES_NO,
+        #                        self.display, self._led_control)
         pass
 
     def _set_pressed(self):
@@ -147,10 +148,6 @@ class AlarmEditor(menu_node.MenuNode):
         self._set_up_buttons()
         self.lock.release()
         self._stop_flag.wait()
-        dialog = QuestionDialog("This is a very, very dumb question. WHY?", QuestionDialog.OK_CANCEL, 
-                                self.display, self._led_control)
-        result = dialog.show_dialog()
-        print result
         return None
 
     def _set_up_buttons(self):
