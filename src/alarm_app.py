@@ -1,5 +1,5 @@
 import menu_node
-from dialog import QuestionDialog
+from dialog import QuestionDialog, YES_OPTION
 import threading
 import buttons
 import display
@@ -57,6 +57,11 @@ class AlarmApplication(menu_node.MenuNode):
     def _get_options(self):
         return [str(al) + ' - ON' if on else str(al) + ' - OFF'
                         for al, on in self.alarm_list]
+    
+    def _refresh_menu(self):
+        # TODO move creation of menu to here and remove the synchronization
+        # as it is unnecessary
+        pass
 
     def _set_up_buttons(self):
 
@@ -90,9 +95,16 @@ class AlarmApplication(menu_node.MenuNode):
         self.stop()
 
     def _delete_pressed(self):
+        self._free_used_buttons()
         dialog = QuestionDialog('Delete alarm?', QuestionDialog.YES_NO,
                                 self.display, self._led_control, 10)
-        print dialog.show_dialog()
+        result = dialog.show_dialog()
+        if result == YES_OPTION:
+            alarm, activated = self.alarm_list[self._selected]
+            self.alarm_list.delete_alarm(alarm, activated)
+
+        # TODO refresh
+        self._set_up_buttons()
 
     def _set_pressed(self):
         alarm, activated = self.alarm_list[self._selected]
