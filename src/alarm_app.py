@@ -31,25 +31,7 @@ class AlarmApplication(menu_node.MenuNode):
             self.lock.release()
             return None
         else:
-            for alarm, _ in self.alarm_list:
-                editor = AlarmEditor(self.display, self.lock, 
-                                     self._led_control, alarm)
-                self.children.append(editor)
-            icons = [display.ON if on else display.OFF
-                     for _, on in self.alarm_list]
-            options = self._get_options()
-            self.lock.acquire()
-            self._selected = 0
-            self.menu = Menu(options, self.display, 
-                        'Alarms', 
-                        led_control=self._led_control,
-                        icons=icons, 
-                        blinking_leds=[self._led_control.ENTER,
-                                        self._led_control.SET,
-                                        self._led_control.DELETE])
-            self._set_up_buttons()
-            self.menu.display_menu()
-            self.lock.release()
+            self._refresh_menu()
             self._stop_flag.wait()
             self.menu.stop()
             return self._selected
@@ -59,9 +41,23 @@ class AlarmApplication(menu_node.MenuNode):
                         for al, on in self.alarm_list]
     
     def _refresh_menu(self):
-        # TODO move creation of menu to here and remove the synchronization
-        # as it is unnecessary
-        pass
+        for alarm, _ in self.alarm_list:
+            editor = AlarmEditor(self.display, self.lock, 
+                                 self._led_control, alarm)
+            self.children.append(editor)
+        icons = [display.ON if on else display.OFF
+                 for _, on in self.alarm_list]
+        options = self._get_options()
+        self._selected = 0
+        self.menu = Menu(options, self.display, 
+                    'Alarms', 
+                    led_control=self._led_control,
+                    icons=icons, 
+                    blinking_leds=[self._led_control.ENTER,
+                                    self._led_control.SET,
+                                    self._led_control.DELETE])
+        self._set_up_buttons()
+        self.menu.display_menu()
 
     def _set_up_buttons(self):
 
@@ -103,8 +99,8 @@ class AlarmApplication(menu_node.MenuNode):
             alarm, activated = self.alarm_list[self._selected]
             self.alarm_list.delete_alarm(alarm, activated)
 
-        # TODO refresh
-        self._set_up_buttons()
+        self.menu.stop()
+        self._refresh_menu()
 
     def _set_pressed(self):
         alarm, activated = self.alarm_list[self._selected]
