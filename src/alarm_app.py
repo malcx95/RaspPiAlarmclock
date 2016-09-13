@@ -187,9 +187,3 @@ class AlarmEditor(menu_node.MenuNode):
             return alarm.DAYS[self.alarm.weekday]
 
         
-class BlinkThread(threading.Thread):
-    
-    def __init__(self):
-        super(self.__class__, self).__init__()
-        pass
-

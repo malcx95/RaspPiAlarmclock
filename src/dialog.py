@@ -13,6 +13,7 @@ CANCEL_OPTION = 'Cancel'
 class CountDownThread(threading.Thread):
 
     def __init__(self, timeout, stop_flag, lock, dialog):
+        super(self.__class__, self).__init__()
         assert timeout > 0
         self.timeout = timeout
         self._dialog = dialog
