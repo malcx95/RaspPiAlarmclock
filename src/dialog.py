@@ -73,7 +73,7 @@ class Dialog(object):
             print 'testing!!'
             if channel == buttons.ENTER:
                 self._count_down_lock.acquire()
-                if not self._stop_flag.is_set:
+                if not self._stop_flag.isSet():
                     self.stop()
                 self._count_down_lock.release()
             elif channel == buttons.LEFT:

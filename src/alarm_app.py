@@ -93,13 +93,8 @@ class AlarmApplication(menu_node.MenuNode):
     def _delete_pressed(self):
         self._free_used_buttons()
         self.menu.stop()
-        dialog = QuestionDialog('Delete alarm?', QuestionDialog.YES_NO,
-                                self.display, self._led_control, 10)
-        result = dialog.show_dialog()
-        if result == YES_OPTION:
-            alarm, activated = self.alarm_list[self._selected]
-            self.alarm_list.delete_alarm(alarm, activated)
-
+        alarm, activated = self.alarm_list[self._selected]
+        self.alarm_list.delete_alarm(alarm, activated)
         self._refresh_menu()
 
     def _set_pressed(self):
