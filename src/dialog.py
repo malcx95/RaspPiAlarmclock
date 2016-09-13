@@ -25,8 +25,10 @@ class CountDownThread(threading.Thread):
         while not self._stop_flag.wait(1):
             self._lock.acquire()
             self._count -= 1
-            if self._count == 0:
+            if self._count <= 0:
+                print 'stopping right?'
                 if not self._stop_flag.is_set:
+                    print 'I WILL STOP'
                     self._dialog.stop()
             print self._count
             self._lock.release()
