@@ -70,6 +70,7 @@ class Dialog(object):
         def button_pressed(channel):
             self._lock.acquire()
 
+            print 'testing!!'
             if channel == buttons.ENTER:
                 self._count_down_lock.acquire()
                 if not self._stop_flag.is_set:

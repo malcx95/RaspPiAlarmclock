@@ -163,7 +163,7 @@ class AlarmList(object):
                 if self._alarms[i] == alarm:
                     self._alarms.pop(i)
                     break
-        raise KeyError('Alarm {} is not in the list'.format(alarm))
+            raise KeyError('Alarm {} is not in the list'.format(alarm))
 
     def set_alarm_activated(self, alarm, activated, old_value):
         """
