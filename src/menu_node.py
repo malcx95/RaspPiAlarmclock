@@ -1,5 +1,8 @@
 import threading
-import RPi.GPIO as GPIO
+try:
+    import RPi.GPIO as GPIO
+except ImportError:
+    import simulator.gpio as GPIO
 import buttons
 import time
 from menu import Menu

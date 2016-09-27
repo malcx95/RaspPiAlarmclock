@@ -3,7 +3,10 @@ import display
 import time
 import buttons
 from ledcontrol import LEDControl
-import RPi.GPIO as GPIO
+try:
+    import RPi.GPIO as GPIO
+except ImportError:
+    import simulator.gpio as GPIO
 
 OK_OPTION = 'OK'
 YES_OPTION = 'Yes'

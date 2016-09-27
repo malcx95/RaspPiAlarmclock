@@ -4,7 +4,10 @@ import threading
 import buttons
 import display
 import alarm
-import RPi.GPIO as GPIO
+try:
+    import RPi.GPIO as GPIO
+except ImportError:
+    import simulator.gpio as GPIO
 from datetime import datetime
 from menu import Menu
 

@@ -1,8 +1,10 @@
 import time
 from ledcontrol import LEDControl
 import threading
-import Adafruit_CharLCD as LCD
-import RPi.GPIO as GPIO
+try:
+    import RPi.GPIO as GPIO
+except ImportError:
+    import simulator.gpio as GPIO
 import display
 
 MENU_DELAY_TIME = 0.1

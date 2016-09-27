@@ -4,7 +4,10 @@ import time
 import display
 import os
 import json
-import RPi.GPIO as GPIO
+try:
+    import RPi.GPIO as GPIO
+except ImportError:
+    import simulator.gpio as GPIO
 from ledcontrol import LEDControl
 from datetime import datetime
 from calendar import monthrange

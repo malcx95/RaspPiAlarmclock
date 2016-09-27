@@ -1,5 +1,9 @@
-import RPi.GPIO as GPIO
+try:
+    import RPi.GPIO as GPIO
+except ImportError:
+    import simulator.gpio as GPIO
 import threading
+from leds import LEDS
 
 class LEDControl:
     """
@@ -7,20 +11,6 @@ class LEDControl:
         should not instantiate this class, use the LED_CONTROL 
         instance.
     """
-
-    LEDS = {
-        'LED_ENTER': 12,
-        'LED_LEFT': 7,
-        'LED_RIGHT': 8,
-        'LED_BACK': 25,
-        'LED_KEY1': 24,
-        'LED_KEY2': 23,
-        'LED_KEY3': 18,
-        'LED_KEY4': 15,
-        'LED_FRONT_RED': 16,
-        'LED_FRONT_GREEN': 21,
-        'LED_FRONT_YELLOW': 20,
-    }
 
     ENTER = 'LED_ENTER'
     LEFT  = 'LED_LEFT'
@@ -35,7 +25,7 @@ class LEDControl:
     FRONT_YELLOW = 'LED_FRONT_YELLOW'
     
     def __init__(self):
-        for led in self.LEDS.values():
+        for led in LEDS.values():
             GPIO.setup(led, GPIO.OUT)
         self._lock = threading.Lock()
         self._values = {
@@ -55,19 +45,19 @@ class LEDControl:
     def set(self, on, led):
         self._lock.acquire()
         self._values[led] = on
-        GPIO.output(self.LEDS[led], on)
+        GPIO.output(LEDS[led], on)
         self._lock.release()
 
     def toggle(self, led):
         self._lock.acquire()
         self._values[led] = not self._values[led]
-        GPIO.output(self.LEDS[led], self._values[led])
+        GPIO.output(LEDS[led], self._values[led])
         self._lock.release()
 
     def is_on(self, led):
         return self._values[led]
 
     def clear(self):
-        for led in self.LEDS:
+        for led in LEDS:
             self.set(False, led)
 
