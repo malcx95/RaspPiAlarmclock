@@ -6,7 +6,7 @@ from ledcontrol import LEDControl
 try:
     import RPi.GPIO as GPIO
 except ImportError:
-    import simulator.gpio as GPIO
+    from simulator.gpio import GPIO
 
 OK_OPTION = 'OK'
 YES_OPTION = 'Yes'

@@ -3,10 +3,6 @@
 import time
 import sys
 import threading
-try:
-    import RPi.GPIO as GPIO
-except ImportError:
-    import simulator.gpio as GPIO
 import os
 from menu import Menu
 from display import Display
@@ -19,7 +15,18 @@ from alarm_app import AlarmApplication
 
 SAVE_DIR = os.path.expanduser('~/.local/share/AlarmClockFiles')
 
+SIMULATOR_MODE = False
+
+try:
+    import RPi.GPIO as GPIO
+except ImportError:
+    from simulator.gpio import GPIO, GPIOSimulator
+    SIMULATOR_MODE = True
+
 def main():
+
+    # if SIMULATOR_MODE:
+    #     GPIO = GPIOSimulator(None)
 
     GPIO.cleanup()
     GPIO.setmode(GPIO.BCM)
@@ -28,6 +35,7 @@ def main():
         os.makedirs(SAVE_DIR)
 
     display = Display()
+
     led_control = LEDControl()
 
     menu_lock = threading.Lock()
@@ -54,15 +62,13 @@ def main():
     alarm_thread.start()
 
     def exit():
-        main_menu.get_node(current_menu_selection).stop()
-        display.clear()
-        display.message("Have a nice\nkebab!")
-        GPIO.cleanup()
+        # main_menu.get_node(current_menu_selection).stop()
+        # display.clear()
+        # display.message("Have a nice\nkebab!")
+        # GPIO.cleanup()
         sys.exit(1)
 
     time.sleep(0.1)
-
-    alarm_thread.set_alarm('201608232300')
 
     try:
         while True:

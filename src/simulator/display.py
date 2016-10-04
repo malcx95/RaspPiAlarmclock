@@ -3,6 +3,7 @@ import os
 class SimulatorDisplay(object):
 
     def __init__(self):
+        #self.window = window
         self.char_grid = [[x for x in ' ' * 16], 
                           [x for x in ' ' * 16]]
         self.cursor = (0, 0)
@@ -33,3 +34,4 @@ class SimulatorDisplay(object):
         os.system("clear")
         print ''.join(x for x in self.char_grid[0])
         print ''.join(x for x in self.char_grid[1])
+

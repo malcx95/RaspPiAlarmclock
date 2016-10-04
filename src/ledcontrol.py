@@ -1,7 +1,7 @@
 try:
     import RPi.GPIO as GPIO
 except ImportError:
-    import simulator.gpio as GPIO
+    from simulator.gpio import GPIO
 import threading
 from leds import LEDS
 

@@ -7,7 +7,7 @@ import alarm
 try:
     import RPi.GPIO as GPIO
 except ImportError:
-    import simulator.gpio as GPIO
+    from simulator.gpio import GPIO
 from datetime import datetime
 from menu import Menu
 

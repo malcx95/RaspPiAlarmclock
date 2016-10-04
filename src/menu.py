@@ -4,7 +4,7 @@ import threading
 try:
     import RPi.GPIO as GPIO
 except ImportError:
-    import simulator.gpio as GPIO
+    from simulator.gpio import GPIO
 import display
 
 MENU_DELAY_TIME = 0.1
