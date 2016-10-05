@@ -44,10 +44,16 @@ class AlarmApplication(menu_node.MenuNode):
                         for al, on in self.alarm_list]
     
     def _refresh_menu(self):
-        for alarm, _ in self.alarm_list:
-            editor = AlarmEditor(self.display, self.lock, 
-                                 self._led_control, alarm)
-            self.children.append(editor)
+        # for alarm, _ in self.alarm_list:
+        #     editor = AlarmEditor(self.display, self.lock, 
+        #                          self._led_control, alarm)
+        #     self.children.append(editor)
+        self.children = [AlarmEditor(self.display,
+                                     self.lock, 
+                                     self._led_control,
+                                     alarm)
+                        for alarm, _ in self.alarm_list]
+
         icons = [display.ON if on else display.OFF
                  for _, on in self.alarm_list]
         options = self._get_options()
