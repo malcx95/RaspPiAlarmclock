@@ -34,6 +34,7 @@ class AlarmApplication(menu_node.MenuNode):
             self.lock.release()
             return None
         else:
+            self._set_up_buttons()
             self._refresh_menu()
             self._stop_flag.wait()
             self.menu.stop()
@@ -65,7 +66,7 @@ class AlarmApplication(menu_node.MenuNode):
                     blinking_leds=[self._led_control.ENTER,
                                     self._led_control.SET,
                                     self._led_control.DELETE])
-        self._set_up_buttons()
+        #self._set_up_buttons()
         self.menu.display_menu()
 
     def _set_up_buttons(self):
@@ -100,7 +101,7 @@ class AlarmApplication(menu_node.MenuNode):
         self.stop()
 
     def _delete_pressed(self):
-        self._free_used_buttons()
+        #self._free_used_buttons()
         self.menu.stop()
         alarm, activated = self.alarm_list[self._selected]
         self.alarm_list.delete_alarm(alarm, activated)

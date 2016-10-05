@@ -163,7 +163,7 @@ class AlarmList(object):
                  for al, act in self._alarms]))
 
     def delete_alarm(self, alarm, activated=None):
-        pdb.set_trace()
+        #pdb.set_trace()
         if activated is not None:
             self._alarms.remove((alarm, activated))
         else:
