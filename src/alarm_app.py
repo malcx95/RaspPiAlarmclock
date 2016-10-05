@@ -190,4 +190,6 @@ class AlarmEditor(menu_node.MenuNode):
         else:
             return alarm.DAYS[self.alarm.weekday]
 
+    def __repr__(self):
+        return "AlarmEditor editing alarm {}".format(str(self.alarm))
         
