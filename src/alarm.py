@@ -103,6 +103,9 @@ class Alarm(object):
                               self.minute if self.minute >= 10 else 
                               '0' + str(self.minute),
                                  DAYS[self.weekday][:3])
+
+    def __repr__(self):
+        return str(self)
     
     def get_json_representation(self):
         return [self.hour, self.minute, self.weekday, self.repeat]
