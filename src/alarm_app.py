@@ -24,6 +24,7 @@ class AlarmApplication(menu_node.MenuNode):
     def _show(self):
         self.children = []
         if self.alarm_list.is_empty():
+            # TODO remove this branch
             self.display.message('No alarms.\nPress {} to add.'\
                                  .format(display.ENTER))
             self._listen_to_input()
@@ -59,10 +60,6 @@ class AlarmApplication(menu_node.MenuNode):
             self.lock.release()
     
     def _refresh_menu(self):
-        # for alarm, _ in self.alarm_list:
-        #     editor = AlarmEditor(self.display, self.lock, 
-        #                          self._led_control, alarm)
-        #     self.children.append(editor)
         self.children = [AlarmEditor(self.display,
                                      self.lock, 
                                      self._led_control,
@@ -110,6 +107,7 @@ class AlarmApplication(menu_node.MenuNode):
         pass
     
 
+# TODO redesign so editors aren't menu nodes
 class AlarmEditor(menu_node.MenuNode):
 
     PAGE0_FORMAT = '{hour}:{minute} {day}'
@@ -138,13 +136,14 @@ class AlarmEditor(menu_node.MenuNode):
         self.lock.acquire()
         self.display.clear()
         self._update()
-        self._set_up_buttons()
         self.lock.release()
-        self._stop_flag.wait()
+        self._listen_to_input()
         return None
 
-    def _set_up_buttons(self):
-        pass
+    def _listen_to_input(self):
+        while not self._stop_flag.wait(0.1):
+            # TODO listen to buttons here
+            pass
 
     def _free_used_buttons(self):
         pass
