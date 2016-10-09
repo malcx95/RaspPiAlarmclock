@@ -70,7 +70,8 @@ class AlarmApplication(menu_node.MenuNode):
         self.children = [AlarmEditor(self.display,
                                      self.lock, 
                                      self._led_control,
-                                     alarm)
+                                     alarm,
+                                     self._stop_flag)
                         for alarm, _ in self.alarm_list]
 
         icons = [display.ON if on else display.OFF
