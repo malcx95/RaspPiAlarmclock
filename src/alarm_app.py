@@ -50,6 +50,9 @@ class AlarmApplication(menu_node.MenuNode):
             # self.lock.acquire()
             if GPIO.input(buttons.ENTER):
                 self._enter_pressed()
+                if self._back_pressed:
+                    self._stop_flag = threading.Event()
+                    self._back_pressed = False
             if GPIO.input(buttons.RIGHT):
                 self.menu.move_selection_right()
                 self._selected = (self._selected + 1) % len(self.children)
@@ -88,11 +91,13 @@ class AlarmApplication(menu_node.MenuNode):
         self.menu.display_menu()
 
     def _enter_pressed(self):
+        self.menu.stop()
         changed_alarm = self.children[self._selected].show()
         if changed_alarm is not None:
             print changed_alarm
         else:
             print "Alarm not changed"
+        self._refresh_menu()
 
     def _delete_pressed(self):
         self.menu.stop()
