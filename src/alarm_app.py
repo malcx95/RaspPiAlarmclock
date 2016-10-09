@@ -47,18 +47,24 @@ class AlarmApplication(menu_node.MenuNode):
     
     def _listen_to_input(self):
         while not self._stop_flag.wait(0.1):
-            self.lock.acquire()
+            # self.lock.acquire()
             if GPIO.input(buttons.ENTER):
                 self._enter_pressed()
             if GPIO.input(buttons.RIGHT):
                 self.menu.move_selection_right()
+                self._selected = (self._selected + 1) % len(self.children)
             if GPIO.input(buttons.LEFT):
                 self.menu.move_selection_left()
+                self._selected = (self._selected - 1) % len(self.children)
             if GPIO.input(buttons.SET):
+                self.lock.acquire()
                 self._set_pressed()
+                self.lock.release()
             if GPIO.input(buttons.DELETE):
+                self.lock.acquire()
                 self._delete_pressed()
-            self.lock.release()
+                self.lock.release()
+            # self.lock.release()
     
     def _refresh_menu(self):
         self.children = [AlarmEditor(self.display,
@@ -81,7 +87,11 @@ class AlarmApplication(menu_node.MenuNode):
         self.menu.display_menu()
 
     def _enter_pressed(self):
-        self.stop()
+        changed_alarm = self.children[self._selected].show()
+        if changed_alarm is not None:
+            print changed_alarm
+        else:
+            print "Alarm not changed"
 
     def _delete_pressed(self):
         self.menu.stop()
@@ -109,7 +119,7 @@ class AlarmApplication(menu_node.MenuNode):
     
 
 # TODO redesign so editors aren't menu nodes
-class AlarmEditor(menu_node.MenuNode):
+class AlarmEditor(object):
 
     PAGE0_FORMAT = '{hour}:{minute} {day}'
     SELECTIONS = ('hour', 'min', 'day', 'repeat')
@@ -121,33 +131,34 @@ class AlarmEditor(menu_node.MenuNode):
                                              display.DOWN_ARROW,
                                              display.ENTER)
 
-    def __init__(self, display, lock, led_control, alarm):
-        super(self.__class__, self).__init__(display, str(alarm), lock)
+    def __init__(self, display, lock, led_control, alarm, stop_flag):
+        self.display = display
+        self.lock = lock
         self.alarm = alarm
+        self.stop_flag = stop_flag
         self._led_control = led_control
         self._weekday = datetime.now().weekday()
         self._selected_day = self._get_weekday_text()
         self._current_selection = 0
         # Page 0 contains hour, minute and day, page 1 contains repeat
         self._current_page = 0
-        # TODO use
-        self._accept = False
+        self._alarm_changed = False
 
-    def _show(self):
-        self.lock.acquire()
+    def show(self):
         self.display.clear()
-        self._update()
-        self.lock.release()
         self._listen_to_input()
-        return None
+        # TODO return new alarm, if any
+        if self._alarm_changed:
+            self._alarm_changed = False
+            return self.alarm
+        else:
+            return None
 
     def _listen_to_input(self):
-        while not self._stop_flag.wait(0.1):
+        self._update()
+        while not self.stop_flag.wait(0.1):
             # TODO listen to buttons here
             pass
-
-    def _free_used_buttons(self):
-        pass
 
     def _update(self):
         top_row = ''
