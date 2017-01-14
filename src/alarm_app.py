@@ -69,7 +69,7 @@ class AlarmApplication(menu_node.MenuNode):
                 self.lock.acquire()
                 self._delete_pressed()
                 self.lock.release()
-            elif GPIO.input(buttons.BACK):
+            if GPIO.input(buttons.BACK):
                 self.stop()
     
     def _refresh_menu(self):
@@ -166,8 +166,10 @@ class AlarmEditor(object):
     def _listen_to_input(self):
         self._update()
         while not self.stop_flag.wait(0.1):
-            # TODO listen to buttons here
-            pass
+            if GPIO.input(buttons.BACK):
+                self.stop()
+            if GPIO.input(buttons.UP):
+                pass
 
     def _update(self):
         top_row = ''
@@ -190,6 +192,9 @@ class AlarmEditor(object):
             return 'Tomorrow'
         else:
             return alarm.DAYS[self.alarm.weekday]
+
+    def _stop(self):
+        self.stop_flag.set()
 
     def __repr__(self):
         return "AlarmEditor editing alarm {}".format(str(self.alarm))
