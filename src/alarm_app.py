@@ -18,7 +18,8 @@ class AlarmApplication(menu_node.MenuNode):
     # TODO I think you need to use the disable back option
     # TODO and handle the back button manually
     def __init__(self, display, lock, led_control, alarm_list):
-        super(self.__class__, self).__init__(display, 'Alarms', lock)
+        super(self.__class__, self).__init__(display, 'Alarms', lock,
+                                             disable_back=True)
         self._led_control = led_control
         self.alarm_list = alarm_list
         self._selected = 0
@@ -49,7 +50,6 @@ class AlarmApplication(menu_node.MenuNode):
     
     def _listen_to_input(self):
         while not self._stop_flag.wait(0.1):
-            # self.lock.acquire()
             if GPIO.input(buttons.ENTER):
                 self._enter_pressed()
                 if self._back_pressed:
@@ -69,7 +69,8 @@ class AlarmApplication(menu_node.MenuNode):
                 self.lock.acquire()
                 self._delete_pressed()
                 self.lock.release()
-            # self.lock.release()
+            elif GPIO.input(buttons.BACK):
+                self.stop()
     
     def _refresh_menu(self):
         self.children = [AlarmEditor(self.display,
