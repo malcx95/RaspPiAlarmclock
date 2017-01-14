@@ -42,6 +42,7 @@ class AlarmApplication(menu_node.MenuNode):
             self._refresh_menu()
             self._listen_to_input()
             self.menu.stop()
+        self.back_pressed = True
         return None
 
     def _get_options(self):
@@ -167,7 +168,7 @@ class AlarmEditor(object):
         self._update()
         while not self.stop_flag.wait(0.1):
             if GPIO.input(buttons.BACK):
-                self.stop()
+                break
             if GPIO.input(buttons.UP):
                 pass
 
