@@ -24,6 +24,7 @@ class AlarmApplication(menu_node.MenuNode):
         self.alarm_list = alarm_list
         self._selected = 0
         self.menu = None
+        self.alarm_editors = []
 
     def _show(self):
         self.children = []
@@ -37,12 +38,11 @@ class AlarmApplication(menu_node.MenuNode):
                 self._add_placeholder_alarm()
                 return 0
             self.lock.release()
-            return None
         else:
             self._refresh_menu()
             self._listen_to_input()
             self.menu.stop()
-            return self._selected
+        return None
 
     def _get_options(self):
         return [str(al) + ' - ON' if on else str(al) + ' - OFF'
@@ -57,10 +57,10 @@ class AlarmApplication(menu_node.MenuNode):
                     self._back_pressed = False
             if GPIO.input(buttons.RIGHT):
                 self.menu.move_selection_right()
-                self._selected = (self._selected + 1) % len(self.children)
+                self._selected = (self._selected + 1) % len(self.alarm_editors)
             if GPIO.input(buttons.LEFT):
                 self.menu.move_selection_left()
-                self._selected = (self._selected - 1) % len(self.children)
+                self._selected = (self._selected - 1) % len(self.alarm_editors)
             if GPIO.input(buttons.SET):
                 self.lock.acquire()
                 self._set_pressed()
@@ -73,7 +73,7 @@ class AlarmApplication(menu_node.MenuNode):
                 self.stop()
     
     def _refresh_menu(self):
-        self.children = [AlarmEditor(self.display,
+        self.alarm_editors = [AlarmEditor(self.display,
                                      self.lock, 
                                      self._led_control,
                                      alarm,
@@ -95,7 +95,7 @@ class AlarmApplication(menu_node.MenuNode):
 
     def _enter_pressed(self):
         self.menu.stop()
-        changed_alarm = self.children[self._selected].show()
+        changed_alarm = self.alarm_editors[self._selected].show()
         if changed_alarm is not None:
             print changed_alarm
         else:
@@ -120,7 +120,7 @@ class AlarmApplication(menu_node.MenuNode):
         alarm = alarm.Alarm(7, 0, today.weekday(), 0)
         alarm.increment_day()
         editor = AlarmEditor(self.display, self.lock, self._led_control, alarm)
-        self.children.append(editor)
+        self.alarm_editors.append(editor)
         self.alarm_list.add_alarm(alarm, False)
     
     def _free_used_buttons(self):
