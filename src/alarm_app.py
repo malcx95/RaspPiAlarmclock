@@ -36,7 +36,7 @@ class AlarmApplication(menu_node.MenuNode):
             self.lock.acquire()
             if not self._back_pressed:
                 self._add_placeholder_alarm()
-                return 0
+                return None
             self.lock.release()
         else:
             self._refresh_menu()
