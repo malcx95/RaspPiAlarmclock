@@ -7,11 +7,11 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 file(GLOB RaspberryPiAlarmClock_SRC
     "*.cpp"
     "*.hpp"
+    "*.c"
+    "*.h"
     )
 
-#indicate the entry point for the executable
-add_executable (rpiclock ${RaspberryPiAlarmClock_SRC})
+add_executable(rpiclock ${RaspberryPiAlarmClock_SRC})
 
-# Indicate which libraries to include during the link process.
 # target_link_libraries (rpiclock)
 
