@@ -6,7 +6,7 @@ int main(void) {
 
     while (1) {
         digitalWrite(16, HIGH);
-        delay(500);
+        delay(100);
         digitalWrite(16, LOW);
         delay(500);
     }

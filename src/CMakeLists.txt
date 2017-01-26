@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 3.3)
 project (RaspberryPiAlarmClock)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -lwiringPi")
+set(CMAKE_CXX_FLAGS "-std=c++11 -Wall")
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 file(GLOB RaspberryPiAlarmClock_SRC
@@ -11,7 +11,9 @@ file(GLOB RaspberryPiAlarmClock_SRC
     "*.h"
     )
 
-add_executable(rpiclock ${RaspberryPiAlarmClock_SRC})
+include_directories("/home/malcolm/raspberrypi/rootfs/usr/local/include")
 
-# target_link_libraries (rpiclock)
+add_executable(clock ${RaspberryPiAlarmClock_SRC})
+
+target_link_libraries(clock "-L/home/malcolm/raspberrypi/rootfs/usr/local/lib -lwiringPi")
 
