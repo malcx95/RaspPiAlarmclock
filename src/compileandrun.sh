@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ ! -d "$DIRECTORY" ]; then
+if [ ! -d "build" ]; then
     echo "Creating build directory..."
     mkdir build
 fi
