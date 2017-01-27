@@ -15,7 +15,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-echo "Compiling..."
+printf "\nCompiling...\n"
 make
 
 if [ $? -ne 0 ]; then
@@ -24,10 +24,18 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-echo "Uploading..."
+printf "\nUploading...\n"
 scp clock pi@rpi:/home/pi/
+
+if [ $? -ne 0 ]; then
+    echo "Upload failed"
+    exit 1
+else
+    echo "Done."
+fi
 
 cd ..
 
-echo "Done."
+exit 0
+
 
