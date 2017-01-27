@@ -25,10 +25,9 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "Uploading..."
-scp clock pi@192.168.1.180:/home/pi/
+scp clock pi@rpi:/home/pi/
 
 cd ..
-ssh pi@192.168.1.180 sudo ./clock
 
 echo "Done."
 
