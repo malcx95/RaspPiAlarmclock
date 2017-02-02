@@ -45,6 +45,14 @@ public:
 
 private:
     
+    /*
+     * Next frame of the display.
+     */
+    char new_text[NUM_ROWS][NUM_COLS];
+
+    /*
+     * The text currently on the display.
+     */
     char curr_text[NUM_ROWS][NUM_COLS];
 
     int lcd;
@@ -53,6 +61,7 @@ private:
     bool cursor_enabled;
     bool cursor_blink_enabled;
 
+    void update();
 };
 
 #endif /* ifndef DISPLAY_H */

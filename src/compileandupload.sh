@@ -24,8 +24,19 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-printf "\nUploading...\n"
-scp clock pi@rpi:/home/pi/
+cd ..
+
+printf "\nUploading compiled program...\n"
+scp build/clock pi@rpi:/home/pi/
+
+if [ $? -ne 0 ]; then
+    echo "Upload failed"
+    exit 1
+fi
+
+
+printf "\nUploading python scripts...\n"
+scp python/* pi@rpi:/home/pi/
 
 if [ $? -ne 0 ]; then
     echo "Upload failed"
@@ -34,7 +45,6 @@ else
     echo "Done."
 fi
 
-cd ..
 
 exit 0
 
