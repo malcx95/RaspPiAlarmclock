@@ -46,11 +46,6 @@ public:
 private:
     
     /*
-     * Next frame of the display.
-     */
-    char new_text[NUM_ROWS][NUM_COLS];
-
-    /*
      * The text currently on the display.
      */
     char curr_text[NUM_ROWS][NUM_COLS];
@@ -61,7 +56,17 @@ private:
     bool cursor_enabled;
     bool cursor_blink_enabled;
 
+    /*
+     * Transfers the curr_text grid to the
+     * display, updating the curr_text.
+     * Restores the cursor position when done.
+     */
     void update();
+
+    /*
+     * Clears the curr_text grid.
+     */
+    void clear_curr_text();
 };
 
 #endif /* ifndef DISPLAY_H */

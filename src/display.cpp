@@ -23,30 +23,46 @@ Display::Display() {
 }
 
 void Display::clear() {
-    for (int row = 0; row < NUM_ROWS; ++row) {
-        for (int col = 0; col < NUM_COLS; ++col) {
-            new_text[row][col] = ' ';
-        }
-    }
+    this->clear_curr_text();
     this->update();
 }
 
-void Display::update() {
+void Display::clear_curr_text() {
     for (int row = 0; row < NUM_ROWS; ++row) {
         for (int col = 0; col < NUM_COLS; ++col) {
-            // only update if changed
-            if (this->curr_text[row][col] != this->new_text[row][col]) {
-                this->curr_text[row][col] = this->new_text[row][col];
-                lcdPosition(this->lcd, col, row);
-                lcdPutchar(this->lcd, this->curr_text[row][col]);
-            }
+            this->curr_text[row][col] = ' ';
         }
     }
+    
+}
+
+void Display::update() {
+    // for (int row = 0; row < NUM_ROWS; ++row) {
+    //     for (int col = 0; col < NUM_COLS; ++col) {
+    //         // only update if changed
+    //         if (this->curr_text[row][col] != this->curr_text[row][col]) {
+    //             this->curr_text[row][col] = this->curr_text[row][col];
+    //             lcdPosition(this->lcd, col, row);
+    //             lcdPutchar(this->lcd, this->curr_text[row][col]);
+    //         }
+    //     }
+    // }
+    char string[33];
+    int i = 0;
+    for (int row = 0; row < NUM_ROWS; ++row) {
+        for (int col = 0; col < NUM_COLS; ++col) {
+            string[i] = this->curr_text[row][col];
+            i++;
+        }
+    }
+    string[32] = '\0';
+    lcdPosition(this->lcd, 0, 0);
+    lcdPuts(this->lcd, string);
     lcdPosition(this->lcd, this->cursor_col, this->cursor_row);
 }
 
 void Display::message(std::string message) {
-    this->clear();
+    this->clear_curr_text();
     int row = 0;
     int col = 0;
     for (char c : message) {
@@ -57,18 +73,25 @@ void Display::message(std::string message) {
         } else if (row >= NUM_ROWS) {
             break;
         }
-        this->new_text[row][col] = c;
+        this->curr_text[row][col] = c;
         col++;
     }
     this->update();
 }
 
 void Display::set_row(std::string text, int row) {
-    // TODO implement
+    for (size_t i = 0; i < text.length(); ++i) {
+        if (i >= NUM_COLS) {
+            break;
+        }
+        this->curr_text[row][i] = text[i];
+    }
+    this->update();
 }
 
 void Display::set_char(char c, int row, int col) {
-    // TODO implement
+    this->curr_text[row][col] = c;
+    this->update();
 }
 
 void Display::set_cursor_position(int row, int col) {
