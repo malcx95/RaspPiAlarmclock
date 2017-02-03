@@ -1,33 +1,33 @@
 #include <wiringPi.h>
 #include "display.hpp"
 #include <iostream>
+#include "buttons.hpp"
 
 int main(int argc, char *argv[])
 {   
     wiringPiSetup();
 
-    Display display;
+    // buttons::buttons_init();
 
-    display.set_cursor_enabled(true);
-    display.set_cursor_blink_enabled(true);
-    display.set_cursor_position(0, 4);
-    delay(1000);
+    // Display display;
 
-    display.message("hejhej");
-    delay(1000);
+    // display.set_cursor_enabled(true);
+    // display.set_cursor_blink_enabled(true);
+    // display.set_cursor_position(0, 4);
+    // delay(1000);
 
-    display.set_char('c', 0, 1);
-    delay(1000);
+    // display.message("hejhej");
+    // delay(1000);
+    
+    pinMode(11, INPUT);
+    pullUpDnControl(11, PUD_UP);
 
-    display.set_row("eeeeeeeeeeeeeeeeeeee", 1);
-    delay(1000);
-
-    display.set_row("hc   le", 0);
-
-    delay(1000);
-
-    display.message("adfieuwhiuwehdiulwehfilwehfluewhflewsuifhlisef");
-    delay(1000);
+    while (1) {
+        if (digitalRead(11) == HIGH) {
+            std::cout << "hej" << std::endl;
+        }
+        delay(1000);
+    }
 
     return EXIT_SUCCESS;
 }

@@ -37,16 +37,6 @@ void Display::clear_curr_text() {
 }
 
 void Display::update() {
-    // for (int row = 0; row < NUM_ROWS; ++row) {
-    //     for (int col = 0; col < NUM_COLS; ++col) {
-    //         // only update if changed
-    //         if (this->curr_text[row][col] != this->curr_text[row][col]) {
-    //             this->curr_text[row][col] = this->curr_text[row][col];
-    //             lcdPosition(this->lcd, col, row);
-    //             lcdPutchar(this->lcd, this->curr_text[row][col]);
-    //         }
-    //     }
-    // }
     char string[33];
     int i = 0;
     for (int row = 0; row < NUM_ROWS; ++row) {
