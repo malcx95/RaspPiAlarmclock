@@ -7,9 +7,12 @@ except ImportError:
     from simulator.gpio import GPIO
 import display
 
-MENU_DELAY_TIME = 0.1
 BLINK_INTERVAL = 0.7
 MAX_NUM_OPTIONS_THAT_FIT = 5
+
+# The number of times the display is updated before
+# the title disappears
+MENU_TITLE_DELAY = 20
 
 class Menu:
 
@@ -57,6 +60,8 @@ class Menu:
 
         # The LCD-display
         self.display = display
+        self.display.show_cursor(True)
+        self.display.blink(True)
 
         # Number of options
         if len(options) > self._icons:
@@ -73,54 +78,54 @@ class Menu:
 
         # The current state of a blink
         self._current_blink = False
-        # Thread enabling blinking
-        self._blink_stop_flag = threading.Event()
-        self._blink_thread = BlinkThread(self)
 
         # The number of options that don't fit on the display
-        self.scroll_amount = max(0, self.options_count - MAX_NUM_OPTIONS_THAT_FIT)
+        self.scroll_amount = max(0, self.options_count - 
+                                 MAX_NUM_OPTIONS_THAT_FIT)
         # The current scroll offset
         self.scroll_offset = 0
-
-        # Lock for synchronizing changes of the selection
-        self._selection_lock = threading.Lock()
 
         # list of LEDs that should blink as the cursor does
         self._blinking_leds = blinking_leds
 
+        # flag indicating whether anything has changed since the
+        # last update
+        self._up_to_date = False
+
+        # counter for title delay
+        self._title_counter = 0
+
     def set_icon_at(self, icon, index):
         self._icons[index] = icon
-        self._selection_lock.acquire()
         self.display.change_row(self._get_options_row(), display.BOTTOM_ROW)
-        self._selection_lock.release()
 
     def update_options(self, options):
         self.options = options
-        self._display_option()
+        self._up_to_date = False
 
-    def display_menu(self):
-
-        # self.display.clear()
-
-        options_row = self._get_options_row()
-
+    def setup(self):
         # Display menu title, if there is any
         if self.title:
-            self.display.change_row(self.title, display.TOP_ROW)
-            self.display.change_row(options_row, display.BOTTOM_ROW)
-            self._led_control.set(True, LEDControl.BACK)
-            self._led_control.set(True, LEDControl.LEFT)
-            self._led_control.set(True, LEDControl.RIGHT)
-            time.sleep(0.5)
+            self._title_counter = MENU_TITLE_DELAY
+        self._up_to_date = False
 
-        self._display_option()
-        self._blink_thread.start()
+    def update(self):
+        if not self._up_to_date:
+            options_row = self._get_options_row()
+
+            if self._title_counter == MENU_TITLE_DELAY:
+                self.display.change_row(self.title, display.TOP_ROW)
+                self.display.change_row(options_row, display.BOTTOM_ROW)
+            elif self._title_counter == 0:
+                self._display_option()
+                self.display.set_cursor(self._get_option_position(), 1)
+                self._up_to_date = True
+            else:
+                self._title_counter -= 1
 
     def stop(self):
-        self._led_control.set(False, LEDControl.BACK)
-        self._led_control.set(False, LEDControl.LEFT)
-        self._led_control.set(False, LEDControl.RIGHT)
-        self._blink_stop_flag.set()
+        self.display.blink(False)
+        self.display.show_cursor(False)
 
     def move_selection_left(self):
         self._move_selection('l')
@@ -132,7 +137,6 @@ class Menu:
         return self._selected
 
     def _move_selection(self, direction):
-        self._selection_lock.acquire()
         if direction == 'l':
             self._selected -= 1
         else:
@@ -146,10 +150,7 @@ class Menu:
         self.scroll_offset = max(MAX_NUM_OPTIONS_THAT_FIT, 
                                  self._selected + 1) - \
                                  MAX_NUM_OPTIONS_THAT_FIT
-        
-        self._display_option()
-        self.display.change_row(self._get_options_row(), display.BOTTOM_ROW)
-        self._selection_lock.release()
+        self._up_to_date = False 
 
     def _get_options_row(self):
         options_row = ""
@@ -174,7 +175,6 @@ class Menu:
         self.display.change_row(self.options[self._selected], display.TOP_ROW)
         
     def _blink(self):
-        self._selection_lock.acquire()
         if self._current_blink:
             self.display.write_char(1, self._get_option_position(), ' ')
         else:
@@ -186,7 +186,6 @@ class Menu:
             for led in self._blinking_leds:
                 self._led_control.set(not self._current_blink, led)
 
-        self._selection_lock.release()
         self._current_blink = not self._current_blink
 
     def _get_option_position(self):
@@ -195,14 +194,3 @@ class Menu:
     def __str__(self):
         return "Menu \"{}\" with options {}".format(self.title, self.options)
 
-
-class BlinkThread(threading.Thread):
-
-    def __init__(self, display):
-        super(BlinkThread, self).__init__()
-        self.display = display
-
-    def run(self):
-        while not self.display._blink_stop_flag.wait(BLINK_INTERVAL):
-            self.display._blink()
-        

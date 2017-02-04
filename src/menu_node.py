@@ -13,6 +13,11 @@ class MenuNode(object):
     Generic class for things that can be in menu items.
     """
 
+    # Constants returned from the update method
+    ENTER = 0
+    BACK = 1
+    NO_NAVIGATION = 2
+
     def __init__(self, display, title, lock, children=[], disable_back=False):
         if not isinstance(children, list):
             raise ValueError("Children must be list")
@@ -24,67 +29,31 @@ class MenuNode(object):
         self._back_pressed = False
         self._disable_back = disable_back
 
-    def start(self):
+    def setup(self):
         """
-        Shows this MenuNode on the display. This method does not return 
-        until another thread calls the stop() method.
-
-        Returns (bool, MenuNode): whether the back button was pressed,
-        the index of the child node selected.
+        Sets this menu node up for viewing.
         """
+        raise NotImplementedError('Update needs to be overridden!')
 
-        self._stop_flag = threading.Event()
-        self._back_pressed = False
-        if not self._disable_back:
-            def back(channel):
-                self.lock.acquire()
-                self._back_pressed = True
-                self.stop()
-                self.lock.release()
-
-            GPIO.add_event_detect(buttons.BACK, GPIO.RISING, 
-                                  callback=back, bouncetime=400)
-
-        child_selected = self._show()
-        self.lock.acquire()
-        back_pressed = self._back_pressed
-        self.lock.release()
-        return back_pressed, child_selected
-
-    def _show(self):
+    def update(self):
         """
-        Abstract method for showing this menu item on the display.
-        Every subclass to MenuNode must implement this method,
-        and use the self._stop_flag to determine when to quit.
+        Runs an iteration of this MenuNode. 
 
-        This method needs to be synchronized with the lock.
-
-        Returns the index of the selected MenuNode, if any.
+        Returns a tuple:
+            (MenuNode.NO_NAVIGATION, None) if no navigation was done.
+            (MenuNode.BACK, None) if a back navigation should be done.
+            (MenuNode.ENTER, MenuNode) if a child (second) is to be entered.
         """
-        raise NotImplementedError('Start needs to be overridden!')
+        raise NotImplementedError('Update needs to be overridden!')
 
     def stop(self):
         """
-        Terminates the MenuNode, freeing up resources used by it and
-        making the start() method return.
-        """
+        Terminates the MenuNode, freeing up resources used by it.
 
-        # I don't know why but this fixes the bounce problem
-        time.sleep(0.1)
-
-        if not self._disable_back:
-            GPIO.remove_event_detect(buttons.BACK)
-        self._free_used_buttons()
-        self._stop_flag.set()
-
-    def _free_used_buttons(self):
+        Returns the index of the selected MenuNode, if any. Returns
+        None otherwise.
         """
-        Removes the event detect of any buttons that isn't the back button.
-        Is called by the stop() method and needs to be implemented by every
-        subclass. If the MenuNode does not use any other buttons than the 
-        back button, this method doesn't do anything.
-        """
-        raise NotImplementedError('Free used buttons must be overridden!')
+        raise NotImplementedError('Update needs to be overridden!')
 
     def get_node(self, path):
         """

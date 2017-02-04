@@ -114,7 +114,7 @@ class AlarmApplication(menu_node.MenuNode):
         self.alarm_list.set_alarm_activated(alarm, not activated, activated)
         icon = display.ON if not activated else display.OFF
         self.menu.set_icon_at(icon, self._selected)
-        self.menu.update_options(self._get_options())
+        self.menu.update(self._get_options())
 
     def _add_placeholder_alarm(self):
         today = datetime.now()
