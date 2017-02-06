@@ -2,6 +2,8 @@
 Button constants
 """
 
+import RPi.GPIO as GPIO
+
 BUTTONS = {
     'ENTER': 17,
     'LEFT' : 27,
@@ -21,3 +23,7 @@ SET = BUTTONS['KEY1']
 UP = BUTTONS['KEY2']
 DOWN = BUTTONS['KEY3']
 DELETE = BUTTONS['KEY4']
+
+def is_pressed(button):
+    return GPIO.input(button)
+

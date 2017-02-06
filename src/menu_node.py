@@ -26,7 +26,6 @@ class MenuNode(object):
         self.children = children
         self.display = display
         self.lock = lock
-        self._back_pressed = False
         self._disable_back = disable_back
 
     def setup(self):
@@ -42,16 +41,30 @@ class MenuNode(object):
         Returns a tuple:
             (MenuNode.NO_NAVIGATION, None) if no navigation was done.
             (MenuNode.BACK, None) if a back navigation should be done.
-            (MenuNode.ENTER, MenuNode) if a child (second) is to be entered.
+            (MenuNode.ENTER, MenuNode-index) if a child (second) is to be entered.
+        """
+        if not self._disable_back:
+            if buttons.is_pressed(buttons.BACK):
+                return MenuNode.BACK, None
+        res = self._update()
+        assert isinstance(res, tuple)
+        status, child = res
+        assert status in (MenuNode.BACK, MenuNode.ENTER, MenuNode.NO_NAVIGATION)
+        assert child is None or isinstance(child, int)
+        return res
+
+    def _update(self):
+        """
+        Internal update, override this and return:
+            (MenuNode.NO_NAVIGATION, None) if no navigation was done.
+            (MenuNode.BACK, None) if a back navigation should be done.
+            (MenuNode.ENTER, MenuNode-index) if a child (second) is to be entered.
         """
         raise NotImplementedError('Update needs to be overridden!')
 
     def stop(self):
         """
         Terminates the MenuNode, freeing up resources used by it.
-
-        Returns the index of the selected MenuNode, if any. Returns
-        None otherwise.
         """
         raise NotImplementedError('Update needs to be overridden!')
 
@@ -81,16 +94,12 @@ class PlaceHolderNode(MenuNode):
     def __init__(self, display, lock, title="Example"):
         super(self.__class__, self).__init__(display, title, lock)
 
-    def _show(self):
-        self.lock.acquire()
+    def setup(self):
         self.display.clear()
         self.display.change_row(self.title, 0)
-        self.lock.release()
-        self._stop_flag.wait()
-        return None
-    
-    def _free_used_buttons(self):
-        pass
+
+    def _update(self):
+        return MenuNode.NO_NAVIGATION, None
 
 
 class SelectionMenu(MenuNode):
@@ -106,54 +115,63 @@ class SelectionMenu(MenuNode):
         super(self.__class__, self).__init__(display, title,
                                              lock, children, disable_back)
         self._led_control = led_control
+        self.menu = None
 
-    def _show(self):
-        self.lock.acquire()
-        menu = Menu([str(child) for child in self.children],
+    def setup(self):
+        self.menu = Menu([str(child) for child in self.children],
                     self.display, self.title, led_control=self._led_control,
                     blinking_leds=[self._led_control.ENTER])
+        self.menu.setup()
+    
+    def _update(self):
+        self.menu.update()
+        if buttons.is_pressed(buttons.ENTER):
+            return MenuNode.ENTER, self.menu.get_selected_index()
+        return MenuNode.NO_NAVIGATION, None
 
-        def button_pressed(channel):
-            self.lock.acquire()
-            if channel == buttons.LEFT:
-                # move left
-                menu.move_selection_left()
-            elif channel == buttons.RIGHT:
-                # move right
-                menu.move_selection_right()
-            elif channel == buttons.ENTER:
-                # enter
-                self._enter_pressed()
-            self.lock.release()
+    def stop(self):
+        self.menu.stop()
 
-        # set up buttons
-        menu.display_menu()
-        GPIO.add_event_detect(buttons.ENTER, GPIO.RISING,
-                              callback=button_pressed,
-                              bouncetime=300)
-        GPIO.add_event_detect(buttons.LEFT, GPIO.RISING,
-                              callback=button_pressed, 
-                              bouncetime=300)
-        GPIO.add_event_detect(buttons.RIGHT, GPIO.RISING, 
-                              callback=button_pressed, 
-                              bouncetime=300)
-        
-        self.lock.release()
-        
-        self._stop_flag.wait()
+    # def _show(self):
+    #     self.lock.acquire()
+    #     menu = 
 
-        selected = menu.get_selected_index()
-        menu.stop()
+    #     def button_pressed(channel):
+    #         self.lock.acquire()
+    #         if channel == buttons.LEFT:
+    #             # move left
+    #             menu.move_selection_left()
+    #         elif channel == buttons.RIGHT:
+    #             # move right
+    #             menu.move_selection_right()
+    #         elif channel == buttons.ENTER:
+    #             # enter
+    #             self._enter_pressed()
+    #         self.lock.release()
 
-        self.stop()
+    #     # set up buttons
+    #     menu.display_menu()
+    #     GPIO.add_event_detect(buttons.ENTER, GPIO.RISING,
+    #                           callback=button_pressed,
+    #                           bouncetime=300)
+    #     GPIO.add_event_detect(buttons.LEFT, GPIO.RISING,
+    #                           callback=button_pressed, 
+    #                           bouncetime=300)
+    #     GPIO.add_event_detect(buttons.RIGHT, GPIO.RISING, 
+    #                           callback=button_pressed, 
+    #                           bouncetime=300)
+    #     
+    #     self.lock.release()
+    #     
+    #     self._stop_flag.wait()
 
-        return selected
+    #     selected = menu.get_selected_index()
+    #     menu.stop()
 
-    def _free_used_buttons(self):
-        GPIO.remove_event_detect(buttons.ENTER)
-        GPIO.remove_event_detect(buttons.LEFT)
-        GPIO.remove_event_detect(buttons.RIGHT)
+    #     self.stop()
 
-    def _enter_pressed(self):
-        self.stop()
+    #     return selected
+
+    # def _enter_pressed(self):
+    #     self.stop()
     
