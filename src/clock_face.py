@@ -3,8 +3,8 @@ from datetime import datetime
 
 class ClockFace(MenuNode):
 
-    def __init__(self, display, lock):
-        super(self.__class__, self).__init__(display, "Clock", lock)
+    def __init__(self, display):
+        super(self.__class__, self).__init__(display, "Clock")
         self.time = None
     
     def _show(self):

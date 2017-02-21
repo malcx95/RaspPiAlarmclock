@@ -18,19 +18,19 @@ class MenuNode(object):
     BACK = 1
     NO_NAVIGATION = 2
 
-    def __init__(self, display, title, lock, children=[], disable_back=False):
+    def __init__(self, display, title, children=[], disable_back=False):
         if not isinstance(children, list):
             raise ValueError("Children must be list")
         self._stop_flag = threading.Event()
         self.title = title
         self.children = children
         self.display = display
-        self.lock = lock
         self._disable_back = disable_back
 
     def setup(self):
         """
         Sets this menu node up for viewing.
+        Returns nothing.
         """
         raise NotImplementedError('Update needs to be overridden!')
 
@@ -108,12 +108,12 @@ class SelectionMenu(MenuNode):
     selected MenuNode when stopped or on the press of the enter button.
     """
 
-    def __init__(self, display, title, children, lock,
+    def __init__(self, display, title, children,
                  disable_back=False, led_control=None):
         if not children:
             raise ValueError("Children can't be empty")
         super(self.__class__, self).__init__(display, title,
-                                             lock, children, disable_back)
+                                             children, disable_back)
         self._led_control = led_control
         self.menu = None
 

@@ -38,56 +38,62 @@ def main():
 
     led_control = LEDControl()
 
-    menu_lock = threading.Lock()
-
     alarm_list = alarm.AlarmList()
 
     # setup buttons
     for button in buttons.BUTTONS.values():
         GPIO.setup(button, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
-    clock_face = ClockFace(display, menu_lock)
+    clock_face = ClockFace(display)
 
     main_children = [clock_face,
-                     AlarmApplication(display, menu_lock, led_control, alarm_list)]
+                     AlarmApplication(display, led_control, alarm_list)]
 
     main_menu = SelectionMenu(display, "Main menu", main_children,
-                              menu_lock, disable_back=True,
-                              led_control=led_control)
+                              disable_back=True, led_control=led_control)
     
     # list of indices tracing the path to the current node
     current_menu_selection = []
 
-    alarm_thread = alarm.AlarmSupervisorThread(display, led_control)
-    alarm_thread.start()
+    # alarm_thread = alarm.AlarmSupervisorThread(display, led_control)
+    # alarm_thread.start()
 
     def exit():
         # main_menu.get_node(current_menu_selection).stop()
         # display.clear()
         # display.message("Have a nice\nkebab!")
-        # GPIO.cleanup()
+        GPIO.cleanup()
         sys.exit(1)
 
     time.sleep(0.1)
 
     try:
+        led_control.clear()
         while True:
-            led_control.clear()
             selected_node = main_menu.get_node(current_menu_selection)
-            alarm_thread.set_selected_menu_node(selected_node)
-            back_pressed, child_selected = selected_node.start()
-            menu_lock.acquire()
-            if alarm_thread.alarm_gone_off:
-                alarm_thread.permission_to_start.set()
-                alarm_thread.alarm_dismissed.wait()
-            else:
-                if child_selected is not None and (not back_pressed):
-                    current_menu_selection.append(child_selected)
-                elif back_pressed:
-                    if current_menu_selection:
+            selected_node.setup()
+
+            while True:
+                navigation, child = selected_node.update()
+                if navigation != MenuNode.NO_NAVIGATION:
+                    if navigation == MenuNode.BACK and len(current_menu_selection) > 0:
                         current_menu_selection.pop()
-            child_selected = None
-            menu_lock.release()
+                    elif navigation == MenuNode.ENTER:
+                        current_menu_selection.append(child)
+                    selected_node.stop()
+                    break
+            # alarm_thread.set_selected_menu_node(selected_node)
+            # back_pressed, child_selected = selected_node.start()
+            # if alarm_thread.alarm_gone_off:
+            #     alarm_thread.permission_to_start.set()
+            #     alarm_thread.alarm_dismissed.wait()
+            # else:
+            #     if child_selected is not None and (not back_pressed):
+            #         current_menu_selection.append(child_selected)
+            #     elif back_pressed:
+            #         if current_menu_selection:
+            #             current_menu_selection.pop()
+            # child_selected = None
     except KeyboardInterrupt:
         exit()
 

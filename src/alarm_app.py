@@ -17,8 +17,8 @@ class AlarmApplication(menu_node.MenuNode):
 
     # TODO I think you need to use the disable back option
     # TODO and handle the back button manually
-    def __init__(self, display, lock, led_control, alarm_list):
-        super(self.__class__, self).__init__(display, 'Alarms', lock,
+    def __init__(self, display, led_control, alarm_list):
+        super(self.__class__, self).__init__(display, 'Alarms',
                                              disable_back=True)
         self._led_control = led_control
         self.alarm_list = alarm_list
