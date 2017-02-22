@@ -1,8 +1,4 @@
 import threading
-try:
-    import RPi.GPIO as GPIO
-except ImportError:
-    from simulator.gpio import GPIO
 import buttons
 import time
 from menu import Menu
@@ -18,10 +14,11 @@ class MenuNode(object):
     BACK = 1
     NO_NAVIGATION = 2
 
-    def __init__(self, display, title, children=[], disable_back=False):
+    def __init__(self, display, title, button_control, children=[], disable_back=False):
         if not isinstance(children, list):
             raise ValueError("Children must be list")
         self._stop_flag = threading.Event()
+        self._button_control = button_control
         self.title = title
         self.children = children
         self.display = display
@@ -44,7 +41,7 @@ class MenuNode(object):
             (MenuNode.ENTER, MenuNode-index) if a child (second) is to be entered.
         """
         if not self._disable_back:
-            if buttons.is_pressed(buttons.BACK):
+            if self._button_control.is_pressed(buttons.BACK):
                 return MenuNode.BACK, None
         res = self._update()
         assert isinstance(res, tuple)
@@ -59,6 +56,8 @@ class MenuNode(object):
             (MenuNode.NO_NAVIGATION, None) if no navigation was done.
             (MenuNode.BACK, None) if a back navigation should be done.
             (MenuNode.ENTER, MenuNode-index) if a child (second) is to be entered.
+
+        Whether back-button is pressed doesn't need to be checked here.
         """
         raise NotImplementedError('Update needs to be overridden!')
 
@@ -91,8 +90,8 @@ class PlaceHolderNode(MenuNode):
     Just a placeholder node.
     """
 
-    def __init__(self, display, lock, title="Example"):
-        super(self.__class__, self).__init__(display, title, lock)
+    def __init__(self, display, button_control, title="Example"):
+        super(self.__class__, self).__init__(display, title, button_control)
 
     def setup(self):
         self.display.clear()
@@ -108,11 +107,11 @@ class SelectionMenu(MenuNode):
     selected MenuNode when stopped or on the press of the enter button.
     """
 
-    def __init__(self, display, title, children,
+    def __init__(self, display, title, button_control, children,
                  disable_back=False, led_control=None):
         if not children:
             raise ValueError("Children can't be empty")
-        super(self.__class__, self).__init__(display, title,
+        super(self.__class__, self).__init__(display, title, button_control,
                                              children, disable_back)
         self._led_control = led_control
         self.menu = None
@@ -125,8 +124,12 @@ class SelectionMenu(MenuNode):
     
     def _update(self):
         self.menu.update()
-        if buttons.is_pressed(buttons.ENTER):
+        if self._button_control.is_pressed(buttons.ENTER):
             return MenuNode.ENTER, self.menu.get_selected_index()
+        elif self._button_control.is_pressed(buttons.LEFT):
+            self.menu.move_selection_left()
+        elif self._button_control.is_pressed(buttons.RIGHT):
+            self.menu.move_selection_right()
         return MenuNode.NO_NAVIGATION, None
 
     def stop(self):

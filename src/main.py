@@ -25,9 +25,6 @@ except ImportError:
 
 def main():
 
-    # if SIMULATOR_MODE:
-    #     GPIO = GPIOSimulator(None)
-
     GPIO.cleanup()
     GPIO.setmode(GPIO.BCM)
 
@@ -41,15 +38,14 @@ def main():
     alarm_list = alarm.AlarmList()
 
     # setup buttons
-    for button in buttons.BUTTONS.values():
-        GPIO.setup(button, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+    button_control = buttons.ButtonControl()
 
-    clock_face = ClockFace(display)
+    clock_face = ClockFace(display, button_control)
 
     main_children = [clock_face,
-                     AlarmApplication(display, led_control, alarm_list)]
+                     AlarmApplication(display, led_control, alarm_list, button_control)]
 
-    main_menu = SelectionMenu(display, "Main menu", main_children,
+    main_menu = SelectionMenu(display, "Main menu", button_control, main_children,
                               disable_back=True, led_control=led_control)
     
     # list of indices tracing the path to the current node
@@ -74,6 +70,7 @@ def main():
             selected_node.setup()
 
             while True:
+                button_control.update()
                 navigation, child = selected_node.update()
                 if navigation != MenuNode.NO_NAVIGATION:
                     if navigation == MenuNode.BACK and len(current_menu_selection) > 0:
@@ -82,6 +79,7 @@ def main():
                         current_menu_selection.append(child)
                     selected_node.stop()
                     break
+            time.sleep(0.1)
             # alarm_thread.set_selected_menu_node(selected_node)
             # back_pressed, child_selected = selected_node.start()
             # if alarm_thread.alarm_gone_off:
