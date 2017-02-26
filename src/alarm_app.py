@@ -22,57 +22,10 @@ class AlarmApplication(menu_node.MenuNode):
         self.alarm_editors = []
 
     def setup(self):
-        pass
-
-    def _update(self):
         self.children = []
         if self.alarm_list.is_empty():
-            self.display.message('No alarms.\nPress {} to add.'\
-                                 .format(display.ENTER))
-            self._listen_to_input()
-            self.lock.acquire()
-            if not self._back_pressed:
-                self._add_placeholder_alarm()
-                return None
-            self.lock.release()
-        else:
-            self._refresh_menu()
-            self._listen_to_input()
-            self.menu.stop()
-        self.back_pressed = True
-        return None
-
-    def _get_options(self):
-        return [str(al) + ' - ON' if on else str(al) + ' - OFF'
-                        for al, on in self.alarm_list]
-    
-    def _listen_to_input(self):
-        while not self._stop_flag.wait(0.1):
-            if GPIO.input(buttons.ENTER):
-                self._enter_pressed()
-                if self._back_pressed:
-                    self._stop_flag = threading.Event()
-                    self._back_pressed = False
-            if GPIO.input(buttons.RIGHT):
-                self.menu.move_selection_right()
-                self._selected = (self._selected + 1) % len(self.alarm_editors)
-            if GPIO.input(buttons.LEFT):
-                self.menu.move_selection_left()
-                self._selected = (self._selected - 1) % len(self.alarm_editors)
-            if GPIO.input(buttons.SET):
-                self.lock.acquire()
-                self._set_pressed()
-                self.lock.release()
-            if GPIO.input(buttons.DELETE):
-                self.lock.acquire()
-                self._delete_pressed()
-                self.lock.release()
-            if GPIO.input(buttons.BACK):
-                self.stop()
-    
-    def _refresh_menu(self):
+            self._add_placeholder_alarm()
         self.alarm_editors = [AlarmEditor(self.display,
-                                     self.lock, 
                                      self._led_control,
                                      alarm,
                                      self._stop_flag)
@@ -89,8 +42,30 @@ class AlarmApplication(menu_node.MenuNode):
                     blinking_leds=[self._led_control.ENTER,
                                     self._led_control.SET,
                                     self._led_control.DELETE])
-        self.menu.display_menu()
+        self.menu.setup()
+        
 
+    def _update(self):
+        # TODO redo this
+        if GPIO.input(buttons.ENTER):
+            pass
+        elif GPIO.input(buttons.RIGHT):
+            self.menu.move_selection_right()
+            self._selected = (self._selected + 1) % len(self.alarm_editors)
+        elif GPIO.input(buttons.LEFT):
+            self.menu.move_selection_left()
+            self._selected = (self._selected - 1) % len(self.alarm_editors)
+        elif GPIO.input(buttons.SET):
+            self._set_pressed()
+        elif GPIO.input(buttons.DELETE):
+            self._delete_pressed()
+        elif GPIO.input(buttons.BACK):
+            self.stop()
+
+    def _get_options(self):
+        return [str(al) + ' - ON' if on else str(al) + ' - OFF'
+                        for al, on in self.alarm_list]
+    
     def _enter_pressed(self):
         self.menu.stop()
         changed_alarm = self.alarm_editors[self._selected].show()
@@ -117,7 +92,6 @@ class AlarmApplication(menu_node.MenuNode):
         today = datetime.now()
         alarm = alarm.Alarm(7, 0, today.weekday(), 0)
         alarm.increment_day()
-        editor = AlarmEditor(self.display, self.lock, self._led_control, alarm)
         self.alarm_editors.append(editor)
         self.alarm_list.add_alarm(alarm, False)
     
@@ -153,7 +127,6 @@ class AlarmEditor(object):
 
     def show(self):
         self.display.clear()
-        self._listen_to_input()
         # TODO return new alarm, if any
         if self._alarm_changed:
             self._alarm_changed = False

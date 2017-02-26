@@ -14,7 +14,8 @@ class MenuNode(object):
     BACK = 1
     NO_NAVIGATION = 2
 
-    def __init__(self, display, title, button_control, children=[], disable_back=False):
+    def __init__(self, display, title, button_control,
+                 children=[], disable_back=False):
         if not isinstance(children, list):
             raise ValueError("Children must be list")
         self._stop_flag = threading.Event()
