@@ -13,7 +13,7 @@ MAX_NUM_OPTIONS_THAT_FIT = 5
 
 # The number of times the display is updated before
 # the title disappears
-MENU_TITLE_DELAY = 20
+MENU_TITLE_DELAY = 10
 
 class Menu:
 

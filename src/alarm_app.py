@@ -11,21 +11,22 @@ from menu import Menu
 class AlarmApplication(menu_node.MenuNode):
     """The menu option that manages the alarms"""
 
-    # TODO I think you need to use the disable back option
-    # TODO and handle the back button manually
+    # TODO redesign
     def __init__(self, display, led_control, alarm_list, button_control):
         super(self.__class__, self).__init__(display, 'Alarms', button_control,
-                                             disable_back=True)
+                                             disable_back=False)
         self._led_control = led_control
         self.alarm_list = alarm_list
         self._selected = 0
         self.menu = None
         self.alarm_editors = []
 
-    def _show(self):
+    def setup(self):
+        pass
+
+    def _update(self):
         self.children = []
         if self.alarm_list.is_empty():
-            # TODO remove this branch
             self.display.message('No alarms.\nPress {} to add.'\
                                  .format(display.ENTER))
             self._listen_to_input()

@@ -79,7 +79,7 @@ def main():
                         current_menu_selection.append(child)
                     selected_node.stop()
                     break
-            time.sleep(0.1)
+                time.sleep(0.1)
             # alarm_thread.set_selected_menu_node(selected_node)
             # back_pressed, child_selected = selected_node.start()
             # if alarm_thread.alarm_gone_off:

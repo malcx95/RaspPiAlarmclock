@@ -7,18 +7,15 @@ class ClockFace(MenuNode):
         super(self.__class__, self).__init__(display, "Clock", button_control)
         self.time = None
     
-    def _show(self):
-        self.lock.acquire()
+    def setup(self):
         self.time = datetime.now().strftime('%H:%M')
 
         self.display.clear()
         self.display.change_row(self.time, 0)
-        self.lock.release()
-        while not self._stop_flag.wait(1):
-            self.lock.acquire()
-            self._update_time()
-            self.lock.release()
-        return None
+
+    def _update(self):
+        self._update_time()
+        return MenuNode.NO_NAVIGATION, None
 
     def _update_time(self):
         old_time = self.time
@@ -26,6 +23,6 @@ class ClockFace(MenuNode):
         if old_time != self.time:
             self.display.change_row(self.time, 0)
     
-    def _free_used_buttons(self):
+    def stop(self):
         pass
 
