@@ -18,7 +18,6 @@ class MenuNode(object):
                  children=[], disable_back=False):
         if not isinstance(children, list):
             raise ValueError("Children must be list")
-        self._stop_flag = threading.Event()
         self._button_control = button_control
         self.title = title
         self.children = children
@@ -66,7 +65,7 @@ class MenuNode(object):
         """
         Terminates the MenuNode, freeing up resources used by it.
         """
-        raise NotImplementedError('Update needs to be overridden!')
+        raise NotImplementedError('Stop needs to be overridden!')
 
     def get_node(self, path):
         """

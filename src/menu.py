@@ -117,6 +117,7 @@ class Menu:
             if self._title_counter == MENU_TITLE_DELAY:
                 self.display.change_row(self.title, display.TOP_ROW)
                 self.display.change_row(options_row, display.BOTTOM_ROW)
+                self.display.set_cursor(self._get_option_position(), 1)
                 self._title_counter -= 1
             elif self._title_counter == 0:
                 self._display_option()

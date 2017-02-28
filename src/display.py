@@ -50,6 +50,8 @@ class Display(Adafruit_CharLCDPlate):
         # off icon
         self.create_char(7, [0,14,17,17,17,17,14,0])
 
+        super(Display, self).clear()
+
         self.blink(False)
         self.show_cursor(False)
 
@@ -132,5 +134,4 @@ class Display(Adafruit_CharLCDPlate):
 
     def _is_already_clear(self):
         return self.rows == ["                ","                "]
-
         
