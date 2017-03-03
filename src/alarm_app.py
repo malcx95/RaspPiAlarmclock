@@ -93,6 +93,12 @@ class AlarmApplication(MenuNode):
 class AlarmEditor(MenuNode):
 
     PAGE0_FORMAT = '{hour}:{minute} {day}'
+    PAGE1_FORMAT = 'Repeat: {repeat}'
+
+    HOUR_INDEX = 0
+    MINUTE_INDEX = 1
+    DAY_INDEX = 2
+    REPEAT_INDEX = 3
 
     # (Position on page, page number)
     HOUR_POS = (0, 0)
@@ -100,16 +106,10 @@ class AlarmEditor(MenuNode):
     DAY_POS = (6, 0)
     REPEAT_POS = (8, 1)
 
-    SELECTIONS = {
-        0: HOUR_POS,
-        1: MINUTE_POS,
-        2: DAY_POS,
-        3: REPEAT_POS
-    }
+    # Don't change this order without changing the index constants
+    SELECTIONS = (HOUR_POS, MINUTE_POS, DAY_POS, REPEAT_POS)
 
-    BOTTOM_ROW = 'Edit:{}{}, Done:{}'.format(display.UP_ARROW, 
-                                             display.DOWN_ARROW,
-                                             display.ENTER)
+    BOTTOM_ROW = 'Edit:{}{}'.format(display.UP_ARROW, display.DOWN_ARROW)
 
     def __init__(self, display, led_control, alarm, button_control):
         super(self.__class__, self).__init__(display, 'Alarm Editor',
@@ -119,47 +119,79 @@ class AlarmEditor(MenuNode):
         self._weekday = datetime.now().weekday()
         self._selected_day = self._get_weekday_text()
         self._current_selection = 0
-        # Page 0 contains hour, minute and day, page 1 contains repeat
-        self._current_page = 0
 
-    # TODO implement these
     def setup(self):
-        top_row = self.PAGE0_FORMAT.format(hour=self.alarm.hour,
-                                           minute=self.alarm.minute 
-                                            if self.alarm.minute > 9 else
-                                            '0' + str(self.alarm.minute),
-                                           day=self._get_weekday_text())
-        self.display.change_row(top_row, display.TOP_ROW)
-        self.display.change_row(self.BOTTOM_ROW, display.BOTTOM_ROW)
         self.display.show_cursor(True)
         self.display.blink(True)
-        self.display.set_cursor(self.SELECTIONS[self._current_selection][0], 0)
+        self._update_display()
 
     def _update(self):
-        if self._button_control.is_pressed(buttons.ENTER):
-            return MenuNode.BACK, None
+        changed = False
+        if self._button_control.is_pressed(buttons.LEFT):
+            self._move_selection(True)
+            changed = True
+        elif self._button_control.is_pressed(buttons.RIGHT):
+            self._move_selection(False)
+            changed = True
+        elif self._button_control.is_pressed(buttons.UP):
+            self._increment_selection(1)
+            changed = True
+        elif self._button_control.is_pressed(buttons.DOWN):
+            self._increment_selection(-1)
+            changed = True
+
+        if changed:
+            self._update_display()
 
         return MenuNode.NO_NAVIGATION, None
 
+    def _increment_selection(self, amount):
+        if self._current_selection == self.HOUR_INDEX:
+            self.alarm.increment_hour(amount)
+        elif self._current_selection == self.MINUTE_INDEX:
+            self.alarm.incremement_minute(amount)
+        elif self._current_selection == self.DAY_INDEX:
+            self.alarm.increment_weekday(amount)
+        elif self._current_selection == self.REPEAT_INDEX:
+            self.alarm.increment_repeat(amount)
+
+    def _update_display(self):
+        index, page = self.SELECTIONS[self._current_selection]
+        top_row = ""
+        bottom_row = ""
+        if page == 0:
+            top_row = self.PAGE0_FORMAT.format(hour=self.alarm.hour
+                                               if self.alarm.hour > 9 else
+                                               '0' + str(self.alarm.hour),
+                                               # add extra zero if singe digit
+                                               minute=self.alarm.minute 
+                                               if self.alarm.minute > 9 else
+                                               '0' + str(self.alarm.minute),
+                                               day=self._get_weekday_text())
+        else:
+            top_row = self.PAGE1_FORMAT.format(
+                repeat=self.alarm.get_repeat_string())
+
+        self.display.change_row(top_row, display.TOP_ROW)
+        self.display.change_row(self.BOTTOM_ROW, display.BOTTOM_ROW)
+        self.display.set_cursor(index, display.TOP_ROW)
+
+    def _get_current_page(self):
+        return self.SELECTIONS[self._current_selection][1]
+
+    def _move_selection(self, move_left):
+        """
+        Move cursor, if move_left is True, move left, otherwise
+        move right
+        """
+        movement = -1 if move_left else 1
+        self._current_selection = (movement + 
+                                   self._current_selection) % \
+                                    len(self.SELECTIONS)
 
     def stop(self):
         self.display.show_cursor(False)
         self.display.blink(False)
-
-    # def show(self):
-    #     self.display.clear()
-    #     # TODO return new alarm, if any
-    #     if self._alarm_changed:
-    #         self._alarm_changed = False
-    #         return self.alarm
-    #     else:
-    #         return None
-
-    # def _update(self):
-    #     top_row = ''
-    #     if self._current_page == 0:
-    #     else:
-    #         top_row = 'Repeat: {}'.format(self.alarm.get_repeat_string())
 
     def _get_weekday_text(self):
         today = datetime.now().weekday()

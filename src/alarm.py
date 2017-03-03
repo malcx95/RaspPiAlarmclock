@@ -20,7 +20,6 @@ DAYS = ('Monday', 'Tuesday', 'Wednesday', 'Thursday',
 
 TIME_FORMAT = "%Y%m%d%H%M"
 
-
 class Alarm(object):
     """
     Represents an alarm. Contains information about exactly when the
@@ -58,19 +57,23 @@ class Alarm(object):
     def get_repeat_string(self):
         return self.REPEAT_OPTIONS[self.repeat]
 
+    def increment_weekday(self, amount):
+        """
+        Increments the weekday number by amount and returns the new day.
+        """
+        self.weekday = (self.weekday + amount) % 7
+        return self.weekday
+
     def increment_repeat(self, amount):
         """
-        Increments the repeat option by amount (-1 or 1).
+        Increments the repeat option by amount and returns the new repeat.
         """
-        new_repeat = self.repeat
-        new_repeat = (new_repeat + amount) % 3
-        self.repeat = repeat
-        return repeat
+        self.repeat = (self.repeat + amount) % 3
+        return self.repeat
 
     def increment_hour(self, amount):
         """
         Increments the hour by amount and returns the new hour.
-        Amount must be -1 or 1.
         """
         new_hour = self.hour
         new_hour = (new_hour + amount) % 24
@@ -80,7 +83,6 @@ class Alarm(object):
     def incremement_minute(self, amount):
         """
         Increments the minute by amount and returns the new minute.
-        Amount must be -1 or 1.
         """
         new_min = self.minute
         new_min = (new_min + amount) % 60
