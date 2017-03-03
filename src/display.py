@@ -2,7 +2,7 @@ import threading
 try:
     from Adafruit_CharLCD import Adafruit_CharLCDPlate
 except ImportError:
-    from simulator.display import SimulatorDisplay as Adafruit_CharLCDPlate
+    from tests.simulator.display import SimulatorDisplay as Adafruit_CharLCDPlate
 
 LCD_COLS = 16
 LCD_ROWS = 2

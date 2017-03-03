@@ -25,6 +25,9 @@ DOWN = BUTTONS['KEY3']
 DELETE = BUTTONS['KEY4']
 
 class ButtonControl:
+    """
+    Interface for controlling the buttons.
+    """
 
     def __init__(self):
         # buttons mapped to (Is currently pressed, was pressed before)

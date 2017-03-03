@@ -32,6 +32,4 @@ class SimulatorDisplay(object):
 
     def _update(self):
         os.system("clear")
-        print ''.join(x for x in self.char_grid[0])
-        print ''.join(x for x in self.char_grid[1])
 

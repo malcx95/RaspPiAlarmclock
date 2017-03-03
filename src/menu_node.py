@@ -134,47 +134,4 @@ class SelectionMenu(MenuNode):
 
     def stop(self):
         self.menu.stop()
-
-    # def _show(self):
-    #     self.lock.acquire()
-    #     menu = 
-
-    #     def button_pressed(channel):
-    #         self.lock.acquire()
-    #         if channel == buttons.LEFT:
-    #             # move left
-    #             menu.move_selection_left()
-    #         elif channel == buttons.RIGHT:
-    #             # move right
-    #             menu.move_selection_right()
-    #         elif channel == buttons.ENTER:
-    #             # enter
-    #             self._enter_pressed()
-    #         self.lock.release()
-
-    #     # set up buttons
-    #     menu.display_menu()
-    #     GPIO.add_event_detect(buttons.ENTER, GPIO.RISING,
-    #                           callback=button_pressed,
-    #                           bouncetime=300)
-    #     GPIO.add_event_detect(buttons.LEFT, GPIO.RISING,
-    #                           callback=button_pressed, 
-    #                           bouncetime=300)
-    #     GPIO.add_event_detect(buttons.RIGHT, GPIO.RISING, 
-    #                           callback=button_pressed, 
-    #                           bouncetime=300)
-    #     
-    #     self.lock.release()
-    #     
-    #     self._stop_flag.wait()
-
-    #     selected = menu.get_selected_index()
-    #     menu.stop()
-
-    #     self.stop()
-
-    #     return selected
-
-    # def _enter_pressed(self):
-    #     self.stop()
     
