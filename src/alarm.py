@@ -152,12 +152,12 @@ class AlarmList(object):
     def add_alarm(self, alarm, activated):
         self._alarms.append((alarm, activated))
         self._alarms.sort(_alarm_list_compare)
-        self._save()
+        self.save()
 
     def is_empty(self):
         return not self._alarms
 
-    def _save(self):
+    def save(self):
         with open(self.SAVE_FILE, 'w') as file_:
             file_.write(json.dumps(
                 [[al.get_json_representation(), act] 
@@ -190,7 +190,7 @@ class AlarmList(object):
                 'Alarm {} with old value {} not found'.format(
                     str(alarm), old_value))
         self._alarms[found_index] = (alarm, activated)
-        self._save()
+        self.save()
 
 
 class AlarmSupervisorThread(threading.Thread):

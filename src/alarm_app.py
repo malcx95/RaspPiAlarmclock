@@ -19,6 +19,9 @@ class AlarmApplication(MenuNode):
         self.menu = None
 
     def setup(self):
+        # Save the alarm list since we might have just exited an editor.
+        self.alarm_list.save()
+
         if self.alarm_list.is_empty():
             self.alarm_list.append(self._get_placeholder_alarm())
         self.children = [AlarmEditor(self.display,
