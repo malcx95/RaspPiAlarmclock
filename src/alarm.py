@@ -1,17 +1,15 @@
 import threading
-import buttons
+try:
+    import buttons
+except ImportError:
+    pass
 import time
 import display
 import os
 import json
-try:
-    import RPi.GPIO as GPIO
-except ImportError:
-    from simulator.gpio import GPIO
 from ledcontrol import LEDControl
 from datetime import datetime
 from calendar import monthrange
-from main import SAVE_DIR
 
 
 DAYS = ('Monday', 'Tuesday', 'Wednesday', 'Thursday',
@@ -32,6 +30,7 @@ class Alarm(object):
     REPEAT_OPTIONS = ('None', 'Daily', 'Weekly')
 
     def __init__(self, hour, minute, weekday, repeat):
+        """hour: int, minute: int, weekday: int, repeat: int"""
         self.hour = hour
         self.minute = minute
         self.repeat = repeat
@@ -114,54 +113,66 @@ class Alarm(object):
 
 
 def _alarm_list_compare(x1, x2):
-    if x1[1] and not x2[1]:
-        return -1
-    elif not x1[1] and x2[1]:
-        return 1
-    else:
-        return cmp(str(x1[0]), str(x2[0]))
+    return cmp(str(x1), str(x2))
 
 
 class AlarmList(object):
     """An intelligent iterable list of alarms"""
 
-    SAVE_FILE = os.path.join(SAVE_DIR, 'alarms.json')
-
-    def __init__(self):
-        self._alarms = self.load_alarms()
+    def __init__(self, save_file):
+        self.save_file = save_file
+        active, inactive = self.load_alarms()
+        self._inactive_alarms = inactive
+        self._active_alarms = active
 
     def __iter__(self):
-        return iter(self._alarms)
+        return iter(self._active_alarms + self._inactive_alarms)
 
     def __getitem__(self, index):
-        return self._alarms[index]
+        return (self._active_alarms + self._inactive_alarms)[index]
+
+    def get_active_alarms(self):
+        # TODO implement
+        return []
+    
+    def get_inactive_alarms(self):
+        # TODO implement
+        return []
 
     def load_alarms(self):
-        alarms = []
-        if os.path.isfile(self.SAVE_FILE):
-            with open(self.SAVE_FILE) as file_:
+        active = []
+        inactive = []
+        if os.path.isfile(self.save_file):
+            with open(self.save_file) as file_:
                 alarms_string = file_.read()
-            alarm_array = json.loads(alarms_string)
-            for alarm, activated in alarm_array:
-                alarms.append((Alarm(*alarm), activated))
-            alarms.sort(_alarm_list_compare)
-            return alarms
+            alarms = json.loads(alarms_string)
+            for alarm, activated in alarms['active']:
+                active.append(Alarm(*alarm))
+            active.sort(_alarm_list_compare)
+            for alarm, activated in alarms['inactive']:
+                inactive.append(Alarm(*alarm))
+            inactive.sort(_alarm_list_compare)
+            return active, inactive
         else:
-            return []
+            return [], []
 
     def add_alarm(self, alarm, activated):
-        self._alarms.append((alarm, activated))
-        self._alarms.sort(_alarm_list_compare)
+        if activated:
+            self._active_alarms.append(alarm)
+            self._active_alarms.sort(_alarm_list_compare)
+        else:
+            self.in_active_alarms.append(alarm)
+            self._inactive_alarms.sort(_alarm_list_compare)
         self.save()
 
     def is_empty(self):
         return not self._alarms
 
     def save(self):
-        with open(self.SAVE_FILE, 'w') as file_:
-            file_.write(json.dumps(
-                [[al.get_json_representation(), act] 
-                 for al, act in self._alarms]))
+        active = [al.get_json_representation() for al in self._active_alarms]
+        inactive = [al.get_json_representation() for al in self._inactive_alarms]
+        with open(self.save_file, 'w') as file_:
+            file_.write(json.dumps({'active': active, 'inactive': inactive}))
 
     def delete_alarm(self, alarm, activated=None):
         # TODO remember to save

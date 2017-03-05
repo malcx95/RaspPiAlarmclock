@@ -14,6 +14,7 @@ import alarm
 from alarm_app import AlarmApplication
 
 SAVE_DIR = os.path.expanduser('~/.local/share/AlarmClockFiles')
+ALARMS_FILE = os.path.join(SAVE_DIR, 'alarms.json')
 
 SIMULATOR_MODE = False
 
@@ -35,7 +36,7 @@ def main():
 
     led_control = LEDControl()
 
-    alarm_list = alarm.AlarmList()
+    alarm_list = alarm.AlarmList(ALARMS_FILE)
 
     # setup buttons
     button_control = buttons.ButtonControl()

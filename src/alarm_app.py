@@ -10,7 +10,6 @@ import pdb
 class AlarmApplication(MenuNode):
     """The menu option that manages the alarms"""
 
-    # TODO redesign
     def __init__(self, display, led_control, alarm_list, button_control):
         super(self.__class__, self).__init__(display, 'Alarms', button_control)
         self._led_control = led_control
@@ -23,12 +22,12 @@ class AlarmApplication(MenuNode):
         self.alarm_list.save()
 
         if self.alarm_list.is_empty():
-            self.alarm_list.append(self._get_placeholder_alarm())
+            self.alarm_list.add_alarm(*self._get_placeholder_alarm())
         self.children = [AlarmEditor(self.display,
                                      self._led_control,
                                      alarm,
                                      self._button_control)
-                        for alarm, _ in self.alarm_list]
+                        for alarm in self.alarm_list]
 
         icons = [display.ON if on else display.OFF
                  for _, on in self.alarm_list]
@@ -44,7 +43,6 @@ class AlarmApplication(MenuNode):
 
     def _update(self):
         self.menu.update()
-        # TODO redo this
         if self._button_control.is_pressed(buttons.ENTER):
             return MenuNode.ENTER, self.menu.get_selected_index()
         elif self._button_control.is_pressed(buttons.RIGHT):
@@ -61,33 +59,24 @@ class AlarmApplication(MenuNode):
         return [str(al) + ' - ON' if on else str(al) + ' - OFF'
                         for al, on in self.alarm_list]
     
-    def _enter_pressed(self):
-        self.menu.stop()
-        changed_alarm = self.children[self._selected].show()
-        if changed_alarm is not None:
-            print changed_alarm
-        else:
-            print "Alarm not changed"
-        self._refresh_menu()
-
     def _delete_pressed(self):
         self.menu.stop()
-        alarm, activated = self.alarm_list[self._selected]
+        alarm, activated = self.alarm_list[self.menu.get_selected_index()]
         self.alarm_list.delete_alarm(alarm, activated)
-        self._refresh_menu()
+        self.setup()
 
     def _set_pressed(self):
-        alarm, activated = self.alarm_list[self._selected]
+        alarm, activated = self.alarm_list[self.menu.get_selected_index()]
         self.alarm_list.set_alarm_activated(alarm, not activated, activated)
         icon = display.ON if not activated else display.OFF
-        self.menu.set_icon_at(icon, self._selected)
-        self.menu.update(self._get_options())
+        self.menu.set_icon_at(icon, self.menu.get_selected_index())
+        self.menu.update_options(self._get_options())
 
     def _get_placeholder_alarm(self):
         today = datetime.now()
-        alarm = alarm.Alarm(7, 0, today.weekday(), 0)
-        alarm.increment_day()
-        return (alarm, False)
+        al = alarm.Alarm(7, 0, today.weekday(), 0)
+        al.increment_weekday(1)
+        return (al, False)
     
     def stop(self):
         self.menu.stop()
