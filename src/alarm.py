@@ -2,7 +2,7 @@ import threading
 try:
     import buttons
 except ImportError:
-    pass
+    import tests.simulator.buttons as buttons
 import time
 import display
 import os

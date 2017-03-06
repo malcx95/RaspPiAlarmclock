@@ -1,7 +1,10 @@
 import threading
 import display
 import time
-import buttons
+try:
+    import buttons
+except ImportError:
+    import tests.simulator.buttons as buttons
 from ledcontrol import LEDControl
 try:
     import RPi.GPIO as GPIO

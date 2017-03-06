@@ -1,6 +1,9 @@
 from menu_node import MenuNode
 from dialog import QuestionDialog, YES_OPTION
-import buttons
+try:
+    import buttons
+except ImportError:
+    import tests.simulator.buttons as buttons
 import display
 import alarm
 from datetime import datetime

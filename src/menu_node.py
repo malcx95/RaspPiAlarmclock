@@ -1,5 +1,8 @@
 import threading
-import buttons
+try:
+    import buttons
+except ImportError:
+    import tests.simulator.buttons as buttons
 import time
 from menu import Menu
 
