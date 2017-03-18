@@ -31,15 +31,20 @@ class ButtonControl:
         self.sequences = {}
 
     def update(self):
-        pass
+        for button in self.sequences:
+            self.sequences[button] = self.sequences[button][1:]
 
     def set_sequence(self, seq, button):
+        """
+        Sets the expected sequence for this button.
+
+        ButtonControl -> [bool] -> int -> None
+        """
         self.sequences[button] = seq
 
     def is_pressed(self, button):
-        if self.sequences.get(button, None):
-            output = self.sequences[button][0]
-            self.sequences[button] = self.sequences[button][1:]
+        if button in self.sequences:
+            return self.sequences[button][0]
         else:
             return False
 

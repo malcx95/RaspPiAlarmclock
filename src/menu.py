@@ -5,7 +5,7 @@ import pdb
 try:
     import RPi.GPIO as GPIO
 except ImportError:
-    from simulator.gpio import GPIO
+    from tests.simulator.gpio import GPIO
 import display
 
 BLINK_INTERVAL = 0.7

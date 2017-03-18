@@ -1,29 +1,213 @@
 import unittest
+import simulator.buttons as buttons
+from menu_node import MenuNode
+import alarm_app
+import pdb
+import display
+import ledcontrol
 import alarm
 import os
 
 ALARMS_TEST_FILE = 'tests/alarms_test.json'
+
+TEST_ALARMS = [
+    (alarm.Alarm(7, 30, 1, 0), True),
+    (alarm.Alarm(8, 0, 1, 2), True),
+    (alarm.Alarm(2, 15, 4, 0), False),
+    (alarm.Alarm(7, 10, 1, 1), True),
+    (alarm.Alarm(7, 0, 1, 0), False),
+]
 
 def clear_alarms(alarms_file):
     if os.path.isfile(alarms_file):
         os.system('rm ' + alarms_file)
 
 
-# void -> (Alarm, AlarmList)
 def create_alarm_list_and_test_alarm():
     """
     Inits the alarm list and an alarm
+
+    void -> (Alarm, AlarmList)
     """
     clear_alarms(ALARMS_TEST_FILE)
     alarms = alarm.AlarmList(ALARMS_TEST_FILE)
     al = alarm.Alarm(7, 0, 1, 0)
     return al, alarms
 
-# TODO add more tests
+
+def init_alarm_app(alarm_list=None, button_control=None):
+    """
+    Inits an alarm app.
+
+    void -> AlarmApplication
+    AlarmList -> ButtonControl -> AlarmApplication
+    """
+    if alarm_list is None:
+        _, alarm_list = create_alarm_list_and_test_alarm()
+    display_ = display.Display()
+    led_control = ledcontrol.LEDControl()
+    if button_control is None:
+        button_control = buttons.ButtonControl()
+    return alarm_app.AlarmApplication(display_, 
+                                      led_control,
+                                      alarm_list,
+                                      button_control)
+
+
+class AlarmAppTests(unittest.TestCase):
+
+    def test_init(self):
+        app = init_alarm_app()
+        self.assertIsNone(app.menu, msg="Menu is initialized in init")
+
+    def test_setup_empty_alarm_list(self):
+        app = init_alarm_app()
+        app.setup()
+        self.assertFalse(app.alarm_list.is_empty(), 
+                         msg="No placeholder was created")
+        self.assertTrue(app.alarm_list.num_alarms() == len(app.menu.options),
+                       msg="An option was not created for each alarm")
+
+    def test_setup_one_alarm(self):
+        al, alarm_list = create_alarm_list_and_test_alarm()
+        alarm_list.add_alarm(al, True)
+        app = init_alarm_app(alarm_list)
+        app.setup()
+        self.assertFalse(app.alarm_list.is_empty(), 
+                         msg="No placeholder was created")
+        self.assertTrue(app.alarm_list.num_alarms() == len(app.menu.options),
+                       msg="An option was not created for each alarm")
+
+    def test_delete_alarm(self):
+        al, alarm_list = create_alarm_list_and_test_alarm()
+        for alarm, activated in TEST_ALARMS:
+            alarm_list.add_alarm(alarm, activated)
+
+        sample_alarm = alarm_list.get_active_alarms()[0]
+
+        button_control = buttons.ButtonControl()
+        button_control.set_sequence([False, False, True], buttons.DELETE)
+        app = init_alarm_app(alarm_list, button_control)
+        app.setup()
+
+        for i in range(2):
+            active_alarms = app.alarm_list.get_active_alarms()
+            self.assertIn(sample_alarm, active_alarms, 
+                          msg="Alarm deleted too early")
+
+            button_control.update()
+            nav, child = app.update()
+            self.assertIsNone(child, msg="Unexpected child")
+            self.assertEqual(nav, MenuNode.NO_NAVIGATION, 
+                             msg="Expected NO_NAVIGATION")
+
+        active_alarms = app.alarm_list.get_active_alarms()
+        self.assertNotIn(sample_alarm, active_alarms, 
+                         msg="Alarm not deleted")
+
+    def test_delete_alarm_inactive(self):
+        al, alarm_list = create_alarm_list_and_test_alarm()
+        for alarm, activated in TEST_ALARMS:
+            alarm_list.add_alarm(alarm, activated)
+
+        # needs to be the last one
+        sample_alarm = alarm_list.get_inactive_alarms()[-1]
+
+        button_control = buttons.ButtonControl()
+        button_control.set_sequence([False, False, True], buttons.DELETE)
+        # navigate left to the last inactivated alarm
+        button_control.set_sequence([False, True, False], buttons.LEFT)
+        app = init_alarm_app(alarm_list, button_control)
+        app.setup()
+
+        for i in range(2):
+            inactive_alarms = app.alarm_list.get_inactive_alarms()
+            self.assertIn(sample_alarm, inactive_alarms, 
+                          msg="Alarm deleted too early")
+
+            button_control.update()
+            nav, child = app.update()
+            self.assertIsNone(child, msg="Unexpected child")
+            self.assertEqual(nav, MenuNode.NO_NAVIGATION, 
+                             msg="Expected NO_NAVIGATION")
+
+        inactive_alarms = app.alarm_list.get_inactive_alarms()
+        self.assertNotIn(sample_alarm, inactive_alarms, 
+                         msg="Alarm not deleted")
+
+    def test_inactivate_alarm(self):
+        al, alarm_list = create_alarm_list_and_test_alarm()
+        for alarm, activated in TEST_ALARMS:
+            alarm_list.add_alarm(alarm, activated)
+
+        sample_alarm = alarm_list.get_active_alarms()[0]
+
+        button_control = buttons.ButtonControl()
+        button_control.set_sequence([False, False, True], buttons.SET)
+        app = init_alarm_app(alarm_list, button_control)
+        app.setup()
+
+        for i in range(2):
+            inactive_alarms = app.alarm_list.get_inactive_alarms()
+            active_alarms = app.alarm_list.get_active_alarms()
+            self.assertIn(sample_alarm, active_alarms, 
+                          msg="Alarm changed too early")
+            self.assertNotIn(sample_alarm, inactive_alarms, 
+                          msg="Alarm changed too early")
+
+            button_control.update()
+            nav, child = app.update()
+            self.assertIsNone(child, msg="Unexpected child")
+            self.assertEqual(nav, MenuNode.NO_NAVIGATION, 
+                             msg="Expected NO_NAVIGATION")
+
+        inactive_alarms = app.alarm_list.get_inactive_alarms()
+        active_alarms = app.alarm_list.get_active_alarms()
+        self.assertNotIn(sample_alarm, active_alarms, 
+                         msg="Alarm not removed from active")
+        self.assertIn(sample_alarm, inactive_alarms, 
+                         msg="Alarm not added to inactive")
+        
+    def test_activate_alarm(self):
+        al, alarm_list = create_alarm_list_and_test_alarm()
+        for alarm, activated in TEST_ALARMS:
+            alarm_list.add_alarm(alarm, activated)
+
+        # needs to be the last one
+        sample_alarm = alarm_list.get_inactive_alarms()[-1]
+
+        button_control = buttons.ButtonControl()
+        button_control.set_sequence([False, False, True], buttons.SET)
+
+        # navigate left to the last inactivated alarm
+        button_control.set_sequence([False, True, False], buttons.LEFT)
+        app = init_alarm_app(alarm_list, button_control)
+        app.setup()
+
+        for i in range(2):
+            inactive_alarms = app.alarm_list.get_inactive_alarms()
+            active_alarms = app.alarm_list.get_active_alarms()
+            self.assertIn(sample_alarm, inactive_alarms, 
+                          msg="Alarm changed too early")
+            self.assertNotIn(sample_alarm, active_alarms, 
+                          msg="Alarm changed too early")
+
+            button_control.update()
+            nav, child = app.update()
+            self.assertIsNone(child, msg="Unexpected child")
+            self.assertEqual(nav, MenuNode.NO_NAVIGATION, 
+                             msg="Expected NO_NAVIGATION")
+
+        inactive_alarms = app.alarm_list.get_inactive_alarms()
+        active_alarms = app.alarm_list.get_active_alarms()
+        self.assertNotIn(sample_alarm, inactive_alarms, 
+                         msg="Alarm not removed from inactive")
+        self.assertIn(sample_alarm, active_alarms, 
+                         msg="Alarm not added to active")
+        
 
 class AlarmListTests(unittest.TestCase):
 
-    
     def setup(self):
         clear_alarms(ALARMS_TEST_FILE)
 

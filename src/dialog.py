@@ -6,10 +6,10 @@ try:
 except ImportError:
     import tests.simulator.buttons as buttons
 from ledcontrol import LEDControl
-try:
-    import RPi.GPIO as GPIO
-except ImportError:
-    from simulator.gpio import GPIO
+# try:
+#     import RPi.GPIO as GPIO
+# except ImportError:
+#     from tests.simulator.gpio import GPIO
 
 OK_OPTION = 'OK'
 YES_OPTION = 'Yes'

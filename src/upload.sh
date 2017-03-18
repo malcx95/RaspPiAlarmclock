@@ -9,6 +9,10 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+rm *.pyc
+rm tests/*.pyc
+rm tests/simulator/*.pyc
+
 scp -r ./* pi@rpi:/home/pi/RaspPiAlarmclock/src
 
 if [ $? -ne 0 ]; then

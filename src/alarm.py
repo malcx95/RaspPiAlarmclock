@@ -100,7 +100,7 @@ class Alarm(object):
             self._day += 1
 
     def __eq__(self, other):
-        return str(self) == str(other)
+        return self.get_json_representation() == other.get_json_representation()
             
     def __str__(self):
         return '{}:{} {}'.format(self.hour, 
@@ -146,6 +146,9 @@ class AlarmList(object):
 
     def num_inactive_alarms(self):
         return len(self._inactive_alarms)
+
+    def num_alarms(self):
+        return self.num_active_alarms() + self.num_inactive_alarms()
 
     def get_active_alarms(self):
         return self._active_alarms

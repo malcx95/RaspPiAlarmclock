@@ -26,6 +26,6 @@ class SimulatorDisplay(object):
         self.char_grid[row][col] = chr(char)
 
     def clear(self):
-        self.char_grid = [[x for x in '        '], 
-                          [x for x in '        ']]
+        self.char_grid = [[x for x in ' ' * 16], 
+                          [x for x in ' ' * 16]]
 
