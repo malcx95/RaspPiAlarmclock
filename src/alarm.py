@@ -128,11 +128,24 @@ class AlarmList(object):
         self._inactive_alarms = inactive
         self._active_alarms = active
 
-    def __iter__(self):
-        return iter(self._active_alarms + self._inactive_alarms)
+    def get_all_alarms(self):
+        return self._active_alarms + self._inactive_alarms
 
-    def __getitem__(self, index):
-        return (self._active_alarms + self._inactive_alarms)[index]
+    def get_all_alarms_with_activated(self):
+        """
+        Just like get all alarms, but every alarm is paired with it's
+        activated status.
+
+        AlarmList -> [(Alarm, bool)]
+        """
+        return [(al, True) for al in self._active_alarms] + \
+                [(al, False) for al in self._inactive_alarms]
+
+    def num_active_alarms(self):
+        return len(self._active_alarms)
+
+    def num_inactive_alarms(self):
+        return len(self._inactive_alarms)
 
     def get_active_alarms(self):
         return self._active_alarms
@@ -143,7 +156,7 @@ class AlarmList(object):
     def load_alarms(self):
         active = []
         inactive = []
-        if os.path.isfile(self.save_file):
+        try:
             with open(self.save_file) as file_:
                 alarms_string = file_.read()
             alarms = json.loads(alarms_string)
@@ -154,7 +167,7 @@ class AlarmList(object):
                 inactive.append(Alarm(*alarm))
             inactive.sort(_alarm_list_compare)
             return active, inactive
-        else:
+        except Exception:
             return [], []
 
     def add_alarm(self, alarm, activated):

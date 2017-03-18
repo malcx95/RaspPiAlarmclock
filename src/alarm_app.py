@@ -26,14 +26,16 @@ class AlarmApplication(MenuNode):
 
         if self.alarm_list.is_empty():
             self.alarm_list.add_alarm(*self._get_placeholder_alarm())
+
+        all_alarms = self.alarm_list.get_all_alarms_with_activated()
         self.children = [AlarmEditor(self.display,
                                      self._led_control,
                                      alarm,
                                      self._button_control)
-                        for alarm in self.alarm_list]
+                        for alarm, _ in all_alarms]
 
-        icons = [display.ON if on else display.OFF
-                 for _, on in self.alarm_list]
+        icons = [display.ON if activated else display.OFF
+                 for _, activated in all_alarms]
         options = self._get_options()
         self.menu = Menu(options, self.display, 
                     'Alarms', 
@@ -60,16 +62,18 @@ class AlarmApplication(MenuNode):
 
     def _get_options(self):
         return [str(al) + ' - ON' if on else str(al) + ' - OFF'
-                        for al, on in self.alarm_list]
+                for al, on in self.alarm_list.get_all_alarms_with_activated()]
     
     def _delete_pressed(self):
         self.menu.stop()
-        alarm, activated = self.alarm_list[self.menu.get_selected_index()]
+        all_alarms = self.alarm_list.get_all_alarms_with_activated()
+        alarm, activated = all_alarms[self.menu.get_selected_index()]
         self.alarm_list.delete_alarm(alarm, activated)
         self.setup()
 
     def _set_pressed(self):
-        alarm, activated = self.alarm_list[self.menu.get_selected_index()]
+        all_alarms = self.alarm_list.get_all_alarms_with_activated()
+        alarm, activated = all_alarms[self.menu.get_selected_index()]
         self.alarm_list.set_alarm_activated(alarm, not activated, activated)
         icon = display.ON if not activated else display.OFF
         self.menu.set_icon_at(icon, self.menu.get_selected_index())

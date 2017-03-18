@@ -72,11 +72,13 @@ class AlarmListTests(unittest.TestCase):
         al, alarms = create_alarm_list_and_test_alarm()
         alarms.add_alarm(al, True)
         alarms.delete_alarm(al, True)
-        self.assertNotIn(al, alarms)
+        self.assertNotIn(al, alarms.get_inactive_alarms())
+        self.assertNotIn(al, alarms.get_active_alarms())
 
     def test_alarm_delete_inactive(self):
         al, alarms = create_alarm_list_and_test_alarm()
         alarms.add_alarm(al, False)
         alarms.delete_alarm(al, False)
-        self.assertNotIn(al, alarms)
+        self.assertNotIn(al, alarms.get_inactive_alarms())
+        self.assertNotIn(al, alarms.get_active_alarms())
 
