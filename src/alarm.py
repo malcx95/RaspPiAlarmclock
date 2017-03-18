@@ -98,6 +98,9 @@ class Alarm(object):
                 self._month += 1
         else:
             self._day += 1
+
+    def __eq__(self, other):
+        return str(self) == str(other)
             
     def __str__(self):
         return '{}:{} {}'.format(self.hour, 
@@ -132,12 +135,10 @@ class AlarmList(object):
         return (self._active_alarms + self._inactive_alarms)[index]
 
     def get_active_alarms(self):
-        # TODO implement
-        return []
+        return self._active_alarms
     
     def get_inactive_alarms(self):
-        # TODO implement
-        return []
+        return self._inactive_alarms
 
     def load_alarms(self):
         active = []
@@ -146,10 +147,10 @@ class AlarmList(object):
             with open(self.save_file) as file_:
                 alarms_string = file_.read()
             alarms = json.loads(alarms_string)
-            for alarm, activated in alarms['active']:
+            for alarm in alarms['active']:
                 active.append(Alarm(*alarm))
             active.sort(_alarm_list_compare)
-            for alarm, activated in alarms['inactive']:
+            for alarm in alarms['inactive']:
                 inactive.append(Alarm(*alarm))
             inactive.sort(_alarm_list_compare)
             return active, inactive
@@ -161,12 +162,12 @@ class AlarmList(object):
             self._active_alarms.append(alarm)
             self._active_alarms.sort(_alarm_list_compare)
         else:
-            self.in_active_alarms.append(alarm)
+            self._inactive_alarms.append(alarm)
             self._inactive_alarms.sort(_alarm_list_compare)
         self.save()
 
     def is_empty(self):
-        return not self._alarms
+        return not (self._inactive_alarms or self._active_alarms)
 
     def save(self):
         active = [al.get_json_representation() for al in self._active_alarms]
@@ -174,16 +175,19 @@ class AlarmList(object):
         with open(self.save_file, 'w') as file_:
             file_.write(json.dumps({'active': active, 'inactive': inactive}))
 
-    def delete_alarm(self, alarm, activated=None):
+    def delete_alarm(self, alarm, activated):
         # TODO remember to save
-        if activated is not None:
-            self._alarms.remove((alarm, activated))
+        if activated:
+            for i in range(len(self._active_alarms)):
+                if self._active_alarms[i] == alarm:
+                    self._active_alarms.pop(i)
+                    return
         else:
-            for i in range(len(self._alarms)):
-                if self._alarms[i] == alarm:
-                    self._alarms.pop(i)
-                    break
-            raise KeyError('Alarm {} is not in the list'.format(alarm))
+            for i in range(len(self._inactive_alarms)):
+                if self._inactive_alarms[i] == alarm:
+                    self._inactive_alarms.pop(i)
+                    return
+        raise KeyError('Alarm {} is not in the list'.format(alarm))
 
     def set_alarm_activated(self, alarm, activated, old_value):
         """
@@ -191,16 +195,36 @@ class AlarmList(object):
         KeyError if the given alarm is not contained in the list.
         """
         found_index = None
-        for i in range(len(self._alarms)):
-            al, act = self._alarms[i]
-            if alarm == al and act == old_value:
+        alarm_list = []
+
+        # we want to look either in the active or inactive
+        # alarms depending on the old value
+        if old_value:
+            alarm_list = self._active_alarms
+        else:
+            alarm_list = self._inactive_alarms
+        
+        for i in range(len(alarm_list)):
+            al = alarm_list[i]
+            if alarm == al:
                 found_index = i
                 break
+
         if found_index is None:
             raise KeyError(
                 'Alarm {} with old value {} not found'.format(
                     str(alarm), old_value))
-        self._alarms[found_index] = (alarm, activated)
+
+        # move from active to inactive, or the other way around
+        if old_value:
+            self._active_alarms.pop(found_index)
+            self._inactive_alarms.append(alarm)
+            self._inactive_alarms.sort(_alarm_list_compare)
+        else:
+            self._inactive_alarms.pop(found_index)
+            self._active_alarms.append(alarm)
+            self._active_alarms.sort(_alarm_list_compare)
+
         self.save()
 
 
