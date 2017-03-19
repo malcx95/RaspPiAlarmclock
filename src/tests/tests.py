@@ -2,6 +2,7 @@ import unittest
 import simulator.buttons as buttons
 from menu_node import MenuNode
 import alarm_app
+from datetime import datetime
 import pdb
 import display
 import ledcontrol
@@ -246,14 +247,14 @@ class AlarmAppTests(unittest.TestCase):
 
         nav, child = app.update()
         self.assertIsNone(child, msg="Unexpected child")
-        self.assertEqual(nav, MenuNode.NO_NAVIGATION, 
+        self.assertEqual(nav, MenuNode.NO_NAVIGATION,
                          msg="Expected NO_NAVIGATION")
 
         button_control.update()
 
         nav, child = app.update()
         self.assertIsNotNone(child, msg="Child should not be None")
-        self.assertEqual(nav, MenuNode.ENTER, 
+        self.assertEqual(nav, MenuNode.ENTER,
                          msg="Expected NO_NAVIGATION")
 
         num_alarms = app.alarm_list.num_alarms()
@@ -323,4 +324,42 @@ class AlarmListTests(unittest.TestCase):
         alarms.delete_alarm(al, False)
         self.assertNotIn(al, alarms.get_inactive_alarms())
         self.assertNotIn(al, alarms.get_active_alarms())
+
+    def test_alarm_gone_off_empty_alarm_list(self):
+        _, alarms = create_alarm_list_and_test_alarm()
+
+        # check every possible time
+        for day in range(7):
+            for minute in range(60):
+                for hour in range(24):
+                    time = datetime(2017, 03, 20 + day, hour, minute).strftime(
+                        alarm.TIME_FORMAT)
+                    # the alarm should never go off
+                    self.assertIsNone(alarms.get_gone_off_alarm(time))
+
+    def test_alarm_gone_off_one_inactivated_alarm(self):
+        al, alarms = create_alarm_list_and_test_alarm()
+        alarms.add_alarm(al, False)
+
+        # check every possible time
+        for day in range(7):
+            for minute in range(60):
+                for hour in range(24):
+                    time = datetime(2017, 03, 20 + day, hour, minute).strftime(
+                        alarm.TIME_FORMAT)
+                    # the alarm should never go off
+                    self.assertIsNone(alarms.get_gone_off_alarm(time))
+
+    # def test_alarm_gone_off_one_activated_alarm(self):
+    #     _, alarms = create_alarm_list_and_test_alarm()
+    #     alarms.add_alarm(al, False)
+
+    #     # check every possible time
+    #     for day in range(7):
+    #         for minute in range(60):
+    #             for hour in range(24):
+    #                 time = datetime(2017, 03, 20 + day, hour, minute).strftime(
+    #                     alarm.TIME_FORMAT)
+    #                 # the alarm should never go off
+    #                 self.assertIsNone(alarms.get_gone_off_alarm(time))
 

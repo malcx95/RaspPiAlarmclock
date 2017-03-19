@@ -192,16 +192,17 @@ class AlarmList(object):
             file_.write(json.dumps({'active': active, 'inactive': inactive}))
 
     def delete_alarm(self, alarm, activated):
-        # TODO remember to save
         if activated:
             for i in range(len(self._active_alarms)):
                 if self._active_alarms[i] == alarm:
                     self._active_alarms.pop(i)
+                    self.save()
                     return
         else:
             for i in range(len(self._inactive_alarms)):
                 if self._inactive_alarms[i] == alarm:
                     self._inactive_alarms.pop(i)
+                    self.save()
                     return
         raise KeyError('Alarm {} is not in the list'.format(alarm))
 
@@ -242,6 +243,19 @@ class AlarmList(object):
             self._active_alarms.sort(_alarm_list_compare)
 
         self.save()
+
+    def get_gone_off_alarm(self, time):
+        """
+        If an alarm is supposed to go off now, the alarm that should go off
+        is returned, otherwise, None is returned. The given time
+        should be generated using datetime.now().strftime(alarm.TIME_FORMAT).
+
+        An alarm goes off if the current time equals the time of an activated
+        alarm down to the minute.
+
+        AlarmList -> String -> Alarm | None
+        """
+        pass
 
 
 class AlarmSupervisorThread(threading.Thread):
