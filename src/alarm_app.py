@@ -24,9 +24,6 @@ class AlarmApplication(MenuNode):
         # Save the alarm list since we might have just exited an editor.
         self.alarm_list.save()
 
-        if self.alarm_list.is_empty():
-            self.alarm_list.add_alarm(*self._get_placeholder_alarm())
-
         all_alarms = self.alarm_list.get_all_alarms_with_activated()
         self.children = [AlarmEditor(self.display,
                                      self._led_control,
@@ -35,7 +32,7 @@ class AlarmApplication(MenuNode):
                         for alarm, _ in all_alarms]
 
         icons = [display.ON if activated else display.OFF
-                 for _, activated in all_alarms]
+                 for _, activated in all_alarms] + ['+']
         options = self._get_options()
         self.menu = Menu(options, self.display, 
                     'Alarms', 
@@ -46,10 +43,23 @@ class AlarmApplication(MenuNode):
                                     self._led_control.DELETE])
         self.menu.setup()
 
+    def _new_option_selected(self):
+        return self.menu.get_selected_index() == self.alarm_list.num_alarms()
+
     def _update(self):
         self.menu.update()
         if self._button_control.is_pressed(buttons.ENTER):
+
+            if self._new_option_selected():
+                # insert new alarm editor at this index (the last)
+                al = self._get_placeholder_alarm()
+                editor = AlarmEditor(self.display, self._led_control,
+                                     al, self._button_control)
+                self.alarm_list.add_alarm(al, True)
+                self.children.append(editor)
+
             return MenuNode.ENTER, self.menu.get_selected_index()
+
         elif self._button_control.is_pressed(buttons.RIGHT):
             self.menu.move_selection_right()
         elif self._button_control.is_pressed(buttons.LEFT):
@@ -62,7 +72,9 @@ class AlarmApplication(MenuNode):
 
     def _get_options(self):
         return [str(al) + ' - ON' if on else str(al) + ' - OFF'
-                for al, on in self.alarm_list.get_all_alarms_with_activated()]
+                for al, on in 
+                self.alarm_list.get_all_alarms_with_activated()] + \
+                ['New alarm...']
     
     def _delete_pressed(self):
         self.menu.stop()
@@ -83,7 +95,7 @@ class AlarmApplication(MenuNode):
         today = datetime.now()
         al = alarm.Alarm(7, 0, today.weekday(), 0)
         al.increment_weekday(1)
-        return (al, False)
+        return al
     
     def stop(self):
         self.menu.stop()

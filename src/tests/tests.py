@@ -63,9 +63,9 @@ class AlarmAppTests(unittest.TestCase):
     def test_setup_empty_alarm_list(self):
         app = init_alarm_app()
         app.setup()
-        self.assertFalse(app.alarm_list.is_empty(), 
-                         msg="No placeholder was created")
-        self.assertTrue(app.alarm_list.num_alarms() == len(app.menu.options),
+        # There should be one less alarm 
+        # than number of options (because of "new")
+        self.assertTrue(app.alarm_list.num_alarms() == len(app.menu.options) - 1,
                        msg="An option was not created for each alarm")
 
     def test_setup_one_alarm(self):
@@ -75,8 +75,10 @@ class AlarmAppTests(unittest.TestCase):
         app.setup()
         self.assertFalse(app.alarm_list.is_empty(), 
                          msg="No placeholder was created")
-        self.assertTrue(app.alarm_list.num_alarms() == len(app.menu.options),
-                       msg="An option was not created for each alarm")
+        # There should be one less alarm 
+        # than number of options (because of "new")
+        self.assertTrue(app.alarm_list.num_alarms() == len(app.menu.options) - 1,
+                        msg="An option was not created for each alarm")
 
     def test_delete_alarm(self):
         al, alarm_list = create_alarm_list_and_test_alarm()
@@ -116,7 +118,7 @@ class AlarmAppTests(unittest.TestCase):
         button_control = buttons.ButtonControl()
         button_control.set_sequence([False, False, True], buttons.DELETE)
         # navigate left to the last inactivated alarm
-        button_control.set_sequence([False, True, False], buttons.LEFT)
+        button_control.set_sequence([True, True, False], buttons.LEFT)
         app = init_alarm_app(alarm_list, button_control)
         app.setup()
 
@@ -125,11 +127,16 @@ class AlarmAppTests(unittest.TestCase):
             self.assertIn(sample_alarm, inactive_alarms, 
                           msg="Alarm deleted too early")
 
-            button_control.update()
             nav, child = app.update()
             self.assertIsNone(child, msg="Unexpected child")
             self.assertEqual(nav, MenuNode.NO_NAVIGATION, 
                              msg="Expected NO_NAVIGATION")
+            button_control.update()
+
+        nav, child = app.update()
+        self.assertIsNone(child, msg="Unexpected child")
+        self.assertEqual(nav, MenuNode.NO_NAVIGATION, 
+                         msg="Expected NO_NAVIGATION")
 
         inactive_alarms = app.alarm_list.get_inactive_alarms()
         self.assertNotIn(sample_alarm, inactive_alarms, 
@@ -180,7 +187,7 @@ class AlarmAppTests(unittest.TestCase):
         button_control.set_sequence([False, False, True], buttons.SET)
 
         # navigate left to the last inactivated alarm
-        button_control.set_sequence([False, True, False], buttons.LEFT)
+        button_control.set_sequence([True, True, False], buttons.LEFT)
         app = init_alarm_app(alarm_list, button_control)
         app.setup()
 
@@ -192,11 +199,16 @@ class AlarmAppTests(unittest.TestCase):
             self.assertNotIn(sample_alarm, active_alarms, 
                           msg="Alarm changed too early")
 
-            button_control.update()
             nav, child = app.update()
             self.assertIsNone(child, msg="Unexpected child")
             self.assertEqual(nav, MenuNode.NO_NAVIGATION, 
                              msg="Expected NO_NAVIGATION")
+            button_control.update()
+
+        nav, child = app.update()
+        self.assertIsNone(child, msg="Unexpected child")
+        self.assertEqual(nav, MenuNode.NO_NAVIGATION, 
+                         msg="Expected NO_NAVIGATION")
 
         inactive_alarms = app.alarm_list.get_inactive_alarms()
         active_alarms = app.alarm_list.get_active_alarms()
@@ -204,7 +216,53 @@ class AlarmAppTests(unittest.TestCase):
                          msg="Alarm not removed from inactive")
         self.assertIn(sample_alarm, active_alarms, 
                          msg="Alarm not added to active")
+
+
+    def test_create_new_alarm(self):
+        al, alarm_list = create_alarm_list_and_test_alarm()
+        for alarm, activated in TEST_ALARMS:
+            alarm_list.add_alarm(alarm, activated)
         
+        old_num_alarms = alarm_list.num_alarms()
+        old_num_activated = alarm_list.num_active_alarms()
+
+        button_control = buttons.ButtonControl()
+
+        # press the "new"-button
+        button_control.set_sequence([False, True], buttons.ENTER)
+
+        # navigate left to the new-option
+        button_control.set_sequence([True, False], buttons.LEFT)
+
+        app = init_alarm_app(alarm_list, button_control)
+        app.setup()
+
+        num_alarms = app.alarm_list.num_alarms()
+        num_activated = app.alarm_list.num_active_alarms()
+        self.assertEqual(num_alarms, old_num_alarms,
+                        msg="Alarm added too soon")
+        self.assertEqual(num_activated, old_num_activated,
+                        msg="Alarm added too soon")
+
+        nav, child = app.update()
+        self.assertIsNone(child, msg="Unexpected child")
+        self.assertEqual(nav, MenuNode.NO_NAVIGATION, 
+                         msg="Expected NO_NAVIGATION")
+
+        button_control.update()
+
+        nav, child = app.update()
+        self.assertIsNotNone(child, msg="Child should not be None")
+        self.assertEqual(nav, MenuNode.ENTER, 
+                         msg="Expected NO_NAVIGATION")
+
+        num_alarms = app.alarm_list.num_alarms()
+        num_activated = app.alarm_list.num_active_alarms()
+        self.assertEqual(num_alarms, old_num_alarms + 1,
+                        msg="Alarm not added")
+        self.assertEqual(num_activated, old_num_activated + 1,
+                        msg="Alarm not active or added")
+
 
 class AlarmListTests(unittest.TestCase):
 
