@@ -350,16 +350,47 @@ class AlarmListTests(unittest.TestCase):
                     # the alarm should never go off
                     self.assertIsNone(alarms.get_gone_off_alarm(time))
 
-    # def test_alarm_gone_off_one_activated_alarm(self):
-    #     _, alarms = create_alarm_list_and_test_alarm()
-    #     alarms.add_alarm(al, False)
+    def test_alarm_gone_off_mixed(self):
+        _, alarms = create_alarm_list_and_test_alarm()
+        al1 = alarm.Alarm(7, 30, 0, 0)
+        alarms.add_alarm(al1, True)
 
-    #     # check every possible time
-    #     for day in range(7):
-    #         for minute in range(60):
-    #             for hour in range(24):
-    #                 time = datetime(2017, 03, 20 + day, hour, minute).strftime(
-    #                     alarm.TIME_FORMAT)
-    #                 # the alarm should never go off
-    #                 self.assertIsNone(alarms.get_gone_off_alarm(time))
+        al2 = alarm.Alarm(10, 0, 0, 0)
+        alarms.add_alarm(al2, False)
+
+        al3 = alarm.Alarm(15, 30, 1, 0)
+        alarms.add_alarm(al3, True)
+
+        al4 = alarm.Alarm(16, 30, 2, 1)
+        alarms.add_alarm(al3, True)
+
+        # should not go off
+        time1 = datetime(2017, 03, 20, 10, 0).strftime(alarm.TIME_FORMAT)
+
+        # al1 should go off
+        time2 = datetime(2017, 03, 20, 7, 30).strftime(alarm.TIME_FORMAT)
+
+        # should not go off
+        time3 = datetime(2017, 03, 20, 10, 0).strftime(alarm.TIME_FORMAT)
+
+        # al3 should go off
+        time4 = datetime(2017, 03, 21, 15, 30).strftime(alarm.TIME_FORMAT)
+
+        # al4 should go off, since repeated daily
+        time5 = datetime(2017, 03, 20, 16, 30).strftime(alarm.TIME_FORMAT)
+
+        self.assertIsNone(alarms.get_gone_off_alarm(time1),
+                         msg="Alarm shouldn't go off but did")
+
+        self.assertEquals(alarms.get_gone_off_alarm(time2), al1,
+                         msg="Alarm 1 should go off but didn't")
+
+        self.assertIsNone(alarms.get_gone_off_alarm(time3),
+                         msg="Alarm shouldn't go off but did")
+
+        self.assertEquals(alarms.get_gone_off_alarm(time4), al3,
+                         msg="Alarm 3 should go off but didn't")
+
+        self.assertEquals(alarms.get_gone_off_alarm(time5), al4,
+                         msg="Alarm 4 should go off but didn't")
 
