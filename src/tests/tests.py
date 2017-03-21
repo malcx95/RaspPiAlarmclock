@@ -364,6 +364,9 @@ class AlarmListTests(unittest.TestCase):
         al4 = alarm.Alarm(16, 30, 2, 1)
         alarms.add_alarm(al3, True)
 
+        al5 = alarm.Alarm(9, 30, 0, 2)
+        alarms.add_alarm(al3, True)
+
         # should not go off
         time1 = datetime(2017, 03, 20, 10, 0).strftime(alarm.TIME_FORMAT)
 
@@ -379,6 +382,15 @@ class AlarmListTests(unittest.TestCase):
         # al4 should go off, since repeated daily
         time5 = datetime(2017, 03, 20, 16, 30).strftime(alarm.TIME_FORMAT)
 
+        # al5 should go off, since repeated weekly
+        time6 = datetime(2017, 03, 27, 9, 30).strftime(alarm.TIME_FORMAT)
+
+        # should not go off
+        time7 = datetime(2017, 03, 28, 9, 30).strftime(alarm.TIME_FORMAT)
+
+        # should not go off
+        time8 = datetime(2017, 03, 27, 9, 29).strftime(alarm.TIME_FORMAT)
+
         self.assertIsNone(alarms.get_gone_off_alarm(time1),
                          msg="Alarm shouldn't go off but did")
 
@@ -393,4 +405,13 @@ class AlarmListTests(unittest.TestCase):
 
         self.assertEquals(alarms.get_gone_off_alarm(time5), al4,
                          msg="Alarm 4 should go off but didn't")
+
+        self.assertEquals(alarms.get_gone_off_alarm(time6), al5,
+                         msg="Alarm 5 should go off but didn't")
+
+        self.assertIsNone(alarms.get_gone_off_alarm(time7),
+                         msg="Alarm shouldn't go off but did")
+
+        self.assertIsNone(alarms.get_gone_off_alarm(time8),
+                         msg="Alarm shouldn't go off but did")
 

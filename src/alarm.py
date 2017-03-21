@@ -100,7 +100,8 @@ class Alarm(object):
             self._day += 1
 
     def __eq__(self, other):
-        return self.get_json_representation() == other.get_json_representation()
+        return self.get_json_representation() == \
+                other.get_json_representation() if other is not None else False
             
     def __str__(self):
         return '{}:{} {}'.format(self.hour, 
@@ -255,6 +256,7 @@ class AlarmList(object):
 
         AlarmList -> String -> Alarm | None
         """
+        # TODO implement
         pass
 
 
