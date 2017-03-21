@@ -87,6 +87,18 @@ class Alarm(object):
         new_min = (new_min + amount) % 60
         self.minute = new_min
         return new_min
+
+    def should_go_off(self, time):
+        """
+        Returns whether this alarm should go off on the given time.
+
+        Alarm -> datetime -> bool
+        """
+        if self.hour == time.hour and self.minute == time.minute:
+            if self.repeat == self.EVERY_WEEK:
+                return self.weekday == time.weekday()
+            return True
+        return False
         
     def _increment_day(self):
         num_days = monthrange(self._year, self._month)
@@ -249,15 +261,17 @@ class AlarmList(object):
         """
         If an alarm is supposed to go off now, the alarm that should go off
         is returned, otherwise, None is returned. The given time
-        should be generated using datetime.now().strftime(alarm.TIME_FORMAT).
+        should be generated using datetime.now().
 
         An alarm goes off if the current time equals the time of an activated
         alarm down to the minute.
 
-        AlarmList -> String -> Alarm | None
+        AlarmList -> datetime -> Alarm | None
         """
-        # TODO implement
-        pass
+        for alarm in self._active_alarms:
+            if alarm.should_go_off(time):
+                return alarm
+        return None
 
 
 class AlarmSupervisorThread(threading.Thread):

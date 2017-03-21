@@ -362,34 +362,34 @@ class AlarmListTests(unittest.TestCase):
         alarms.add_alarm(al3, True)
 
         al4 = alarm.Alarm(16, 30, 2, 1)
-        alarms.add_alarm(al3, True)
+        alarms.add_alarm(al4, True)
 
         al5 = alarm.Alarm(9, 30, 0, 2)
-        alarms.add_alarm(al3, True)
+        alarms.add_alarm(al5, True)
 
         # should not go off
-        time1 = datetime(2017, 03, 20, 10, 0).strftime(alarm.TIME_FORMAT)
+        time1 = datetime(2017, 03, 20, 10, 0)
 
         # al1 should go off
-        time2 = datetime(2017, 03, 20, 7, 30).strftime(alarm.TIME_FORMAT)
+        time2 = datetime(2017, 03, 20, 7, 30)
 
         # should not go off
-        time3 = datetime(2017, 03, 20, 10, 0).strftime(alarm.TIME_FORMAT)
+        time3 = datetime(2017, 03, 20, 10, 0)
 
         # al3 should go off
-        time4 = datetime(2017, 03, 21, 15, 30).strftime(alarm.TIME_FORMAT)
+        time4 = datetime(2017, 03, 21, 15, 30)
 
         # al4 should go off, since repeated daily
-        time5 = datetime(2017, 03, 20, 16, 30).strftime(alarm.TIME_FORMAT)
+        time5 = datetime(2017, 03, 20, 16, 30)
 
         # al5 should go off, since repeated weekly
-        time6 = datetime(2017, 03, 27, 9, 30).strftime(alarm.TIME_FORMAT)
+        time6 = datetime(2017, 03, 27, 9, 30)
 
         # should not go off
-        time7 = datetime(2017, 03, 28, 9, 30).strftime(alarm.TIME_FORMAT)
+        time7 = datetime(2017, 03, 28, 9, 30)
 
         # should not go off
-        time8 = datetime(2017, 03, 27, 9, 29).strftime(alarm.TIME_FORMAT)
+        time8 = datetime(2017, 03, 27, 9, 29)
 
         self.assertIsNone(alarms.get_gone_off_alarm(time1),
                          msg="Alarm shouldn't go off but did")
