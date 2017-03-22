@@ -1,4 +1,5 @@
 import unittest
+import weather
 import simulator.buttons as buttons
 from menu_node import MenuNode
 import alarm_app
@@ -414,4 +415,13 @@ class AlarmListTests(unittest.TestCase):
 
         self.assertIsNone(alarms.get_gone_off_alarm(time8),
                          msg="Alarm shouldn't go off but did")
+
+
+class WeatherTests(unittest.TestCase):
+
+    def test_update(self):
+        w = weather.update_weather(weather.URL)
+        self.assertIsNotNone(w)
+        self.assertIsInstance(w, weather.WeatherInfo)
+
 
