@@ -1,4 +1,3 @@
-import threading
 
 class GPIOSimulator:
 
@@ -8,10 +7,6 @@ class GPIOSimulator:
     FALLING = 1
     BCM = None
     PUD_DOWN = None
-
-    def __init__(self, window, lock):
-        self.window = window
-        self.lock = lock
 
     def setup(self, port, inout, **kwargs):
         pass
@@ -31,7 +26,5 @@ class GPIOSimulator:
     def setmode(self, mode):
         pass
 
-# TODO initscr()
-window_lock = threading.Lock()
-GPIO = GPIOSimulator(None, window_lock)
+GPIO = GPIOSimulator()
 

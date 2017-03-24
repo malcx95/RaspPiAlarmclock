@@ -205,6 +205,9 @@ class AlarmList(object):
             file_.write(json.dumps({'active': active, 'inactive': inactive}))
 
     def delete_alarm(self, alarm, activated):
+        """
+        Removes the given alarm from the list with the given activated status.
+        """
         if activated:
             for i in range(len(self._active_alarms)):
                 if self._active_alarms[i] == alarm:

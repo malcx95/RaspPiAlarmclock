@@ -48,3 +48,6 @@ class ButtonControl:
         else:
             return False
 
+    def wait_for_press(self, button, timeout):
+        return True
+

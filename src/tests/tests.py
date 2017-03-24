@@ -333,7 +333,7 @@ class AlarmListTests(unittest.TestCase):
         for day in range(7):
             for minute in range(60):
                 for hour in range(24):
-                    time = datetime(2017, 03, 20 + day, hour, minute).strftime(
+                    time = datetime(2017, 3, 20 + day, hour, minute).strftime(
                         alarm.TIME_FORMAT)
                     # the alarm should never go off
                     self.assertIsNone(alarms.get_gone_off_alarm(time))
@@ -346,7 +346,7 @@ class AlarmListTests(unittest.TestCase):
         for day in range(7):
             for minute in range(60):
                 for hour in range(24):
-                    time = datetime(2017, 03, 20 + day, hour, minute).strftime(
+                    time = datetime(2017, 3, 20 + day, hour, minute).strftime(
                         alarm.TIME_FORMAT)
                     # the alarm should never go off
                     self.assertIsNone(alarms.get_gone_off_alarm(time))
@@ -369,28 +369,28 @@ class AlarmListTests(unittest.TestCase):
         alarms.add_alarm(al5, True)
 
         # should not go off
-        time1 = datetime(2017, 03, 20, 10, 0)
+        time1 = datetime(2017, 3, 20, 10, 0)
 
         # al1 should go off
-        time2 = datetime(2017, 03, 20, 7, 30)
+        time2 = datetime(2017, 3, 20, 7, 30)
 
         # should not go off
-        time3 = datetime(2017, 03, 20, 10, 0)
+        time3 = datetime(2017, 3, 20, 10, 0)
 
         # al3 should go off
-        time4 = datetime(2017, 03, 21, 15, 30)
+        time4 = datetime(2017, 3, 21, 15, 30)
 
         # al4 should go off, since repeated daily
-        time5 = datetime(2017, 03, 20, 16, 30)
+        time5 = datetime(2017, 3, 20, 16, 30)
 
         # al5 should go off, since repeated weekly
-        time6 = datetime(2017, 03, 27, 9, 30)
+        time6 = datetime(2017, 3, 27, 9, 30)
 
         # should not go off
-        time7 = datetime(2017, 03, 28, 9, 30)
+        time7 = datetime(2017, 3, 28, 9, 30)
 
         # should not go off
-        time8 = datetime(2017, 03, 27, 9, 29)
+        time8 = datetime(2017, 3, 27, 9, 29)
 
         self.assertIsNone(alarms.get_gone_off_alarm(time1),
                          msg="Alarm shouldn't go off but did")
@@ -425,3 +425,13 @@ class WeatherTests(unittest.TestCase):
         self.assertIsInstance(w, weather.WeatherInfo)
 
 
+# class MainTests(unittest.TestCase):
+# 
+#     def test_sound_alarm_alarm(self):
+#         _, alarms = create_alarm_list_and_test_alarm()
+#         al = alarm.Alarm(7, 30, 0, 0)
+#         alarms.add_alarm(al, True)
+# 
+#         display_ = display.Display()
+#         button_control = buttons.ButtonControl()
+# 

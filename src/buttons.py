@@ -1,8 +1,6 @@
-"""
-Button constants
-"""
 
 import RPi.GPIO as GPIO
+import time
 
 BUTTONS = {
     'ENTER': 17,
@@ -46,7 +44,16 @@ class ButtonControl:
         pressed, before_pressed = self.buttons[button]
         return pressed and not before_pressed
 
-
-# def is_pressed(button):
-#     return GPIO.input(button)
+    def wait_for_press(self, button, timeout):
+        """
+        Waits for a button to be pressed. Returns True when the button is pressed
+        or False when the given timeout in milliseconds expires.
+        """
+        while True:
+            if GPIO.input(button):
+                return True
+            if timeout <= 0:
+                return False
+            timeout -= 1
+            time.sleep(0.001)
 
