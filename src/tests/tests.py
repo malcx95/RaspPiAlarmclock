@@ -392,6 +392,12 @@ class AlarmListTests(unittest.TestCase):
         # should not go off
         time8 = datetime(2017, 3, 27, 9, 29)
 
+        # should not go off
+        time9 = datetime(2017, 3, 21, 7, 30)
+
+        # should not go off
+        time10 = datetime(2017, 3, 22, 7, 30)
+
         self.assertIsNone(alarms.get_gone_off_alarm(time1),
                          msg="Alarm shouldn't go off but did")
 
@@ -414,6 +420,12 @@ class AlarmListTests(unittest.TestCase):
                          msg="Alarm shouldn't go off but did")
 
         self.assertIsNone(alarms.get_gone_off_alarm(time8),
+                         msg="Alarm shouldn't go off but did")
+
+        self.assertIsNone(alarms.get_gone_off_alarm(time9),
+                         msg="Alarm shouldn't go off but did")
+
+        self.assertIsNone(alarms.get_gone_off_alarm(time10),
                          msg="Alarm shouldn't go off but did")
 
 

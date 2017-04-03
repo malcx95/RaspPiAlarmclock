@@ -95,7 +95,7 @@ class Alarm(object):
         Alarm -> datetime -> bool
         """
         if self.hour == time.hour and self.minute == time.minute:
-            if self.repeat == self.EVERY_WEEK:
+            if self.repeat == self.EVERY_WEEK or self.repeat == self.NO_REPEAT:
                 return self.weekday == time.weekday()
             return True
         return False
